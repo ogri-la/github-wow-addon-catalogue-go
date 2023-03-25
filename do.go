@@ -256,6 +256,8 @@ func wait(resp ResponseWrapper) {
 	time.Sleep(time.Duration(30) * time.Second)
 }
 
+// TODO: replace this with extracting the 'next' url from the `Link` header:
+// Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
 // inspects `resp` and determines if there are more pages to fetch.
 func more_pages(page, per_page int, jsonstr string) int {
 	val := gjson.Get(jsonstr, "total_count")
@@ -349,8 +351,10 @@ func init_state() State {
 
 func main() {
 	STATE = init_state()
-	var struct_list []GithubRepo
+	struct_map := map[string]GithubRepo{}
 	search_list := [][]string{
+		// order is important.
+		// duplicate 'code' results are replaced by by 'repositories' results
 		[]string{"code", "path:.github/workflows bigwigsmods packager"},
 		[]string{"code", "path:.github/workflows CF_API_KEY"},
 		[]string{"repositories", "topic:wow-addon"},
@@ -359,9 +363,11 @@ func main() {
 		endpoint := pair[0]
 		query := pair[1]
 		search_results := search_github(endpoint, query)
-		struct_list = append(struct_list, search_results_to_struct_list(search_results)...)
+		for _, repo := range search_results_to_struct_list(search_results) {
+			struct_map[repo.FullName] = repo
+		}
 	}
-	pprint(struct_list)
+	pprint(struct_map)
 	println()
-	pprint(len(struct_list))
+	pprint(len(struct_map))
 }
