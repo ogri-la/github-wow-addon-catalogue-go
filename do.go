@@ -227,17 +227,10 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 		warn("failed to read response body.", err)
 		return empty_response, err
 	}
-	content_string := string(content_bytes)
-
-	var json_content_string string
-	if json.Valid(content_bytes) {
-		json_content_string = content_string
-	}
 
 	return ResponseWrapper{
 		Response: resp,
 		Text:     string(content_bytes),
-		JSON:     json_content_string,
 	}, nil
 }
 
@@ -276,8 +269,7 @@ func more_pages(page, per_page int, jsonstr string) int {
 func search_github(endpoint string, query string) []string {
 	results_acc := []string{}
 	per_page := 100
-	// how often should we attempt to download the URL once throttled?
-	num_attempts := 6
+	num_attempts := 5 // number of attempts to download the URL once throttled.
 	page := 1
 	query = url.PathEscape(query)
 
@@ -285,7 +277,6 @@ func search_github(endpoint string, query string) []string {
 		var resp ResponseWrapper
 		var err error
 		api_url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, query, per_page, page)
-		//url := API_URL + "search/" + endpoint + "?q=" + query + "&per_page=" + i2s(per_page) + "&page=" + i2s(page)
 		for i := 1; i <= num_attempts; i++ {
 			debug(fmt.Sprintf("attempt %d", i))
 			resp, err = github_download(api_url)
@@ -304,10 +295,10 @@ func search_github(endpoint string, query string) []string {
 				continue
 			}
 
-			results_acc = append(results_acc, resp.JSON)
+			results_acc = append(results_acc, resp.Text)
 			break
 		}
-		remaining_pages := more_pages(page, per_page, resp.JSON)
+		remaining_pages := more_pages(page, per_page, resp.Text)
 		if remaining_pages > 0 && page < 10 {
 			debug(fmt.Sprintf("remaining pages: %d", remaining_pages))
 			page = page + 1
