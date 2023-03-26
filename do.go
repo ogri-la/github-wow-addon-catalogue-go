@@ -71,6 +71,26 @@ var STATE State
 
 var API_URL = "https://api.github.com"
 
+var REPO_EXCLUDES = map[string]bool{
+	"alchem1ster/AddOns-Update-Tool": true, // Not an add-on
+	"alchem1ster/AddOnsFixer":        true, // Not an add-on
+	"BilboTheGreedy/Azerite":         true, // Not an add-on
+	"Centias/BankItems":              true, // Fork
+	"DaMitchell/HelloWorld":          true,
+	"dratr/BattlePetCount":           true, // Fork
+	"HappyRot/AddOns":                true, // Compilation
+	"hippuli/":                       true, // Fork galore
+	"JsMacros/":                      true, // Minecraft stuff
+	"Kirri777/WorldQuestsList":       true, // Fork
+	"livepeer/":                      true, // Minecraft stuff
+	"lowlee/MikScrollingBattleText":  true, // Fork
+	"lowlee/MSBTOptions":             true, // Fork
+	"MikeD89/KarazhanChess":          true, // Hijacking BigWigs' TOC IDs, probably by accident
+	"smashedr/MethodAltManager":      true, // Fork
+	"wagyourtail/JsMacros":           true, // More Minecraft stuff
+	"ynazar1/Arh":                    true, // Fork
+}
+
 // --- utils
 
 func pprint(thing any) {
@@ -234,6 +254,7 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	}, nil
 }
 
+// just like `download` but adds an 'authorization' header to the request.
 func github_download(url string) (ResponseWrapper, error) {
 	headers := map[string]string{"Authorization": "token " + STATE.GithubToken}
 	return download(url, headers)
@@ -241,7 +262,7 @@ func github_download(url string) (ResponseWrapper, error) {
 
 // ---
 
-// inspects `resp` and determines if we were throttled.
+// inspects http response and determines if it was throttled.
 func throttled(resp ResponseWrapper) bool {
 	if resp.StatusCode == 422 || resp.StatusCode == 403 {
 		debug("throttled")
@@ -252,6 +273,7 @@ func throttled(resp ResponseWrapper) bool {
 
 // inspects http response and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
+	// TODO: something a bit cleverer than this.
 	debug("waiting 30secs")
 	time.Sleep(time.Duration(30) * time.Second)
 }
@@ -268,7 +290,11 @@ func more_pages(page, per_page int, jsonstr string) int {
 	return int(math.Ceil(remaining_pages))              // 5
 }
 
-func search_github(endpoint string, query string) []string {
+// 'get_projects'
+func _search_github(endpoint string, query string) []string {
+	if endpoint != "code" && endpoint != "repositories" {
+		fatal("unsupported endpoint: "+endpoint, nil)
+	}
 	results_acc := []string{}
 	per_page := 100
 	num_attempts := 5 // number of attempts to download the URL once throttled.
@@ -328,12 +354,35 @@ func search_results_to_struct_list(search_results []string) []GithubRepo {
 	for _, json_blob := range search_results {
 		item_list := gjson.Get(json_blob, "items").Array()
 		for _, item := range item_list {
-
 			g := json_string_to_struct(item.String())
 			results_acc = append(results_acc, g)
 		}
 	}
 	return results_acc
+}
+
+// --- tasks
+
+func search_github() map[string]GithubRepo {
+	struct_map := map[string]GithubRepo{}
+	search_list := [][]string{
+		// order is important.
+		// duplicate 'code' results are replaced by by 'repositories' results
+		[]string{"code", "path:.github/workflows bigwigsmods packager"},
+		[]string{"code", "path:.github/workflows CF_API_KEY"},
+		[]string{"repositories", "topic:wow-addon"},
+		[]string{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"}}
+	for _, pair := range search_list {
+		endpoint := pair[0]
+		query := pair[1]
+		search_results := _search_github(endpoint, query)
+		for _, repo := range search_results_to_struct_list(search_results) {
+			if !REPO_EXCLUDES[repo.FullName] {
+				struct_map[repo.FullName] = repo
+			}
+		}
+	}
+	return struct_map
 }
 
 // --- bootstrap
@@ -351,23 +400,8 @@ func init_state() State {
 
 func main() {
 	STATE = init_state()
-	struct_map := map[string]GithubRepo{}
-	search_list := [][]string{
-		// order is important.
-		// duplicate 'code' results are replaced by by 'repositories' results
-		[]string{"code", "path:.github/workflows bigwigsmods packager"},
-		[]string{"code", "path:.github/workflows CF_API_KEY"},
-		[]string{"repositories", "topic:wow-addon"},
-		[]string{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"}}
-	for _, pair := range search_list {
-		endpoint := pair[0]
-		query := pair[1]
-		search_results := search_github(endpoint, query)
-		for _, repo := range search_results_to_struct_list(search_results) {
-			struct_map[repo.FullName] = repo
-		}
-	}
-	pprint(struct_map)
+	github_repos := search_github()
+	pprint(github_repos)
 	println()
-	pprint(len(struct_map))
+	pprint(len(github_repos))
 }
