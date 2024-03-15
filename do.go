@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -52,7 +53,7 @@ type GithubRepo struct {
 }
 
 // what we'll render out
-type CatalogueRepo struct {
+type Project struct {
 	Description   string
 	DownloadCount int
 	GameTrackList []string
@@ -363,11 +364,73 @@ func search_results_to_struct_list(search_results []string) []GithubRepo {
 
 // --- tasks
 
-func search_github() map[string]GithubRepo {
+func parse_repo(repo GithubRepo) (Project, error) {
+
+	if repo.FullName == "" {
+		// this is weird, where are these empties coming from?
+		pprint(repo)
+		return Project{}, errors.New("repo has no 'full_name' property!")
+	}
+
+	url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
+	for {
+		// fetch current release, if any
+		resp, err := github_download(url)
+		if err != nil {
+			fatal("error requesting: "+url, err)
+		}
+
+		if resp.StatusCode == 404 {
+			return Project{}, errors.New("project has no releases: " + repo.FullName)
+		}
+
+		if throttled(resp) {
+			wait(resp)
+			continue
+		}
+
+		println("got a release resp!")
+		os.Exit(0)
+		// look for "release.json" in release assets
+
+		// if found, fetch it, validate it as json, validate as correct release-json (schema?)
+		// for each asset in release, 'extract project ids from toc files'
+		// this seems to involve reading the toc files inside zip files looking for "curse_id", "wago_id", "wowi_id" properties
+		// a lot of toc data is just being ignored here :( and those properties are kind of rare
+
+		// if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
+
+		// return a Project struct
+
+		return Project{}, nil
+	}
+}
+
+func parse_repo_list(repo_list []GithubRepo) []GithubRepo {
+
+	project_list := []Project{}
+
+	for _, repo := range repo_list {
+		project, err := parse_repo(repo)
+		if err != nil {
+			warn("", err)
+			continue
+		}
+		project_list = append(project_list, project)
+	}
+
+	return nil
+}
+
+// does a bunch of Github searches for repositories,
+// converts results to structs,
+// de-duplicates results,
+// returns structs.
+func search_github() []GithubRepo {
 	struct_map := map[string]GithubRepo{}
 	search_list := [][]string{
 		// order is important.
-		// duplicate 'code' results are replaced by by 'repositories' results
+		// duplicate 'code' results are replaced by 'repositories' results.
 		[]string{"code", "path:.github/workflows bigwigsmods packager"},
 		[]string{"code", "path:.github/workflows CF_API_KEY"},
 		[]string{"repositories", "topic:wow-addon"},
@@ -382,7 +445,11 @@ func search_github() map[string]GithubRepo {
 			}
 		}
 	}
-	return struct_map
+	struct_list := make([]GithubRepo, len(struct_map))
+	for _, repo := range struct_map {
+		struct_list = append(struct_list, repo)
+	}
+	return struct_list
 }
 
 // --- bootstrap
@@ -400,8 +467,9 @@ func init_state() State {
 
 func main() {
 	STATE = init_state()
-	github_repos := search_github()
-	pprint(github_repos)
+	github_repo_list := search_github()
+	github_repo_list = parse_repo_list(github_repo_list)
+	pprint(github_repo_list)
 	println()
-	pprint(len(github_repos))
+	pprint(len(github_repo_list))
 }
