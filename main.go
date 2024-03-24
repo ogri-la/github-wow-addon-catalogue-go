@@ -1,17 +1,21 @@
 package main
 
 import (
+	"archive/zip"
 	"bufio"
+	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"log/slog"
 	"math"
 	"net/http"
+	"net/http/httptrace"
 	"net/http/httputil"
 	"net/url"
 	"os"
@@ -22,12 +26,16 @@ import (
 	"time"
 
 	"github.com/lmittmann/tint"
+	"github.com/snabb/httpreaderat"
 	"github.com/tidwall/gjson"
+
+	bufra "github.com/avvmoto/buf-readerat"
 )
 
 type State struct {
 	CWD         string
 	GithubToken string
+	Client      *http.Client
 }
 
 func NewState() *State {
@@ -90,17 +98,31 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
-	Description   string
-	DownloadCount int
-	GameTrackList []string
-	Label         string
-	Name          string
-	Source        string
-	SourceId      string
-	TagList       []string
-	UpdatedDate   string
-	URL           string
+	Description    string
+	DownloadCount  int
+	GameTrackList  []string
+	Label          string
+	Name           string
+	Source         string
+	SourceId       string
+	ProjectIDMap   map[string]string
+	TagList        []string
+	UpdatedDate    string
+	URL            string
+	Flavors        []string
+	LastSeenDate   string
+	HasReleaseJSON bool
 }
+
+/* // unused
+func NewProject() *Project {
+	return &Project{
+		GameTrackList: []string{},
+		ProjectIDMap:  map[string]string{},
+		TagList:       []string{},
+	}
+}
+*/
 
 type ResponseWrapper struct {
 	*http.Response
@@ -234,7 +256,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		// if redirect, call self with redirect location (resp.Request.URL)
 		// if error, pass through
 		//if resp.StatusCode != 200 {
-		if resp.StatusCode > 399 {
+		if resp.StatusCode != 200 {
 			// non-200 response, pass through
 			slog.Debug("non-200 response, pass through", "code", resp.StatusCode)
 			return resp, nil
@@ -275,36 +297,44 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	//return http.DefaultTransport.RoundTrip(r)
 }
 
+// client trace to log whether the request's underlying tcp connection was re-used
+func trace_context() context.Context {
+	client_tracer := &httptrace.ClientTrace{
+		GotConn: func(info httptrace.GotConnInfo) {
+			slog.Debug("HTTP connection reuse", "reused", info.Reused, "remote", info.Conn.RemoteAddr())
+		},
+	}
+	return httptrace.WithClientTrace(context.Background(), client_tracer)
+}
+
 func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	slog.Debug("HTTP GET", "url", url)
 	empty_response := ResponseWrapper{}
 
-	// fetch it
+	// ---
 
-	client := http.Client{}
-	customTransport := FileCachingRequest{}
-	client.Transport = &customTransport
-
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequestWithContext(trace_context(), http.MethodGet, url, nil)
 	if err != nil {
-		fatal("error creating request", err)
+		return empty_response, fmt.Errorf("failed to create request: %w", err)
 	}
 	for header, header_val := range headers {
 		req.Header.Set(header, header_val)
 	}
+
+	// ---
+
+	client := STATE.Client
 	resp, err := client.Do(req)
 	if err != nil {
-		warn("failed to fetch URL "+url, err)
-		return empty_response, err
+		return empty_response, fmt.Errorf("failed to fetch '%s': %w", url, err)
 	}
 	defer resp.Body.Close()
 
-	// construct a response
+	// ---
 
 	content_bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		warn("failed to read response body.", err)
-		return empty_response, err
+		return empty_response, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	return ResponseWrapper{
@@ -313,10 +343,83 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	}, nil
 }
 
+// returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
+func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
+
+	empty_response := map[string][]byte{}
+
+	req, err := http.NewRequestWithContext(trace_context(), http.MethodGet, url, nil)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	for header, header_val := range headers {
+		req.Header.Set(header, header_val)
+	}
+
+	// ---
+
+	client := STATE.Client
+
+	// a 'readerat' is an implementation of the built-in Go interface `io.ReaderAt`,
+	// that provides a means to jump around within the bytes of a remote file using
+	// HTTP Range requests.
+	http_readerat, err := httpreaderat.New(client, req, nil)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to create a HTTPReaderAt: %w", err)
+	}
+
+	// a 'buffered readerat' remembers the bytes read of a `io.ReaderAt` implementation,
+	// reducing the number of future reads when the bytes have already been read..
+	// in our case it's unlikely to be useful but it also doesn't hurt.
+	buffer_size := 1024 * 1024 // 1MiB
+	buffered_http_readerat := bufra.NewBufReaderAt(http_readerat, buffer_size)
+	zip_rdr, err := zip.NewReader(buffered_http_readerat, http_readerat.Size())
+
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to create a zip reader: %w", err)
+	}
+
+	file_bytes := map[string][]byte{}
+
+	for _, zipped_file_entry := range zip_rdr.File {
+		if zipped_file_filter(zipped_file_entry.Name) {
+			slog.Debug("found zipped file name match", "filename", zipped_file_entry.Name)
+
+			fh, err := zipped_file_entry.Open()
+			if err != nil {
+				// this file is probably busted, stop trying to read it altogether.
+				return empty_response, fmt.Errorf("failed to open zipped file entry: %w", err)
+			}
+
+			bl, err := io.ReadAll(fh)
+			if err != nil {
+				// again, file is probably busted, abort.
+				return empty_response, fmt.Errorf("failed to read zipped file entry: %w", err)
+			}
+
+			// note: so much other great stuff available to us in zipped_file! can we use it?
+
+			file_bytes[zipped_file_entry.Name] = bl
+		}
+	}
+
+	return file_bytes, nil
+}
+
 // just like `download` but adds an 'authorization' header to the request.
 func github_download(url string) (ResponseWrapper, error) {
-	headers := map[string]string{"Authorization": "token " + STATE.GithubToken}
+	headers := map[string]string{
+		"Authorization": "token " + STATE.GithubToken,
+	}
 	return download(url, headers)
+}
+
+func github_zip_download(url string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
+	headers := map[string]string{
+		"Authorization": "token " + STATE.GithubToken,
+	}
+	return download_zip(url, headers, zipped_file_filter)
 }
 
 // ---
@@ -464,7 +567,6 @@ func json_string_to_struct(json_blob string) (GithubRepo, error) {
 	}
 
 	return repo, nil
-
 }
 
 func search_results_to_struct_list(search_results_list []string) []GithubRepo {
@@ -473,20 +575,20 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 		item_list := gjson.Get(search_results, "items")
 		if !item_list.Exists() {
 			slog.Error("no 'items' found in json blob", "json-blob", search_results)
-			exit(1)
+			panic("programming error")
 		}
 
 		for _, item := range item_list.Array() {
 			g, err := json_string_to_struct(item.String())
 
 			if g.Name == "" {
-				fmt.Println("bad github repo")
-				exit(1)
+				slog.Error("bad github repo", "repo", item)
+				panic("programming error, bad github repo")
 			}
 
 			if err != nil {
 				fmt.Println(err.Error())
-				exit(1)
+				panic("programming error")
 			}
 			results_acc = append(results_acc, g)
 		}
@@ -494,9 +596,73 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	return results_acc
 }
 
-// downloads a release asset from github that matches the first entry in a release.json file.
-func extract_project_ids_from_toc_files(asset_url string) {
-    panic("not implemented")
+func parse_toc_file(toc_bytes []byte) (map[string]string, error) {
+	return map[string]string{}, nil
+}
+
+// downloads a file asset from a github release,
+// extracts any .toc files from within it,
+// parsing their contents,
+// and returning a map of any project-ids to their values.
+// for example: {"X-WoWI-ID" => "1234", ...}
+func extract_project_ids_from_toc_files(asset_url string) (map[string]string, error) {
+	empty_response := map[string]string{}
+
+	is_toc_file := func(filename string) bool {
+
+		// for m in (TOP_LEVEL_TOC_NAME_PATTERN.match(n),)
+		// if m and filename.startswith(m["name"].lstrip("!_"))
+		// if m and filename.startswith(m["name"].lstrip("!_"))
+
+		/*
+			   TOP_LEVEL_TOC_NAME_PATTERN = re.compile(
+				    rf"""
+				        ^
+				        (?P<name>[^/]+)
+				        [/]
+				        (?P=name)
+				        (?:[-_](?P<flavor>{'|'.join(map(re.escape, TOC_ALIASES))}))?
+				        \.toc
+				        $
+				    """,
+				    flags=re.I | re.X,
+			  )
+
+		*/
+
+		/*
+
+			TOC_ALIASES = {
+			    **ReleaseJsonFlavor.__members__,
+			    "vanilla": ReleaseJsonFlavor.classic,
+			    "tbc": ReleaseJsonFlavor.bcc,
+			    "wotlkc": ReleaseJsonFlavor.wrath,
+			}
+
+		*/
+
+		return true
+	}
+
+	toc_file_map, err := github_zip_download(asset_url, is_toc_file)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to process remote zip file: %w", err)
+	}
+
+	selected_key_vals := map[string]string{}
+	for _, toc_bytes := range toc_file_map {
+		keyvals, err := parse_toc_file(toc_bytes)
+		if err != nil {
+			return empty_response, fmt.Errorf("failed to parse .toc contents: %w", err)
+		}
+		for key, val := range keyvals {
+			if key == "X-Curse-Project-ID" || key == "X-Wago-ID" || key == "X-WoWI-ID" {
+				selected_key_vals[key] = val
+			}
+		}
+	}
+
+	return selected_key_vals, nil
 }
 
 // --- tasks
@@ -505,24 +671,26 @@ func parse_repo(repo GithubRepo) (Project, error) {
 
 	slog.Info("parsing project", "project", repo.FullName)
 
+	empty_response := Project{}
+
 	url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
 	for {
 		// fetch current release, if any
 		resp, err := github_download_with_retries_and_backoff(url)
 		if err != nil {
 			//slog.Error("error downloading repository release listing", "error", err.Error())
-			return Project{}, fmt.Errorf("failed to download repository release listing: %w", err)
+			return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
 		}
 
 		var release_list []GithubRelease
 		err = json.Unmarshal([]byte(resp.Text), &release_list)
 		if err != nil {
 			//slog.Error("error parsing Github 'release' response as JSON", "error", err)
-			return Project{}, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
+			return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
 		}
 
 		if len(release_list) != 1 {
-			return Project{}, fmt.Errorf("project has no releases")
+			return empty_response, fmt.Errorf("project has no releases")
 		}
 
 		first_github_release := release_list[0] // 'release_json_release'
@@ -534,21 +702,25 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			if asset.Name == "release.json" {
 				asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
 				if err != nil {
-					return Project{}, fmt.Errorf("failed to download release.json: %w", err)
+					return empty_response, fmt.Errorf("failed to download release.json: %w", err)
 				}
 				err = json.Unmarshal([]byte(asset_resp.Text), &release_json_file)
 				if err != nil {
-					return Project{}, fmt.Errorf("failed to parse release.json as JSON: %w", err)
+					return empty_response, fmt.Errorf("failed to parse release.json as JSON: %w", err)
 				}
 				break
 			}
 		}
 
+		flavors := []string{} // set of "wrath", "classic", etc
+		project_id_map := map[string]string{}
+
 		if release_json_file != nil {
+
+			slog.Info("release.json found, looking for matching asset")
 
 			// todo: validate
 			// ensure at least one release in 'releases' is available
-			pprint(release_json_file)
 
 			flavors := map[string]bool{}
 			for _, entry := range release_json_file.ReleaseJsonEntryList {
@@ -560,24 +732,21 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			// find the matching asset
 			first_release_json_entry := release_json_file.ReleaseJsonEntryList[0]
 			for _, asset := range first_github_release.AssetList {
-
-				slog.Debug("match?", "asset-name", asset.Name, "release-name", first_github_release.Name)
-
+				slog.Debug("match?", "asset-name", asset.Name, "release-name", first_release_json_entry.Filename)
 				if asset.Name == first_release_json_entry.Filename {
-					// downloads asset?
-					//extract_project_ids_from_toc_files(get(asset.BrowserDownloadURL))
-
-					slog.Info("found matching asset", "asset", asset)
-					extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
-
+					project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
+					if err != nil {
+						slog.Error("failed to extract project ids, ignoring", "error", err)
+					}
 					break
 				}
 			}
 
 		} else {
 
-			// look for candidate assets
-			slog.Info("looking for candidate assets")
+			// there is no release.json file,
+			// look for .zip assets instead and try our luck.
+			slog.Info("no release.json found, looking for candidate assets")
 			release_archives := []Asset{}
 			for _, asset := range release_list[0].AssetList {
 				pprint(asset)
@@ -589,14 +758,27 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			}
 
 			if len(release_archives) == 0 {
-				return Project{}, fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
+				return empty_response, fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 			}
 
 			// extract flavors ...
 		}
 
+		project := Project{
+			Name:           repo.Name,
+			URL:            repo.Url,
+			Description:    repo.Description,
+			UpdatedDate:    repo.UpdatedAt,
+			Flavors:        flavors,
+			HasReleaseJSON: release_json_file != nil,
+			LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
+			ProjectIDMap:   project_id_map,
+		}
+
 		//println(resp.Text)
-		exit(1)
+
+		panic("stopping")
+
 		// look for "release.json" in release assets
 		// if found, fetch it, validate it as json, validate as correct release-json (schema?)
 		// for each asset in release, 'extract project ids from toc files'
@@ -607,7 +789,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 
 		// return a Project struct
 
-		return Project{}, nil
+		return project, nil
 	}
 }
 
@@ -686,12 +868,22 @@ func init_state() *State {
 	}
 	state.CWD = cwd
 
+	state.Client = &http.Client{}
+	state.Client.Transport = &FileCachingRequest{}
+
 	return state
 }
 
 // --- bootstrap
 
+func is_testing() bool {
+	return flag.Lookup("test.v") == nil
+}
+
 func init() {
+	if is_testing() {
+		return
+	}
 	STATE = init_state()
 	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: slog.LevelDebug})))
 }
