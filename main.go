@@ -8,10 +8,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"math"
 	"net/http"
@@ -19,9 +17,8 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"runtime"
+	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 	"time"
 
@@ -114,16 +111,6 @@ type Project struct {
 	HasReleaseJSON bool
 }
 
-/* // unused
-func NewProject() *Project {
-	return &Project{
-		GameTrackList: []string{},
-		ProjectIDMap:  map[string]string{},
-		TagList:       []string{},
-	}
-}
-*/
-
 type ResponseWrapper struct {
 	*http.Response
 	Text string
@@ -164,14 +151,9 @@ func quick_json(blob string) string {
 
 	b, err := json.MarshalIndent(foo, "", "\t")
 	if err != nil {
-		log.Fatal("failed to coerce to json: ", err)
+		fatal("failed to coerce to json: ", err)
 	}
 	return string(b)
-}
-
-// calls `defer()`'s before exiting
-func exit(code int) {
-	runtime.Goexit()
 }
 
 func pprint(thing any) {
@@ -179,35 +161,11 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
-func debug(msg string) {
-	println(msg)
-}
-
-func warn(msg string, err error) {
-	println(msg + ": " + err.Error())
-}
-
 func fatal(msg string, err error) {
-	warn(msg, err)
-	exit(1)
-}
-
-// int-to-string
-func i2s(i int) string {
-	return strconv.Itoa(i)
-}
-
-func trim(s string) string {
-	return strings.TrimSpace(s)
-}
-
-// read text file at given `path`, returning contents as a string stripped of whitespace.
-func slurp(path string) string {
-	data, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatal("failed to read file: " + path)
+		panic(fmt.Sprintf("%s: %v", msg, err))
 	}
-	return trim(string(data))
+	panic(msg)
 }
 
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
@@ -343,6 +301,22 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	}, nil
 }
 
+// inspects http response and determines if it was throttled.
+func throttled(resp ResponseWrapper) bool {
+	if resp.StatusCode == 422 || resp.StatusCode == 403 {
+		slog.Debug("throttled")
+		return true
+	}
+	return false
+}
+
+// inspects http response and determines how long to wait. then waits.
+func wait(resp ResponseWrapper) {
+	// TODO: something a bit cleverer than this.
+	slog.Debug("waiting 5secs")
+	time.Sleep(time.Duration(5) * time.Second)
+}
+
 // returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
@@ -424,22 +398,6 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 
 // ---
 
-// inspects http response and determines if it was throttled.
-func throttled(resp ResponseWrapper) bool {
-	if resp.StatusCode == 422 || resp.StatusCode == 403 {
-		debug("throttled")
-		return true
-	}
-	return false
-}
-
-// inspects http response and determines how long to wait. then waits.
-func wait(resp ResponseWrapper) {
-	// TODO: something a bit cleverer than this.
-	debug("waiting 5secs")
-	time.Sleep(time.Duration(5) * time.Second)
-}
-
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
 
 	var resp ResponseWrapper
@@ -506,11 +464,11 @@ func _get_projects(endpoint string, query string) []string {
 		var body string
 		for i := 1; i <= num_attempts; i++ {
 			if i > 1 {
-				debug(fmt.Sprintf("attempt %d", i))
+				slog.Debug(fmt.Sprintf("attempt %d", i))
 			}
 			resp, err = github_download(api_url)
 			if err != nil {
-				log.Fatal("error requesting url: "+api_url, err)
+				fatal("error requesting url: "+api_url, err)
 			}
 
 			if throttled(resp) {
@@ -519,7 +477,7 @@ func _get_projects(endpoint string, query string) []string {
 			}
 
 			if resp.StatusCode != 200 {
-				fmt.Printf("non 200, non 422 response, waiting and trying again: %d", resp.StatusCode)
+				slog.Debug("non 200, non 422 response, waiting and trying again", "status", resp.StatusCode)
 				wait(resp)
 				continue
 			}
@@ -580,16 +538,16 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 
 		for _, item := range item_list.Array() {
 			g, err := json_string_to_struct(item.String())
+			if err != nil {
+				slog.Error("skipping item", "error", err)
+				panic("programming error") // temporary
+			}
 
 			if g.Name == "" {
-				slog.Error("bad github repo", "repo", item)
-				panic("programming error, bad github repo")
+				slog.Error("skipping item, bad search result", "repo", item)
+				panic("programming error") // temporary
 			}
 
-			if err != nil {
-				fmt.Println(err.Error())
-				panic("programming error")
-			}
 			results_acc = append(results_acc, g)
 		}
 	}
@@ -600,6 +558,27 @@ func parse_toc_file(toc_bytes []byte) (map[string]string, error) {
 	return map[string]string{}, nil
 }
 
+func is_toc_file(filename string) bool {
+	ids := "mainline|classic|bcc|wrath"
+	aliases := "vanilla|tbc|wotlkc"
+
+	// golang doesn't support backreferences, so we can't use ?P= to match previous captures.
+	//pattern := fmt.Sprintf(`^(?P<name>[^/]+)[/](?P=name)(?:[-_](?P<flavor>%s%s))?\.toc$`, ids, aliases)
+
+	// instead we'll split on the first path delimiter and match against the rest of the path,
+	// ensuring the prefix matches the 'name' capture group.
+	bits := strings.SplitN(filename, "/", 2)
+	if len(bits) != 2 {
+		return false
+	}
+	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo", "Bar.toc"
+
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s|%s))?\.toc$`, ids, aliases)
+	cpattern := regexp.MustCompile(pattern)
+	matches := cpattern.FindStringSubmatch(rest) // "Bar.toc" => [Bar.toc Bar], "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
+	return len(matches) >= 2 && prefix == matches[1]
+}
+
 // downloads a file asset from a github release,
 // extracts any .toc files from within it,
 // parsing their contents,
@@ -607,42 +586,6 @@ func parse_toc_file(toc_bytes []byte) (map[string]string, error) {
 // for example: {"X-WoWI-ID" => "1234", ...}
 func extract_project_ids_from_toc_files(asset_url string) (map[string]string, error) {
 	empty_response := map[string]string{}
-
-	is_toc_file := func(filename string) bool {
-
-		// for m in (TOP_LEVEL_TOC_NAME_PATTERN.match(n),)
-		// if m and filename.startswith(m["name"].lstrip("!_"))
-		// if m and filename.startswith(m["name"].lstrip("!_"))
-
-		/*
-			   TOP_LEVEL_TOC_NAME_PATTERN = re.compile(
-				    rf"""
-				        ^
-				        (?P<name>[^/]+)
-				        [/]
-				        (?P=name)
-				        (?:[-_](?P<flavor>{'|'.join(map(re.escape, TOC_ALIASES))}))?
-				        \.toc
-				        $
-				    """,
-				    flags=re.I | re.X,
-			  )
-
-		*/
-
-		/*
-
-			TOC_ALIASES = {
-			    **ReleaseJsonFlavor.__members__,
-			    "vanilla": ReleaseJsonFlavor.classic,
-			    "tbc": ReleaseJsonFlavor.bcc,
-			    "wotlkc": ReleaseJsonFlavor.wrath,
-			}
-
-		*/
-
-		return true
-	}
 
 	toc_file_map, err := github_zip_download(asset_url, is_toc_file)
 	if err != nil {
@@ -857,14 +800,13 @@ func init_state() *State {
 
 	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
 	if !present {
-		fmt.Println("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not present.")
-		exit(1)
+		panic("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not present.")
 	}
 	state.GithubToken = token
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		fatal("foo", err)
 	}
 	state.CWD = cwd
 
@@ -877,7 +819,9 @@ func init_state() *State {
 // --- bootstrap
 
 func is_testing() bool {
-	return flag.Lookup("test.v") == nil
+	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
+	//return flag.Lookup("test.v") != nil
+	return strings.HasSuffix(os.Args[0], ".test")
 }
 
 func init() {
@@ -889,7 +833,6 @@ func init() {
 }
 
 func main() {
-	defer os.Exit(0)
 	slog.Info("searching for projects")
 	github_repo_list := get_projects()
 	slog.Info("found projects", "num", len(github_repo_list))
