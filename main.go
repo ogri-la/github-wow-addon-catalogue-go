@@ -19,6 +19,7 @@ import (
 	"os"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +29,55 @@ import (
 
 	bufra "github.com/avvmoto/buf-readerat"
 )
+
+// assert `b` is true, otherwise panic with message `m`.
+// ideally these would be compile-time checks, but eh, can't do that.
+func ensure(b bool, m string) {
+	if !b {
+		panic(m)
+	}
+}
+
+// ---
+
+type GameTrack string
+
+const (
+	MAINLINE GameTrack = "mainline"
+	CLASSIC  GameTrack = "classic"
+	BCC      GameTrack = "bcc"
+	WRATH    GameTrack = "wrath"
+)
+
+var GameTrackList = []GameTrack{
+	MAINLINE, CLASSIC, BCC, WRATH,
+}
+
+var GameTrackAliasMap = map[string]GameTrack{
+	"vanilla": CLASSIC,
+	"tbc":     BCC,
+	"wotlkc":  WRATH,
+}
+
+var interface_ranges_labels = []GameTrack{
+	MAINLINE,
+	CLASSIC,
+	MAINLINE,
+	BCC,
+	MAINLINE,
+	WRATH,
+	MAINLINE,
+}
+
+var interface_ranges = [][]int{
+	{1_00_00, 1_13_00},
+	{1_13_00, 2_00_00},
+	{2_00_00, 2_05_00},
+	{2_05_00, 3_00_00},
+	{3_00_00, 3_04_00},
+	{3_04_00, 4_00_00},
+	{4_00_00, 11_00_00},
+}
 
 type State struct {
 	CWD         string
@@ -66,8 +116,8 @@ type GithubRepo struct {
 }
 
 type ReleaseJsonEntryMetadata struct {
-	Flavor    string `json:"flavor"`
-	Interface int    `json:"interface"`
+	Flavor    GameTrack `json:"flavor"`
+	Interface int       `json:"interface"`
 }
 
 type ReleaseJsonEntry struct {
@@ -95,9 +145,9 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
-	Description    string
-	DownloadCount  int
-	GameTrackList  []string
+	Description   string
+	DownloadCount int
+	//GameTrackList  []string
 	Label          string
 	Name           string
 	Source         string
@@ -106,7 +156,7 @@ type Project struct {
 	TagList        []string
 	UpdatedDate    string
 	URL            string
-	Flavors        []string
+	Flavors        []GameTrack // unique/set, rename 'GameTrackList'
 	LastSeenDate   string
 	HasReleaseJSON bool
 }
@@ -166,6 +216,10 @@ func fatal(msg string, err error) {
 		panic(fmt.Sprintf("%s: %v", msg, err))
 	}
 	panic(msg)
+}
+
+func in_range(v, s, e int) bool {
+	return v >= s && v <= e
 }
 
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
@@ -358,18 +412,18 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 
 	for _, zipped_file_entry := range zip_rdr.File {
 		if zipped_file_filter(zipped_file_entry.Name) {
-			slog.Debug("found zipped file name match", "filename", zipped_file_entry.Name)
+			slog.Debug("found zip file entry name match", "filename", zipped_file_entry.Name)
 
 			fh, err := zipped_file_entry.Open()
 			if err != nil {
 				// this file is probably busted, stop trying to read it altogether.
-				return empty_response, fmt.Errorf("failed to open zipped file entry: %w", err)
+				return empty_response, fmt.Errorf("failed to open zip file entry: %w", err)
 			}
 
 			bl, err := io.ReadAll(fh)
 			if err != nil {
 				// again, file is probably busted, abort.
-				return empty_response, fmt.Errorf("failed to read zipped file entry: %w", err)
+				return empty_response, fmt.Errorf("failed to read zip file entry: %w", err)
 			}
 
 			// note: so much other great stuff available to us in zipped_file! can we use it?
@@ -554,29 +608,102 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	return results_acc
 }
 
+// simplified .toc file parsing.
+// keys are lowercased.
+// does not handle duplicate keys, last key wins.
 func parse_toc_file(toc_bytes []byte) (map[string]string, error) {
-	return map[string]string{}, nil
+	line_list := strings.Split(strings.ReplaceAll(string(toc_bytes), "\r\n", "\n"), "\n")
+	interesting_lines := map[string]string{}
+	for _, line := range line_list {
+		if strings.HasPrefix(line, "##") {
+			bits := strings.SplitN(line, ":", 2)
+			if len(bits) != 2 {
+				slog.Warn("ignoring line in .toc file", "line", line)
+				continue
+			}
+			key, val := bits[0], bits[1]
+			key = strings.ToLower(strings.TrimSpace(key))
+			val = strings.TrimSpace(val)
+			interesting_lines[key] = val
+		}
+	}
+	return interesting_lines, nil
 }
 
-func is_toc_file(filename string) bool {
-	ids := "mainline|classic|bcc|wrath"
-	aliases := "vanilla|tbc|wotlkc"
+// builds a regular expression to match .toc filenames and extract known game tracks and aliases.
+func toc_filename_regexp() *regexp.Regexp {
+	game_track_list := []string{}
+	for _, game_track := range GameTrackList {
+		game_track_list = append(game_track_list, string(game_track))
+	}
+	for game_track_alias, _ := range GameTrackAliasMap {
+		game_track_list = append(game_track_list, game_track_alias)
+	}
+	game_tracks := strings.Join(game_track_list, "|") // "mainline|wrath|somealias"
 
-	// golang doesn't support backreferences, so we can't use ?P= to match previous captures.
-	//pattern := fmt.Sprintf(`^(?P<name>[^/]+)[/](?P=name)(?:[-_](?P<flavor>%s%s))?\.toc$`, ids, aliases)
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s))?\.toc$`, game_tracks)
+	return regexp.MustCompile(pattern)
+}
 
+var TOC_FILENAME_REGEXP = toc_filename_regexp()
+
+// parses the given `filename`,
+// extracting the filename sans ext and any game track,
+// returning a pair of (filename, game track).
+// matching is case insensitive and game tracks, if any, are returned lowercase.
+// when game track is absent, the second value is empty.
+// when filename cannot be parsed, both values are empty.
+func parse_toc_filename(filename string) (string, GameTrack) {
+	matches := TOC_FILENAME_REGEXP.FindStringSubmatch(filename)
+
+	if len(matches) == 2 {
+		// "Bar.toc" => [Bar.toc Bar]
+		return matches[1], ""
+	}
+	if len(matches) == 3 {
+		// "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
+		flavor := strings.ToLower(matches[2])
+		actual_flavor, is_alias := GameTrackAliasMap[flavor]
+		if is_alias {
+			return matches[1], actual_flavor
+		}
+		return matches[1], GameTrack(flavor)
+	}
+	return "", ""
+}
+
+// parses the given `zip_file_entry` 'filename',
+// that we expect to look like: 'AddonName/AddonName.toc' or 'AddonName/AddonName-gametrack.ext',
+// returning `true` when both the dirname and filename sans ext are equal
+// and the gametrack, if present, is valid.
+func is_toc_file(zip_file_entry string) bool {
+	// golang doesn't support backreferences, so we can't use ?P= to match previous captures:
+	//   fmt.Sprintf(`^(?P<name>[^/]+)[/](?P=name)(?:[-_](?P<flavor>%s%s))?\.toc$`, ids, aliases)
 	// instead we'll split on the first path delimiter and match against the rest of the path,
 	// ensuring the prefix matches the 'name' capture group.
-	bits := strings.SplitN(filename, "/", 2)
+	bits := strings.SplitN(zip_file_entry, "/", 2)
 	if len(bits) != 2 {
 		return false
 	}
-	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo", "Bar.toc"
+	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo"
+	filename, _ := parse_toc_filename(rest)
+	return prefix == filename && filename != ""
+}
 
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s|%s))?\.toc$`, ids, aliases)
-	cpattern := regexp.MustCompile(pattern)
-	matches := cpattern.FindStringSubmatch(rest) // "Bar.toc" => [Bar.toc Bar], "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
-	return len(matches) >= 2 && prefix == matches[1]
+// "30403" => "wrath"
+func interface_number_to_flavor(interface_val string) (GameTrack, error) {
+	interface_int, err := strconv.Atoi(interface_val)
+	if err != nil {
+		return "", fmt.Errorf("failed to convert interface value to integer: %w", err)
+	}
+
+	for i, pair := range interface_ranges {
+		if in_range(interface_int, pair[0], pair[1]) {
+			return interface_ranges_labels[i], nil
+		}
+	}
+
+	return "", fmt.Errorf("interface value out of range: %d", interface_int)
 }
 
 // downloads a file asset from a github release,
@@ -599,7 +726,7 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 			return empty_response, fmt.Errorf("failed to parse .toc contents: %w", err)
 		}
 		for key, val := range keyvals {
-			if key == "X-Curse-Project-ID" || key == "X-Wago-ID" || key == "X-WoWI-ID" {
+			if key == "x-curse-project-id" || key == "x-wago-id" || key == "x-wowi-id" {
 				selected_key_vals[key] = val
 			}
 		}
@@ -608,8 +735,62 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	return selected_key_vals, nil
 }
 
+// extract the flavors from the filenames
+// for 'flavorless' toc files,
+// parse the file contents looking for interface versions
+func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, error) {
+	flavors := []GameTrack{}
+	for _, release_archive := range release_archive_list {
+
+		// future optimisation: original implementation only reads bytes if toc is 'flavorless'.
+		// what might also be interesting is preserving *everything* for analysis later,
+		// like finding all "X-*" keys ever used.
+
+		toc_file_map, err := github_zip_download(release_archive.BrowserDownloadURL, is_toc_file)
+		if err != nil {
+			slog.Error("failed to process remote zip file", "error", err)
+			continue
+		}
+
+		for toc_filename, toc_contents := range toc_file_map {
+			_, flavor := parse_toc_filename(toc_filename)
+			if flavor != "" {
+				flavors = append(flavors, flavor)
+			} else {
+				// 'flavorless', parse the toc contents
+				keyvals, err := parse_toc_file(toc_contents)
+				if err != nil {
+					// couldn't parse this .toc file for some reason, move on to next .toc file
+					slog.Error("failed to parse zip file entry .toc contents", "contents", string(toc_contents), "error", err)
+					continue
+				}
+				interface_value, present := keyvals["interface"]
+				if !present {
+					slog.Warn("no interface value found in toc file")
+				} else {
+					flavor, err := interface_number_to_flavor(interface_value)
+					if err != nil {
+						slog.Error("failed to parse interface number to a flavor", "error", err)
+						continue
+					}
+					flavors = append(flavors, flavor)
+				}
+			}
+		}
+	}
+
+	return flavors, nil
+}
+
 // --- tasks
 
+// look for "release.json" in release assets
+// if found, fetch it, validate it as json, validate as correct release-json (schema?)
+// for each asset in release, 'extract project ids from toc files'
+// this seems to involve reading the toc files inside zip files looking for "curse_id", "wago_id", "wowi_id" properties
+// a lot of toc data is just being ignored here :( and those properties are kind of rare
+// if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
+// return a Project struct
 func parse_repo(repo GithubRepo) (Project, error) {
 
 	slog.Info("parsing project", "project", repo.FullName)
@@ -647,6 +828,8 @@ func parse_repo(repo GithubRepo) (Project, error) {
 				if err != nil {
 					return empty_response, fmt.Errorf("failed to download release.json: %w", err)
 				}
+
+				// todo: custom unmarshall here to enforce gametrack, coerce aliases, validate, etc
 				err = json.Unmarshal([]byte(asset_resp.Text), &release_json_file)
 				if err != nil {
 					return empty_response, fmt.Errorf("failed to parse release.json as JSON: %w", err)
@@ -655,20 +838,18 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			}
 		}
 
-		flavors := []string{} // set of "wrath", "classic", etc
+		flavors := []GameTrack{} // set of "wrath", "classic", etc
 		project_id_map := map[string]string{}
 
 		if release_json_file != nil {
 
 			slog.Info("release.json found, looking for matching asset")
 
-			// todo: validate
 			// ensure at least one release in 'releases' is available
 
-			flavors := map[string]bool{}
 			for _, entry := range release_json_file.ReleaseJsonEntryList {
 				for _, metadata := range entry.Metadata {
-					flavors[metadata.Flavor] = true
+					flavors = append(flavors, metadata.Flavor)
 				}
 			}
 
@@ -692,7 +873,6 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			slog.Info("no release.json found, looking for candidate assets")
 			release_archives := []Asset{}
 			for _, asset := range release_list[0].AssetList {
-				pprint(asset)
 				if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 					if strings.HasSuffix(asset.Name, ".zip") {
 						release_archives = append(release_archives, asset)
@@ -705,6 +885,11 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			}
 
 			// extract flavors ...
+			flavors, err = extract_game_flavors_from_tocs(release_archives)
+			if err != nil {
+				return empty_response, fmt.Errorf("failed to parse .toc files in assets")
+			}
+
 		}
 
 		project := Project{
@@ -718,19 +903,9 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			ProjectIDMap:   project_id_map,
 		}
 
-		//println(resp.Text)
+		pprint(project)
 
 		panic("stopping")
-
-		// look for "release.json" in release assets
-		// if found, fetch it, validate it as json, validate as correct release-json (schema?)
-		// for each asset in release, 'extract project ids from toc files'
-		// this seems to involve reading the toc files inside zip files looking for "curse_id", "wago_id", "wowi_id" properties
-		// a lot of toc data is just being ignored here :( and those properties are kind of rare
-
-		// if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
-
-		// return a Project struct
 
 		return project, nil
 	}
@@ -825,6 +1000,8 @@ func is_testing() bool {
 }
 
 func init() {
+	ensure(len(interface_ranges_labels) == len(interface_ranges), "not equal")
+
 	if is_testing() {
 		return
 	}
