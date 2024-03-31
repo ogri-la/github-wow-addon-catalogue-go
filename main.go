@@ -43,30 +43,30 @@ func ensure(b bool, m string) {
 type GameTrack string
 
 const (
-	MAINLINE GameTrack = "mainline"
-	CLASSIC  GameTrack = "classic"
-	BCC      GameTrack = "bcc"
-	WRATH    GameTrack = "wrath"
+	MainlineGameTrack GameTrack = "mainline"
+	ClassicGameTrack  GameTrack = "classic"
+	BCCGameTrack      GameTrack = "bcc"
+	WrathGameTrack    GameTrack = "wrath"
 )
 
 var GameTrackList = []GameTrack{
-	MAINLINE, CLASSIC, BCC, WRATH,
+	MainlineGameTrack, ClassicGameTrack, BCCGameTrack, WrathGameTrack,
 }
 
 var GameTrackAliasMap = map[string]GameTrack{
-	"vanilla": CLASSIC,
-	"tbc":     BCC,
-	"wotlkc":  WRATH,
+	"vanilla": ClassicGameTrack,
+	"tbc":     BCCGameTrack,
+	"wotlkc":  WrathGameTrack,
 }
 
 var interface_ranges_labels = []GameTrack{
-	MAINLINE,
-	CLASSIC,
-	MAINLINE,
-	BCC,
-	MAINLINE,
-	WRATH,
-	MAINLINE,
+	MainlineGameTrack,
+	ClassicGameTrack,
+	MainlineGameTrack,
+	BCCGameTrack,
+	MainlineGameTrack,
+	WrathGameTrack,
+	MainlineGameTrack,
 }
 
 var interface_ranges = [][]int{
@@ -194,6 +194,25 @@ var REPO_EXCLUDES = map[string]bool{
 
 // --- utils
 
+// cannot continue, exit immediately. use `panic` if you need a stracktrace.
+func fatal() {
+	fmt.Println("cannot continue")
+	os.Exit(1)
+}
+
+func unique[T comparable](list []T) []T {
+	idx := make(map[T]bool)
+	var result []T
+	for _, item := range list {
+		_, present := idx[item]
+		if !present {
+			idx[item] = true
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
 func quick_json(blob string) string {
 	// convert into a simple map then
 	var foo map[string]any
@@ -201,7 +220,8 @@ func quick_json(blob string) string {
 
 	b, err := json.MarshalIndent(foo, "", "\t")
 	if err != nil {
-		fatal("failed to coerce to json: ", err)
+		slog.Error("failed to coerce string blob to json", "blob", blob, "error", err)
+		fatal()
 	}
 	return string(b)
 }
@@ -211,26 +231,19 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
-func fatal(msg string, err error) {
-	if err != nil {
-		panic(fmt.Sprintf("%s: %v", msg, err))
-	}
-	panic(msg)
-}
-
 func in_range(v, s, e int) bool {
 	return v >= s && v <= e
 }
 
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
-func CachePath(cache_key string) string {
+func cache_path(cache_key string) string {
 	return fmt.Sprintf(STATE.CWD+"/output/%s", cache_key)
 }
 
 // creates a key that is unique to the given `http.Request` URL (including query parameters),
 // hashed to an MD5 string and prefixed.
 // the result can be safely used as a filename.
-func MakeCacheKey(r *http.Request) string {
+func make_cache_key(r *http.Request) string {
 	// inconsistent case and url params etc will cause cache misses
 	key := r.URL.String()
 	md5sum := md5.Sum([]byte(key))
@@ -239,8 +252,8 @@ func MakeCacheKey(r *http.Request) string {
 
 // reads the cached response as if it were the result of `httputil.Dumpresponse`,
 // a status code, followed by a series of headers, followed by the response body.
-func ReadCacheEntry(cache_key string) (*http.Response, error) {
-	fh, err := os.Open(CachePath(cache_key))
+func read_cache_entry(cache_key string) (*http.Response, error) {
+	fh, err := os.Open(cache_path(cache_key))
 	if err != nil {
 		return nil, err
 	}
@@ -250,10 +263,10 @@ func ReadCacheEntry(cache_key string) (*http.Response, error) {
 type FileCachingRequest struct{}
 
 func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error) {
-	cache_key := MakeCacheKey(req)
+	cache_key := make_cache_key(req)
 	// "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
-	cache_path := CachePath(cache_key)
-	cached_resp, err := ReadCacheEntry(cache_key)
+	cache_path := cache_path(cache_key)
+	cached_resp, err := read_cache_entry(cache_key)
 	if err != nil {
 		slog.Debug("cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
 
@@ -294,7 +307,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		}
 		fh.Close()
 
-		cached_resp, err = ReadCacheEntry(cache_key)
+		cached_resp, err = read_cache_entry(cache_key)
 		if err != nil {
 			slog.Warn("failed to read cache file", "error", err)
 			return resp, nil
@@ -373,6 +386,9 @@ func wait(resp ResponseWrapper) {
 
 // returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
+
+	// TODO: lookup cache results of this function somehow.
+	// we want a map of filename: bytes
 
 	empty_response := map[string][]byte{}
 
@@ -484,128 +500,6 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 
 	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts)
 	return ResponseWrapper{}, errors.New("failed to download url: " + url)
-}
-
-// TODO: replace this with extracting the 'next' url from the `Link` header:
-// Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
-// inspects `resp` and determines if there are more pages to fetch.
-func more_pages(page, per_page int, jsonstr string) (int, error) {
-	val := gjson.Get(jsonstr, "total_count")
-	if !val.Exists() {
-		return 0, errors.New("expected field 'total_count' not found, cannot paginate")
-	}
-	total := int(val.Int())
-	ptr := page * per_page                              // 300
-	pos := total - ptr                                  // 743 - 300 = 443
-	remaining_pages := float64(pos) / float64(per_page) // 4.43
-	return int(math.Ceil(remaining_pages)), nil         // 5
-}
-
-func _get_projects(endpoint string, query string) []string {
-	if endpoint != "code" && endpoint != "repositories" {
-		fatal("unsupported endpoint: "+endpoint, nil)
-	}
-	results_acc := []string{}
-	per_page := 100
-	num_attempts := 5 // number of attempts to download the URL once throttled.
-	page := 1
-	query = url.PathEscape(query)
-
-	for {
-		var resp ResponseWrapper
-		var err error
-		api_url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, query, per_page, page)
-		var body string
-		for i := 1; i <= num_attempts; i++ {
-			if i > 1 {
-				slog.Debug(fmt.Sprintf("attempt %d", i))
-			}
-			resp, err = github_download(api_url)
-			if err != nil {
-				fatal("error requesting url: "+api_url, err)
-			}
-
-			if throttled(resp) {
-				wait(resp)
-				continue
-			}
-
-			if resp.StatusCode != 200 {
-				slog.Debug("non 200, non 422 response, waiting and trying again", "status", resp.StatusCode)
-				wait(resp)
-				continue
-			}
-
-			body = resp.Text
-			results_acc = append(results_acc, body)
-			break
-		}
-
-		remaining_pages, err := more_pages(page, per_page, body)
-		if err != nil {
-			slog.Error("failed to paginate", "page", page, "remaining-pages", remaining_pages, "error", err)
-		}
-		if remaining_pages > 0 && page < 10 {
-			slog.Debug(fmt.Sprintf("remaining pages: %d", remaining_pages))
-			page = page + 1
-			continue
-		}
-		break
-	}
-	return results_acc
-}
-
-func json_string_to_struct(json_blob string) (GithubRepo, error) {
-
-	// this is a 'code' result, many missing fields.
-	repo_field := gjson.Get(json_blob, "repository")
-	var repo GithubRepo
-	var err error
-	if repo_field.Exists() {
-		err = json.Unmarshal([]byte(repo_field.String()), &repo)
-		if err != nil {
-			fmt.Println(quick_json(json_blob))
-			slog.Error("failed to unmarshal 'code' json to GithubRepo struct", "error", err)
-			return repo, err
-		}
-		return repo, nil
-	}
-
-	err = json.Unmarshal([]byte(json_blob), &repo)
-	if err != nil {
-		fmt.Println(quick_json(json_blob))
-		slog.Error("failed to unmarshall 'repository' json to GithubRepo struct", "error", err)
-		return repo, err
-	}
-
-	return repo, nil
-}
-
-func search_results_to_struct_list(search_results_list []string) []GithubRepo {
-	results_acc := []GithubRepo{}
-	for _, search_results := range search_results_list {
-		item_list := gjson.Get(search_results, "items")
-		if !item_list.Exists() {
-			slog.Error("no 'items' found in json blob", "json-blob", search_results)
-			panic("programming error")
-		}
-
-		for _, item := range item_list.Array() {
-			g, err := json_string_to_struct(item.String())
-			if err != nil {
-				slog.Error("skipping item", "error", err)
-				panic("programming error") // temporary
-			}
-
-			if g.Name == "" {
-				slog.Error("skipping item, bad search result", "repo", item)
-				panic("programming error") // temporary
-			}
-
-			results_acc = append(results_acc, g)
-		}
-	}
-	return results_acc
 }
 
 // simplified .toc file parsing.
@@ -782,47 +676,48 @@ func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, 
 	return flavors, nil
 }
 
-// --- tasks
+func validate_release_dot_json(release_dot_json *ReleaseJson) *ReleaseJson {
+	return release_dot_json
+}
+
+// ---
 
 // look for "release.json" in release assets
-// if found, fetch it, validate it as json, validate as correct release-json (schema?)
+// if found, fetch it, validate it as json and then validate as correct release-json data.
 // for each asset in release, 'extract project ids from toc files'
 // this seems to involve reading the toc files inside zip files looking for "curse_id", "wago_id", "wowi_id" properties
 // a lot of toc data is just being ignored here :( and those properties are kind of rare
 // if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
 // return a Project struct
 func parse_repo(repo GithubRepo) (Project, error) {
-
 	slog.Info("parsing project", "project", repo.FullName)
 
-	empty_response := Project{}
+	var empty_response Project
 
-	url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
+	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
 	for {
-		// fetch current release, if any
-		resp, err := github_download_with_retries_and_backoff(url)
+		// fetch addon's current release, if any
+		resp, err := github_download_with_retries_and_backoff(releases_url)
 		if err != nil {
-			//slog.Error("error downloading repository release listing", "error", err.Error())
 			return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
 		}
 
 		var release_list []GithubRelease
 		err = json.Unmarshal([]byte(resp.Text), &release_list)
 		if err != nil {
-			//slog.Error("error parsing Github 'release' response as JSON", "error", err)
+			// Github response could not be parsed.
 			return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
 		}
 
 		if len(release_list) != 1 {
-			return empty_response, fmt.Errorf("project has no releases")
+			// we're fetching exactly one release, the most recent one.
+			// if one doesn't exist, skip repo.
+			return empty_response, fmt.Errorf("project does not use Github releases so cannot be included in catalogue")
 		}
 
-		first_github_release := release_list[0] // 'release_json_release'
-
-		pprint(first_github_release)
-
-		var release_json_file *ReleaseJson
-		for _, asset := range first_github_release.AssetList {
+		latest_github_release := release_list[0]
+		var release_dot_json *ReleaseJson
+		for _, asset := range latest_github_release.AssetList {
 			if asset.Name == "release.json" {
 				asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
 				if err != nil {
@@ -830,10 +725,13 @@ func parse_repo(repo GithubRepo) (Project, error) {
 				}
 
 				// todo: custom unmarshall here to enforce gametrack, coerce aliases, validate, etc
-				err = json.Unmarshal([]byte(asset_resp.Text), &release_json_file)
+				err = json.Unmarshal([]byte(asset_resp.Text), &release_dot_json)
 				if err != nil {
 					return empty_response, fmt.Errorf("failed to parse release.json as JSON: %w", err)
 				}
+
+				release_dot_json = validate_release_dot_json(release_dot_json)
+
 				break
 			}
 		}
@@ -841,21 +739,21 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		flavors := []GameTrack{} // set of "wrath", "classic", etc
 		project_id_map := map[string]string{}
 
-		if release_json_file != nil {
+		if release_dot_json != nil {
 
 			slog.Info("release.json found, looking for matching asset")
 
 			// ensure at least one release in 'releases' is available
 
-			for _, entry := range release_json_file.ReleaseJsonEntryList {
+			for _, entry := range release_dot_json.ReleaseJsonEntryList {
 				for _, metadata := range entry.Metadata {
 					flavors = append(flavors, metadata.Flavor)
 				}
 			}
 
 			// find the matching asset
-			first_release_json_entry := release_json_file.ReleaseJsonEntryList[0]
-			for _, asset := range first_github_release.AssetList {
+			first_release_json_entry := release_dot_json.ReleaseJsonEntryList[0]
+			for _, asset := range latest_github_release.AssetList {
 				slog.Debug("match?", "asset-name", asset.Name, "release-name", first_release_json_entry.Filename)
 				if asset.Name == first_release_json_entry.Filename {
 					project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
@@ -898,7 +796,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			Description:    repo.Description,
 			UpdatedDate:    repo.UpdatedAt,
 			Flavors:        flavors,
-			HasReleaseJSON: release_json_file != nil,
+			HasReleaseJSON: release_dot_json != nil,
 			LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
 			ProjectIDMap:   project_id_map,
 		}
@@ -915,28 +813,138 @@ func parse_repo(repo GithubRepo) (Project, error) {
 // `GithubRepo` structs that fail to parse are excluded from the final list.
 func parse_repo_list(repo_list []GithubRepo) []Project {
 	project_list := []Project{}
-	i := 0
+	i := 0 // todo: temporary during development
 	for _, repo := range repo_list {
 		i += 1
-		if i == 150 {
+		if i == 100 {
 			break
 		}
 
 		project, err := parse_repo(repo)
 		if err != nil {
-			slog.Warn("skipping project", "project", repo.FullName, "error", err)
+			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo, "error", err)
 			continue
 		}
 		project_list = append(project_list, project)
-
 	}
 	return project_list
 }
 
-// does a bunch of Github searches for repositories,
-// converts results to structs,
-// de-duplicates results,
-// returns structs.
+// TODO: replace this with extracting the 'next' url from the `Link` header:
+// Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
+// inspects `resp` and determines if there are more pages to fetch.
+func more_pages(page, per_page int, jsonstr string) (int, error) {
+	val := gjson.Get(jsonstr, "total_count")
+	if !val.Exists() {
+		return 0, errors.New("expected field 'total_count' not found, cannot paginate")
+	}
+	total := int(val.Int())
+	ptr := page * per_page                              // 300
+	pos := total - ptr                                  // 743 - 300 = 443
+	remaining_pages := float64(pos) / float64(per_page) // 4.43
+	return int(math.Ceil(remaining_pages)), nil         // 5
+}
+
+func search_github(endpoint string, search_query string) []string {
+	if endpoint != "code" && endpoint != "repositories" {
+		slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
+		fatal()
+	}
+	results := []string{} // blobs of json from github api
+	per_page := 100
+	page := 1
+	search_query = url.PathEscape(search_query)
+	var remaining_pages int
+
+	for {
+		url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, search_query, per_page, page)
+		resp, err := github_download_with_retries_and_backoff(url)
+		if err != nil {
+			// halt if we can't fetch every page from each of the search queries.
+			slog.Error("error requesting url", "url", url, "error", err)
+			fatal()
+		}
+		body := resp.Text
+		results = append(results, body)
+
+		_remaining_pages, err := more_pages(page, per_page, body)
+		if err != nil {
+			// halt if we can't fetch every page from each of the search queries.
+			slog.Error("error finding next page of results", "current-page", page, "remaining-pages", remaining_pages, "error", err)
+			fatal()
+		}
+		remaining_pages = _remaining_pages
+		slog.Debug("pagination", "results-per-page", per_page, "current-page", page, "remaining-pages", remaining_pages)
+
+		if remaining_pages > 0 {
+			page = page + 1
+			continue
+		}
+		break
+	}
+	return results
+}
+
+// converts a single search result item from a single page of results to a `GithubRepo` struct.
+// `search_result` is either a 'code' result or a 'repository' result,
+// the two types have different sets of available fields.
+func search_result_to_struct(search_result string) (GithubRepo, error) {
+
+	// 'code' result, many missing fields
+	repo_field := gjson.Get(search_result, "repository")
+	var repo GithubRepo
+	var err error
+	if repo_field.Exists() {
+		err = json.Unmarshal([]byte(repo_field.String()), &repo)
+		if err != nil {
+			slog.Error("failed to unmarshal 'code' search result to GithubRepo struct", "search-result", search_result, "error", err)
+			return repo, err
+		}
+		return repo, nil
+	}
+
+	// 'repository' result
+	err = json.Unmarshal([]byte(search_result), &repo)
+	if err != nil {
+		slog.Error("failed to unmarshall 'repository' search result to GithubRepo struct", "search-result", search_result, "error", err)
+		return repo, err
+	}
+
+	return repo, nil
+}
+
+// convert the blobs of json from searching Github into `GithubRepo` structs.
+func search_results_to_struct_list(search_results_list []string) []GithubRepo {
+	results := []GithubRepo{}
+	for _, search_results := range search_results_list {
+		item_list := gjson.Get(search_results, "items")
+		if !item_list.Exists() {
+			slog.Error("no 'items' found in search results", "search-results", search_results)
+			panic("programming error")
+		}
+
+		for _, item := range item_list.Array() {
+			github_repo, err := search_result_to_struct(item.String())
+			if err != nil {
+				slog.Error("skipping item", "error", err)
+				panic("programming error") // todo: remove. temporary while we debug
+			}
+
+			if github_repo.Name == "" {
+				slog.Error("skipping item, bad search result", "repo", item)
+				panic("programming error") // todo: remove. temporary while we debug
+			}
+
+			results = append(results, github_repo)
+		}
+	}
+	return results
+}
+
+// searches Github for addon repositories,
+// converts results to `GithubRepo` structs,
+// de-duplicates and sorts results,
+// returns a set of unique `GithubRepo` structs.
 func get_projects() []GithubRepo {
 	struct_map := map[string]GithubRepo{}
 	search_list := [][]string{
@@ -948,21 +956,21 @@ func get_projects() []GithubRepo {
 		{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"},
 	}
 	for _, pair := range search_list {
-		endpoint := pair[0]
-		query := pair[1]
-		search_results := _get_projects(endpoint, query)
+		endpoint, query := pair[0], pair[1]
+		search_results := search_github(endpoint, query)
 		for _, repo := range search_results_to_struct_list(search_results) {
-			excluded, present := REPO_EXCLUDES[repo.FullName]
-			if !present || !excluded {
+			_, excluded := REPO_EXCLUDES[repo.FullName]
+			if !excluded {
 				struct_map[repo.FullName] = repo
 			}
 		}
 	}
+
+	// convert map to a list, then sort the list
 	struct_list := []GithubRepo{}
 	for _, repo := range struct_map {
 		struct_list = append(struct_list, repo)
 	}
-
 	slices.SortFunc(struct_list, func(a, b GithubRepo) int {
 		return strings.Compare(a.FullName, b.FullName)
 	})
@@ -975,16 +983,19 @@ func init_state() *State {
 
 	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
 	if !present {
-		panic("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not present.")
+		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not present")
+		fatal()
 	}
 	state.GithubToken = token
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		fatal("foo", err)
+		slog.Error("couldn't find the current working dir to derive a writable location", "error", err)
+		fatal()
 	}
 	state.CWD = cwd
 
+	// attach a http client to global state to reuse http connections
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
 
@@ -995,13 +1006,11 @@ func init_state() *State {
 
 func is_testing() bool {
 	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
-	//return flag.Lookup("test.v") != nil
 	return strings.HasSuffix(os.Args[0], ".test")
 }
 
 func init() {
-	ensure(len(interface_ranges_labels) == len(interface_ranges), "not equal")
-
+	ensure(len(interface_ranges_labels) == len(interface_ranges), "interface ranges are not equal interface range labels")
 	if is_testing() {
 		return
 	}
