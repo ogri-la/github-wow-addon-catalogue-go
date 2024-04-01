@@ -1,0 +1,51 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "definitions": {
+        "flavor": {
+            "enum": ["mainline", "classic", "bcc", "wrath"]
+        },
+        "flavor-alias": {
+            "enum": ["vanilla", "tbc", "wotlkc"]
+        }
+    },
+    "properties": {
+        "releases": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "filename": {
+                        "type": "string"
+                    },
+                    "nolib": {
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "flavor": {
+                                    "anyOf": [
+                                        { "$ref": "#/definitions/flavor" },
+                                        { "$ref": "#/definitions/flavor-alias" }
+                                    ]
+                                },
+                                "interface": {
+                                    "type": "number"
+                                }
+                            },
+                            "required": [
+                                "flavor"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "releases"
+    ]
+}

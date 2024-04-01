@@ -3,8 +3,10 @@ package main
 import (
 	"archive/zip"
 	"bufio"
+	"bytes"
 	"context"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -24,21 +26,12 @@ import (
 	"time"
 
 	"github.com/lmittmann/tint"
+	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/snabb/httpreaderat"
 	"github.com/tidwall/gjson"
 
 	bufra "github.com/avvmoto/buf-readerat"
 )
-
-// assert `b` is true, otherwise panic with message `m`.
-// ideally these would be compile-time checks, but eh, can't do that.
-func ensure(b bool, m string) {
-	if !b {
-		panic(m)
-	}
-}
-
-// ---
 
 type GameTrack string
 
@@ -83,6 +76,7 @@ type State struct {
 	CWD         string
 	GithubToken string
 	Client      *http.Client
+	Schema      *jsonschema.Schema
 }
 
 func NewState() *State {
@@ -163,7 +157,8 @@ type Project struct {
 
 type ResponseWrapper struct {
 	*http.Response
-	Text string
+	Bytes []byte
+	Text  string
 }
 
 // -- globals
@@ -198,6 +193,20 @@ var REPO_EXCLUDES = map[string]bool{
 func fatal() {
 	fmt.Println("cannot continue")
 	os.Exit(1)
+}
+
+// assert `b` is true, otherwise panic with message `m`.
+// ideally these would be compile-time checks, but eh, can't do that.
+func ensure(b bool, m string) {
+	if !b {
+		panic(m)
+	}
+}
+
+// returns `true` if tests are being run.
+func is_testing() bool {
+	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
+	return strings.HasSuffix(os.Args[0], ".test")
 }
 
 func unique[T comparable](list []T) []T {
@@ -235,6 +244,36 @@ func in_range(v, s, e int) bool {
 	return v >= s && v <= e
 }
 
+// --- http utils
+
+// inspects HTTP response `resp` and determines if it was throttled.
+func throttled(resp ResponseWrapper) bool {
+	if resp.StatusCode == 422 || resp.StatusCode == 403 {
+		slog.Debug("throttled")
+		return true
+	}
+	return false
+}
+
+// inspects HTTP response `resp` and determines how long to wait. then waits.
+func wait(resp ResponseWrapper) {
+	// TODO: something a bit cleverer than this?
+	slog.Debug("waiting 10secs")
+	time.Sleep(time.Duration(10) * time.Second)
+}
+
+// logs whether the HTTP request's underlying TCP connection was re-used.
+func trace_context() context.Context {
+	client_tracer := &httptrace.ClientTrace{
+		GotConn: func(info httptrace.GotConnInfo) {
+			slog.Debug("HTTP connection reuse", "reused", info.Reused, "remote", info.Conn.RemoteAddr())
+		},
+	}
+	return httptrace.WithClientTrace(context.Background(), client_tracer)
+}
+
+// --- caching
+
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 func cache_path(cache_key string) string {
 	return fmt.Sprintf(STATE.CWD+"/output/%s", cache_key)
@@ -260,80 +299,143 @@ func read_cache_entry(cache_key string) (*http.Response, error) {
 	return http.ReadResponse(bufio.NewReader(fh), nil)
 }
 
+// zipfile caches are JSON maps of zipfile-entry-filenames => base64-encoded-bytes.
+func read_zip_cache_entry(zip_cache_key string) (map[string][]byte, error) {
+	empty_response := map[string][]byte{}
+
+	fh, err := os.Open(cache_path(zip_cache_key))
+	if err != nil {
+		return empty_response, err
+	}
+
+	data, err := io.ReadAll(fh)
+	if err != nil {
+		return empty_response, err
+	}
+
+	cached_zip_file_contents := map[string]string{}
+	err = json.Unmarshal(data, &cached_zip_file_contents)
+	if err != nil {
+		return empty_response, err
+	}
+
+	result := map[string][]byte{}
+	for zipfile_entry_filename, zipfile_entry_encoded_bytes := range cached_zip_file_contents {
+		bytes, err := base64.StdEncoding.DecodeString(zipfile_entry_encoded_bytes)
+		if err != nil {
+			return empty_response, err
+		}
+		result[zipfile_entry_filename] = bytes
+	}
+
+	return result, nil
+}
+
+func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]byte) error {
+	cached_zip_file_contents := map[string]string{}
+
+	for zipfile_entry, zipfile_entry_bytes := range zip_file_contents {
+		cached_zip_file_contents[zipfile_entry] = base64.StdEncoding.EncodeToString(zipfile_entry_bytes)
+	}
+
+	json_data, err := json.Marshal(cached_zip_file_contents)
+	if err != nil {
+		return err
+	}
+
+	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
+}
+
 type FileCachingRequest struct{}
 
 func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error) {
-	cache_key := make_cache_key(req)
-	// "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
-	cache_path := cache_path(cache_key)
-	cached_resp, err := read_cache_entry(cache_key)
-	if err != nil {
-		slog.Debug("cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
 
+	// don't handle zip files at all,
+	// their caching is handled differently.
+	// see: `read_zip_cache_entry` and `write_zip_cache_entry`.
+	if strings.HasSuffix(req.URL.String(), ".zip") {
 		resp, err := http.DefaultTransport.RoundTrip(req)
+		return resp, err
+	}
+
+	cache_key := make_cache_key(req)    // "711f20df1f76da140218e51445a6fc47"
+	cache_path := cache_path(cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
+	cached_resp, err := read_cache_entry(cache_key)
+	if err == nil {
+		slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
+		return cached_resp, nil
+	}
+	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
+
+	resp, err := http.DefaultTransport.RoundTrip(req)
+	if err != nil {
+		// do not cache error responses
+		slog.Error("error with transport", "url", req.URL)
+		return resp, err
+	}
+
+	if resp.StatusCode == 301 || resp.StatusCode == 302 {
+		// we've been redirected to another location.
+		// follow the redirect and save it's response under the original cache key.
+		// .zip files bypass caching so this should only affect `release.json` files.
+		new_url, err := resp.Location()
 		if err != nil {
-			// do not cache error response, pass through
-			slog.Error("error with transport, pass through")
+			slog.Error("error with redirect request, no location given", "resp", resp)
 			return resp, err
 		}
+		slog.Debug("request redirected", "requested-url", req.URL, "redirected-to", new_url)
 
-		// perhaps:
-		// if redirect, call self with redirect location (resp.Request.URL)
-		// if error, pass through
-		//if resp.StatusCode != 200 {
-		if resp.StatusCode != 200 {
-			// non-200 response, pass through
-			slog.Debug("non-200 response, pass through", "code", resp.StatusCode)
-			return resp, nil
-		}
+		// make another request, update the `resp`, cache as normal.
+		// this allows us to cache regular file like `release.json`.
 
-		fh, err := os.Create(cache_path)
+		// but what happens when the redirect is also redirected?
+		// the `client` below isn't attached to this `RoundTrip` transport,
+		// so it will keep following redirects.
+		// the downside is it will probably create a new connection.
+		client := http.Client{}
+		resp, err = client.Get(new_url.String())
 		if err != nil {
-			slog.Warn("failed to open cache file for writing", "error", err)
-			return resp, nil
+			slog.Error("error with transport handling redirect", "requested-url", req.URL, "redirected-to", new_url, "error", err)
+			return resp, err
 		}
-
-		dumped_bytes, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			slog.Warn("failed to dump response to bytes", "error", err)
-			return resp, nil
-		}
-
-		_, err = fh.Write(dumped_bytes)
-		if err != nil {
-			slog.Warn("failed to write all bytes in response to cache file", "error", err)
-			fh.Close()
-			return resp, nil
-		}
-		fh.Close()
-
-		cached_resp, err = read_cache_entry(cache_key)
-		if err != nil {
-			slog.Warn("failed to read cache file", "error", err)
-			return resp, nil
-		}
-		return cached_resp, nil
-
-	} else {
-		slog.Debug("cache HIT", "url", req.URL, "cache-path", cache_path)
-		return cached_resp, nil
 	}
 
-	//return http.DefaultTransport.RoundTrip(r)
-}
-
-// client trace to log whether the request's underlying tcp connection was re-used
-func trace_context() context.Context {
-	client_tracer := &httptrace.ClientTrace{
-		GotConn: func(info httptrace.GotConnInfo) {
-			slog.Debug("HTTP connection reuse", "reused", info.Reused, "remote", info.Conn.RemoteAddr())
-		},
+	if resp.StatusCode > 299 {
+		// non-2xx response, skip cache
+		bdy, _ := io.ReadAll(resp.Body)
+		slog.Debug("request unsuccessful, skipping cache", "code", resp.StatusCode, "body", string(bdy))
+		return resp, nil
 	}
-	return httptrace.WithClientTrace(context.Background(), client_tracer)
+
+	fh, err := os.Create(cache_path)
+	if err != nil {
+		slog.Warn("failed to open cache file for writing", "error", err)
+		return resp, nil
+	}
+	defer fh.Close()
+
+	dumped_bytes, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		slog.Warn("failed to dump response to bytes", "error", err)
+		return resp, nil
+	}
+
+	_, err = fh.Write(dumped_bytes)
+	if err != nil {
+		slog.Warn("failed to write all bytes in response to cache file", "error", err)
+		return resp, nil
+	}
+
+	cached_resp, err = read_cache_entry(cache_key)
+	if err != nil {
+		slog.Warn("failed to read cache file", "error", err)
+		return resp, nil
+	}
+	return cached_resp, nil
 }
 
 func download(url string, headers map[string]string) (ResponseWrapper, error) {
-	slog.Debug("HTTP GET", "url", url)
+	slog.Info("HTTP GET", "url", url)
 	empty_response := ResponseWrapper{}
 
 	// ---
@@ -364,31 +466,15 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 
 	return ResponseWrapper{
 		Response: resp,
+		Bytes:    content_bytes,
 		Text:     string(content_bytes),
 	}, nil
-}
-
-// inspects http response and determines if it was throttled.
-func throttled(resp ResponseWrapper) bool {
-	if resp.StatusCode == 422 || resp.StatusCode == 403 {
-		slog.Debug("throttled")
-		return true
-	}
-	return false
-}
-
-// inspects http response and determines how long to wait. then waits.
-func wait(resp ResponseWrapper) {
-	// TODO: something a bit cleverer than this.
-	slog.Debug("waiting 5secs")
-	time.Sleep(time.Duration(5) * time.Second)
 }
 
 // returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
-	// TODO: lookup cache results of this function somehow.
-	// we want a map of filename: bytes
+	slog.Info("HTTP GET .zip", "url", url)
 
 	empty_response := map[string][]byte{}
 
@@ -400,6 +486,17 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	for header, header_val := range headers {
 		req.Header.Set(header, header_val)
 	}
+
+	// ---
+
+	zip_cache_key := make_cache_key(req) + "-zip" // fb9f36f59023fbb3681a895823ae9ba0-zip
+	cached_zip_file, err := read_zip_cache_entry(zip_cache_key)
+	if err == nil {
+		slog.Debug("HTTP GET .zip cache HIT", "url", url, "cache-path", cache_path(zip_cache_key))
+		return cached_zip_file, nil
+	}
+
+	slog.Debug("HTTP GET .zip cache MISS", "url", url, "cache-path", cache_path(zip_cache_key))
 
 	// ---
 
@@ -448,6 +545,8 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 		}
 	}
 
+	write_zip_cache_entry(zip_cache_key, file_bytes)
+
 	return file_bytes, nil
 }
 
@@ -466,13 +565,10 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 	return download_zip(url, headers, zipped_file_filter)
 }
 
-// ---
-
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
-
 	var resp ResponseWrapper
 	var err error
-	num_attempts := 5
+	num_attempts := 10 // todo: see original for handling "X-RateLimit-Reset"
 
 	for i := 1; i <= num_attempts; i++ {
 		resp, err = github_download(url)
@@ -502,22 +598,29 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 	return ResponseWrapper{}, errors.New("failed to download url: " + url)
 }
 
+// ---
+
 // simplified .toc file parsing.
 // keys are lowercased.
 // does not handle duplicate keys, last key wins.
-func parse_toc_file(toc_bytes []byte) (map[string]string, error) {
+func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error) {
+	slog.Info("parsing .toc file", "filename", filename)
 	line_list := strings.Split(strings.ReplaceAll(string(toc_bytes), "\r\n", "\n"), "\n")
 	interesting_lines := map[string]string{}
 	for _, line := range line_list {
 		if strings.HasPrefix(line, "##") {
 			bits := strings.SplitN(line, ":", 2)
 			if len(bits) != 2 {
-				slog.Warn("ignoring line in .toc file", "line", line)
+				slog.Warn("ignoring line in .toc file, key has no value", "filename", filename, "line", line)
 				continue
 			}
 			key, val := bits[0], bits[1]
-			key = strings.ToLower(strings.TrimSpace(key))
-			val = strings.TrimSpace(val)
+			key = strings.TrimPrefix(key, "##") // "##Interface:", "## Interface:"
+			key = strings.TrimSuffix(key, ":")  // "Interface", " Interface"
+			key = strings.TrimSpace(key)        // "Interface"
+			key = strings.ToLower(key)          // "interface"
+			val = strings.TrimSpace(val)        // "100206"
+			slog.Debug("toc", "key", key, "val", val, "filename", filename)
 			interesting_lines[key] = val
 		}
 	}
@@ -530,7 +633,7 @@ func toc_filename_regexp() *regexp.Regexp {
 	for _, game_track := range GameTrackList {
 		game_track_list = append(game_track_list, string(game_track))
 	}
-	for game_track_alias, _ := range GameTrackAliasMap {
+	for game_track_alias := range GameTrackAliasMap {
 		game_track_list = append(game_track_list, game_track_alias)
 	}
 	game_tracks := strings.Join(game_track_list, "|") // "mainline|wrath|somealias"
@@ -614,8 +717,8 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	}
 
 	selected_key_vals := map[string]string{}
-	for _, toc_bytes := range toc_file_map {
-		keyvals, err := parse_toc_file(toc_bytes)
+	for zipfile_entry, toc_bytes := range toc_file_map {
+		keyvals, err := parse_toc_file(zipfile_entry, toc_bytes)
 		if err != nil {
 			return empty_response, fmt.Errorf("failed to parse .toc contents: %w", err)
 		}
@@ -652,7 +755,7 @@ func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, 
 				flavors = append(flavors, flavor)
 			} else {
 				// 'flavorless', parse the toc contents
-				keyvals, err := parse_toc_file(toc_contents)
+				keyvals, err := parse_toc_file(toc_filename, toc_contents)
 				if err != nil {
 					// couldn't parse this .toc file for some reason, move on to next .toc file
 					slog.Error("failed to parse zip file entry .toc contents", "contents", string(toc_contents), "error", err)
@@ -660,7 +763,7 @@ func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, 
 				}
 				interface_value, present := keyvals["interface"]
 				if !present {
-					slog.Warn("no interface value found in toc file")
+					slog.Warn("no 'interface' value found in toc file", "filename", toc_filename, "release", release_archive.BrowserDownloadURL)
 				} else {
 					flavor, err := interface_number_to_flavor(interface_value)
 					if err != nil {
@@ -676,8 +779,34 @@ func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, 
 	return flavors, nil
 }
 
-func validate_release_dot_json(release_dot_json *ReleaseJson) *ReleaseJson {
-	return release_dot_json
+func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error) {
+
+	var raw interface{}
+	err := json.Unmarshal(release_dot_json_bytes, &raw)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal release.json bytes into a generic struct for validation: %w", err)
+	}
+
+	err = STATE.Schema.Validate(raw)
+	if err != nil {
+		// future: error data is rich, can something nicer be emitted?
+		return nil, fmt.Errorf("release.json file failed to validate against schema: %w", err)
+	}
+
+	// data is valid, unmarshal to a ReleaseJson
+
+	var release_dot_json ReleaseJson
+	err = json.Unmarshal(release_dot_json_bytes, &release_dot_json)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse release.json as JSON: %w", err)
+	}
+
+	// todo: coerce any values.
+	// for example, alias to canonical
+
+	// ...
+
+	return &release_dot_json, nil
 }
 
 // ---
@@ -690,123 +819,113 @@ func validate_release_dot_json(release_dot_json *ReleaseJson) *ReleaseJson {
 // if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
 // return a Project struct
 func parse_repo(repo GithubRepo) (Project, error) {
-	slog.Info("parsing project", "project", repo.FullName)
+	slog.Info("parsing repo", "repo", repo.FullName)
 
 	var empty_response Project
 
 	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
-	for {
-		// fetch addon's current release, if any
-		resp, err := github_download_with_retries_and_backoff(releases_url)
-		if err != nil {
-			return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
+
+	// fetch addon's current release, if any
+	resp, err := github_download_with_retries_and_backoff(releases_url)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
+	}
+
+	var release_list []GithubRelease
+	err = json.Unmarshal([]byte(resp.Text), &release_list)
+	if err != nil {
+		// Github response could not be parsed.
+		return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
+	}
+
+	if len(release_list) != 1 {
+		// we're fetching exactly one release, the most recent one.
+		// if one doesn't exist, skip repo.
+		return empty_response, fmt.Errorf("no releases found")
+	}
+
+	latest_github_release := release_list[0]
+	var release_dot_json *ReleaseJson
+	for _, asset := range latest_github_release.AssetList {
+		if asset.Name == "release.json" {
+			asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
+			if err != nil {
+				return empty_response, fmt.Errorf("failed to download release.json: %w", err)
+			}
+
+			// todo: custom unmarshall here to enforce gametrack, coerce aliases, validate, etc
+			// todo: do we still have access to the bytes or were they consumed?
+			release_dot_json, err = parse_release_dot_json(asset_resp.Bytes)
+			if err != nil {
+				return empty_response, fmt.Errorf("failed to parse release.json: %w", err)
+			}
+
+			break
+		}
+	}
+
+	flavors := []GameTrack{} // set of "wrath", "classic", etc
+	project_id_map := map[string]string{}
+
+	if release_dot_json != nil {
+		slog.Info("release.json found, looking for matching asset", "repo", repo.FullName, "release", latest_github_release.Name)
+
+		// ensure at least one release in 'releases' is available
+		for _, entry := range release_dot_json.ReleaseJsonEntryList {
+			for _, metadata := range entry.Metadata {
+				flavors = append(flavors, metadata.Flavor)
+			}
 		}
 
-		var release_list []GithubRelease
-		err = json.Unmarshal([]byte(resp.Text), &release_list)
-		if err != nil {
-			// Github response could not be parsed.
-			return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
-		}
-
-		if len(release_list) != 1 {
-			// we're fetching exactly one release, the most recent one.
-			// if one doesn't exist, skip repo.
-			return empty_response, fmt.Errorf("project does not use Github releases so cannot be included in catalogue")
-		}
-
-		latest_github_release := release_list[0]
-		var release_dot_json *ReleaseJson
+		// find the matching asset
+		first_release_json_entry := release_dot_json.ReleaseJsonEntryList[0]
 		for _, asset := range latest_github_release.AssetList {
-			if asset.Name == "release.json" {
-				asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
+			if asset.Name == first_release_json_entry.Filename {
+				//slog.Debug("match", "repo", repo.FullName, "asset-name", asset.Name, "release.json-name", first_release_json_entry.Filename)
+				project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
 				if err != nil {
-					return empty_response, fmt.Errorf("failed to download release.json: %w", err)
+					slog.Error("failed to extract project ids", "error", err)
 				}
-
-				// todo: custom unmarshall here to enforce gametrack, coerce aliases, validate, etc
-				err = json.Unmarshal([]byte(asset_resp.Text), &release_dot_json)
-				if err != nil {
-					return empty_response, fmt.Errorf("failed to parse release.json as JSON: %w", err)
-				}
-
-				release_dot_json = validate_release_dot_json(release_dot_json)
-
 				break
 			}
 		}
 
-		flavors := []GameTrack{} // set of "wrath", "classic", etc
-		project_id_map := map[string]string{}
+	} else {
 
-		if release_dot_json != nil {
-
-			slog.Info("release.json found, looking for matching asset")
-
-			// ensure at least one release in 'releases' is available
-
-			for _, entry := range release_dot_json.ReleaseJsonEntryList {
-				for _, metadata := range entry.Metadata {
-					flavors = append(flavors, metadata.Flavor)
+		// there is no release.json file,
+		// look for .zip assets instead and try our luck.
+		slog.Info("no release.json found, looking for candidate assets")
+		release_archives := []Asset{}
+		for _, asset := range release_list[0].AssetList {
+			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
+				if strings.HasSuffix(asset.Name, ".zip") {
+					release_archives = append(release_archives, asset)
 				}
 			}
-
-			// find the matching asset
-			first_release_json_entry := release_dot_json.ReleaseJsonEntryList[0]
-			for _, asset := range latest_github_release.AssetList {
-				slog.Debug("match?", "asset-name", asset.Name, "release-name", first_release_json_entry.Filename)
-				if asset.Name == first_release_json_entry.Filename {
-					project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
-					if err != nil {
-						slog.Error("failed to extract project ids, ignoring", "error", err)
-					}
-					break
-				}
-			}
-
-		} else {
-
-			// there is no release.json file,
-			// look for .zip assets instead and try our luck.
-			slog.Info("no release.json found, looking for candidate assets")
-			release_archives := []Asset{}
-			for _, asset := range release_list[0].AssetList {
-				if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
-					if strings.HasSuffix(asset.Name, ".zip") {
-						release_archives = append(release_archives, asset)
-					}
-				}
-			}
-
-			if len(release_archives) == 0 {
-				return empty_response, fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
-			}
-
-			// extract flavors ...
-			flavors, err = extract_game_flavors_from_tocs(release_archives)
-			if err != nil {
-				return empty_response, fmt.Errorf("failed to parse .toc files in assets")
-			}
-
 		}
 
-		project := Project{
-			Name:           repo.Name,
-			URL:            repo.Url,
-			Description:    repo.Description,
-			UpdatedDate:    repo.UpdatedAt,
-			Flavors:        flavors,
-			HasReleaseJSON: release_dot_json != nil,
-			LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
-			ProjectIDMap:   project_id_map,
+		if len(release_archives) == 0 {
+			return empty_response, fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 		}
 
-		pprint(project)
-
-		panic("stopping")
-
-		return project, nil
+		// extract flavors ...
+		flavors, err = extract_game_flavors_from_tocs(release_archives)
+		if err != nil {
+			return empty_response, fmt.Errorf("failed to parse .toc files in assets")
+		}
 	}
+
+	project := Project{
+		Name:           repo.Name,
+		URL:            repo.Url,
+		Description:    repo.Description,
+		UpdatedDate:    repo.UpdatedAt,
+		Flavors:        flavors,
+		HasReleaseJSON: release_dot_json != nil,
+		LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
+		ProjectIDMap:   project_id_map,
+	}
+	return project, nil
 }
 
 // parses many `GithubRepo` structs in to a list of `Project` structs.
@@ -816,13 +935,14 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	i := 0 // todo: temporary during development
 	for _, repo := range repo_list {
 		i += 1
-		if i == 100 {
+		// todo: remove. this is an arbitrary limit while developing.
+		if i == 25 {
 			break
 		}
 
 		project, err := parse_repo(repo)
 		if err != nil {
-			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo, "error", err)
+			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 			continue
 		}
 		project_list = append(project_list, project)
@@ -842,7 +962,7 @@ func more_pages(page, per_page int, jsonstr string) (int, error) {
 	ptr := page * per_page                              // 300
 	pos := total - ptr                                  // 743 - 300 = 443
 	remaining_pages := float64(pos) / float64(per_page) // 4.43
-	return int(math.Ceil(remaining_pages)), nil         // 5
+	return int(math.Floor(remaining_pages)), nil        // 4
 }
 
 func search_github(endpoint string, search_query string) []string {
@@ -978,6 +1098,35 @@ func get_projects() []GithubRepo {
 	return struct_list
 }
 
+//
+
+func configure_validator() *jsonschema.Schema {
+	label := "release.json"
+
+	compiler := jsonschema.NewCompiler()
+	compiler.Draft = jsonschema.Draft4 // todo: either drop schema version or raise this one
+	path := "resources/release-json-schema.json"
+
+	file_bytes, err := os.ReadFile(path)
+	if err != nil {
+		slog.Error("failed to read the json schema", "path", path)
+		fatal()
+	}
+
+	err = compiler.AddResource(label, bytes.NewReader(file_bytes))
+	if err != nil {
+		slog.Error("failed to add schema to compiler", "error", err)
+		fatal()
+	}
+	schema, err := compiler.Compile(label)
+	if err != nil {
+		slog.Error("failed to compile schema", "error", err)
+		fatal()
+	}
+
+	return schema
+}
+
 func init_state() *State {
 	state := NewState()
 
@@ -999,15 +1148,12 @@ func init_state() *State {
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
 
+	state.Schema = configure_validator()
+
 	return state
 }
 
 // --- bootstrap
-
-func is_testing() bool {
-	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
-	return strings.HasSuffix(os.Args[0], ".test")
-}
 
 func init() {
 	ensure(len(interface_ranges_labels) == len(interface_ranges), "interface ranges are not equal interface range labels")
@@ -1025,5 +1171,5 @@ func main() {
 
 	slog.Info("parsing projects")
 	project_list := parse_repo_list(github_repo_list)
-	slog.Info("projects parsed", "viable", len(project_list))
+	slog.Info("projects parsed", "num", len(github_repo_list), "viable", len(project_list))
 }
