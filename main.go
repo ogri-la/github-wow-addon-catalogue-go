@@ -7,6 +7,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/base64"
+	"encoding/csv"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -29,11 +30,13 @@ import (
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/snabb/httpreaderat"
 	"github.com/tidwall/gjson"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	bufra "github.com/avvmoto/buf-readerat"
 )
 
-type GameTrack string
+type GameTrack = string
 
 const (
 	MainlineGameTrack GameTrack = "mainline"
@@ -95,7 +98,7 @@ type GithubRepo struct {
 	Owner           GithubRepoOwner `json:"owner"`
 	Description     string          `json:"description"`
 	Fork            bool            `json:"fork"`
-	Url             string          `json:"url"`
+	HTMLURL         string          `json:"html_url"`
 	CreatedAt       string          `json:"created_at"`
 	UpdatedAt       string          `json:"updated_at"`
 	PushedAt        string          `json:"pushed_at"`
@@ -133,26 +136,67 @@ type Asset struct {
 
 // a repository release
 type GithubRelease struct {
-	Name      string  `json:"name"` // "2.2.2"
-	AssetList []Asset `json:"assets"`
+	Name            string  `json:"name"` // "2.2.2"
+	AssetList       []Asset `json:"assets"`
+	PublishedAtDate string  `json:"published_at"`
 }
 
 // what we'll render out
 type Project struct {
-	Description   string
 	DownloadCount int
 	//GameTrackList  []string
-	Label          string
-	Name           string
-	Source         string
-	SourceId       string
-	ProjectIDMap   map[string]string
-	TagList        []string
-	UpdatedDate    string
+	Name           string // AdiBags
+	FullName       string // AdiAddons/AdiBags
 	URL            string
+	Description    string
+	UpdatedDate    string
 	Flavors        []GameTrack // unique/set, rename 'GameTrackList'
-	LastSeenDate   string
+	ProjectIDMap   map[string]string
 	HasReleaseJSON bool
+	LastSeenDate   string
+
+	/*
+		Source   string
+		SourceId string
+		TagList  []string
+	*/
+}
+
+func ProjectCSVHeader() []string {
+	return []string{
+		"name",
+		"full_name",
+		"url",
+		"description",
+		"last_updated",
+		"flavors",
+		"curse_id",
+		"wago_id",
+		"wowi_id",
+		"has_release_json",
+		"last_seen",
+	}
+}
+
+func title_case(s string) string {
+	caser := cases.Title(language.English)
+	return caser.String(s)
+}
+
+func (p Project) CSVRecord() []string {
+	return []string{
+		p.Name,
+		p.FullName,
+		p.URL,
+		p.Description,
+		p.UpdatedDate,
+		strings.Join(p.Flavors, ","),
+		p.ProjectIDMap["x-curse-project-id"],
+		p.ProjectIDMap["x-wago-id"],
+		p.ProjectIDMap["x-wowi-id"],
+		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
+		p.LastSeenDate,
+	}
 }
 
 type ResponseWrapper struct {
@@ -248,7 +292,7 @@ func in_range(v, s, e int) bool {
 
 // inspects HTTP response `resp` and determines if it was throttled.
 func throttled(resp ResponseWrapper) bool {
-	if resp.StatusCode == 422 || resp.StatusCode == 403 {
+	if resp.StatusCode == 403 {
 		slog.Debug("throttled")
 		return true
 	}
@@ -257,9 +301,29 @@ func throttled(resp ResponseWrapper) bool {
 
 // inspects HTTP response `resp` and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
-	// TODO: something a bit cleverer than this?
-	slog.Debug("waiting 10secs")
-	time.Sleep(time.Duration(10) * time.Second)
+	default_pause := float64(10) // seconds
+	pause := default_pause
+
+	// inspect cache to see an example of this value
+	val := resp.Header.Get("X-Ratelimit-Reset")
+	if val == "" {
+		slog.Error("rate limited but no 'X-Ratelimit-Reset' header present.")
+		pause = default_pause
+	} else {
+		int_val, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			slog.Error("failed to convert value of 'X-Ratelimit-Remaining' header to an integer", "val", val)
+			pause = default_pause
+		} else {
+			pause = time.Until(time.Unix(int_val, 0)).Seconds()
+			if pause > 120 {
+				slog.Warn("received unusual wait time, using default instead", "x-ratelimit-reset-header", val, "wait-time", pause, "default-wait-time", default_pause)
+				pause = default_pause
+			}
+		}
+	}
+	slog.Info(fmt.Sprintf("waiting %vs", pause))
+	time.Sleep(time.Duration(pause) * time.Second)
 }
 
 // logs whether the HTTP request's underlying TCP connection was re-used.
@@ -346,6 +410,10 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
 }
 
+func cache_expired(path string) bool {
+	return false
+}
+
 type FileCachingRequest struct{}
 
 func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -362,8 +430,10 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	cache_path := cache_path(cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 	cached_resp, err := read_cache_entry(cache_key)
 	if err == nil {
-		slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
-		return cached_resp, nil
+		if !cache_expired(cache_path) {
+			slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
+			return cached_resp, nil
+		}
 	}
 	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
 
@@ -915,11 +985,15 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
+	flavors = unique(flavors)
+	slices.Sort(flavors)
+
 	project := Project{
+		FullName:       repo.FullName,
 		Name:           repo.Name,
-		URL:            repo.Url,
+		URL:            repo.HTMLURL,
 		Description:    repo.Description,
-		UpdatedDate:    repo.UpdatedAt,
+		UpdatedDate:    latest_github_release.PublishedAtDate,
 		Flavors:        flavors,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
@@ -936,7 +1010,7 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	for _, repo := range repo_list {
 		i += 1
 		// todo: remove. this is an arbitrary limit while developing.
-		if i == 25 {
+		if false && i == 100 {
 			break
 		}
 
@@ -1020,15 +1094,22 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 			slog.Error("failed to unmarshal 'code' search result to GithubRepo struct", "search-result", search_result, "error", err)
 			return repo, err
 		}
+
+		//fmt.Println("code")
+		//fmt.Println(quick_json(search_result))
+
 		return repo, nil
 	}
 
 	// 'repository' result
 	err = json.Unmarshal([]byte(search_result), &repo)
 	if err != nil {
-		slog.Error("failed to unmarshall 'repository' search result to GithubRepo struct", "search-result", search_result, "error", err)
+		slog.Error("failed to unmarshal 'repository' search result to GithubRepo struct", "search-result", search_result, "error", err)
 		return repo, err
 	}
+
+	//fmt.Println("repo")
+	//fmt.Println(quick_json(search_result))
 
 	return repo, nil
 }
@@ -1072,6 +1153,7 @@ func get_projects() []GithubRepo {
 		// duplicate 'code' results are replaced by 'repositories' results, etc.
 		{"code", "path:.github/workflows bigwigsmods packager"},
 		{"code", "path:.github/workflows CF_API_KEY"},
+		//{"code", "path:.github/workflows WOWI_API_TOKEN"},
 		{"repositories", "topic:wow-addon"},
 		{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"},
 	}
@@ -1080,7 +1162,9 @@ func get_projects() []GithubRepo {
 		search_results := search_github(endpoint, query)
 		for _, repo := range search_results_to_struct_list(search_results) {
 			_, excluded := REPO_EXCLUDES[repo.FullName]
-			if !excluded {
+			if excluded {
+				slog.Warn("repo is blacklisted", "repo", repo.FullName)
+			} else {
 				struct_map[repo.FullName] = repo
 			}
 		}
@@ -1153,6 +1237,15 @@ func init_state() *State {
 	return state
 }
 
+func write_csv(project_list []Project) {
+	w := csv.NewWriter(os.Stdout)
+	w.Write(ProjectCSVHeader())
+	for _, p := range project_list {
+		w.Write(p.CSVRecord())
+	}
+	w.Flush()
+}
+
 // --- bootstrap
 
 func init() {
@@ -1172,4 +1265,6 @@ func main() {
 	slog.Info("parsing projects")
 	project_list := parse_repo_list(github_repo_list)
 	slog.Info("projects parsed", "num", len(github_repo_list), "viable", len(project_list))
+
+	write_csv(project_list)
 }
