@@ -24,3 +24,17 @@ func Test_is_toc_file(t *testing.T) {
 		assert.Equal(t, expected, is_toc_file(given), given)
 	}
 }
+
+func Test_is_excluded(t *testing.T) {
+	cases := map[string]bool{
+		"":           false, // matches nothing
+		"foo":        false,
+		"foo/":       true, // matches 'foo/'
+		"foo/bar":    true, // matches 'foo/'
+		"foo/barbaz": true, // matches 'foo/'
+	}
+	for repo_fullname, expected := range cases {
+		_, actual := is_excluded(repo_fullname)
+		assert.Equal(t, expected, actual)
+	}
+}

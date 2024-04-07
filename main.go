@@ -237,7 +237,9 @@ var STATE *State
 
 var API_URL = "https://api.github.com"
 
+// case insensitive repository prefixes
 var REPO_EXCLUDES = map[string]bool{
+	"foo/":                           true, // dummy, for testing
 	"alchem1ster/AddOns-Update-Tool": true, // Not an add-on
 	"alchem1ster/AddOnsFixer":        true, // Not an add-on
 	"BilboTheGreedy/Azerite":         true, // Not an add-on
@@ -356,7 +358,7 @@ func wait(resp ResponseWrapper) {
 			}
 		}
 	}
-	slog.Info(fmt.Sprintf("waiting %vs", pause))
+	slog.Info(fmt.Sprintf("throttled, waiting %vs", pause))
 	time.Sleep(time.Duration(pause) * time.Second)
 }
 
@@ -539,7 +541,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 }
 
 func download(url string, headers map[string]string) (ResponseWrapper, error) {
-	slog.Info("HTTP GET", "url", url)
+	slog.Debug("HTTP GET", "url", url)
 	empty_response := ResponseWrapper{}
 
 	// ---
@@ -586,7 +588,7 @@ func github_download(url string) (ResponseWrapper, error) {
 // returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
-	slog.Info("HTTP GET .zip", "url", url)
+	slog.Debug("HTTP GET .zip", "url", url)
 
 	empty_response := map[string][]byte{}
 
@@ -690,7 +692,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 		}
 
 		if resp.StatusCode != 200 {
-			slog.Info("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i)
+			slog.Warn("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i)
 			wait(resp)
 			continue
 		}
@@ -920,7 +922,7 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error)
 
 // ---
 
-var ErrNoReleasesFound = fmt.Errorf("no releases found")
+var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
 // look for "release.json" in release assets
@@ -980,7 +982,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
-		slog.Info("release.json found, looking for matching asset", "repo", repo.FullName, "release", latest_github_release.Name)
+		slog.Info("release.json found", "repo", repo.FullName, "release", latest_github_release.Name)
 
 		// ensure at least one release in 'releases' is available
 		for _, entry := range release_dot_json.ReleaseJsonEntryList {
@@ -1006,7 +1008,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 
 		// there is no release.json file,
 		// look for .zip assets instead and try our luck.
-		slog.Info("no release.json found, looking for candidate assets")
+		slog.Debug("no release.json found in latest release, looking for .zip files instead")
 		release_archives := []Asset{}
 		for _, asset := range release_list[0].AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
@@ -1052,7 +1054,7 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 		project, err := parse_repo(repo)
 		if err != nil {
 			if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
-				slog.Debug("undownloadable addon, skipping", "repo", repo.FullName, "reason", err)
+				slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
 				continue
 			}
 			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
@@ -1189,6 +1191,17 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	return results
 }
 
+func is_excluded(repo_fullname string) (string, bool) {
+	repo_fullname_lower := strings.ToLower(repo_fullname)
+	for prefix := range REPO_EXCLUDES {
+		prefix_lower := strings.ToLower(prefix) // wasteful, I know
+		if strings.HasPrefix(repo_fullname_lower, prefix_lower) {
+			return prefix, true
+		}
+	}
+	return "", false
+}
+
 // searches Github for addon repositories,
 // converts results to `GithubRepo` structs,
 // de-duplicates and sorts results,
@@ -1212,9 +1225,9 @@ func get_projects() []GithubRepo {
 		endpoint, query := pair[0], pair[1]
 		search_results := search_github(endpoint, query)
 		for _, repo := range search_results_to_struct_list(search_results) {
-			_, excluded := REPO_EXCLUDES[repo.FullName]
+			pattern, excluded := is_excluded(repo.FullName)
 			if excluded {
-				slog.Warn("repository is blacklisted", "repo", repo.FullName)
+				slog.Warn("repository is blacklisted", "repo", repo.FullName, "pattern", pattern)
 			} else {
 				struct_map[repo.FullName] = repo
 			}
@@ -1380,7 +1393,7 @@ func main() {
 	project_list := parse_repo_list(github_repo_list)
 	slog.Info("projects parsed", "num", len(github_repo_list), "viable", len(project_list))
 
-	if STATE.CLI.In != "" {
+	if len(input_project_list) > 0 {
 		slog.Info("merging input with search results")
 
 		project_map := map[string]Project{}
@@ -1402,7 +1415,6 @@ func main() {
 		})
 
 		project_list = new_project_list
-
 	}
 
 	write_csv(project_list)
