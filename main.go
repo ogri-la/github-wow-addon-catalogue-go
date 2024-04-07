@@ -56,35 +56,35 @@ func NewState() *State {
 	return &State{}
 }
 
-type GameTrack = string
+type Flavor = string
 
 const (
-	MainlineGameTrack GameTrack = "mainline"
-	ClassicGameTrack  GameTrack = "classic"
-	BCCGameTrack      GameTrack = "bcc"
-	WrathGameTrack    GameTrack = "wrath"
-	CataGameTrack     GameTrack = "cata"
+	MainlineFlavor Flavor = "mainline"
+	ClassicFlavor  Flavor = "classic"
+	BCCFlavor      Flavor = "bcc"
+	WrathFlavor    Flavor = "wrath"
+	CataFlavor     Flavor = "cata"
 )
 
-var GameTrackList = []GameTrack{
-	MainlineGameTrack, ClassicGameTrack, BCCGameTrack, WrathGameTrack, CataGameTrack,
+var FlavorList = []Flavor{
+	MainlineFlavor, ClassicFlavor, BCCFlavor, WrathFlavor, CataFlavor,
 }
 
-var GameTrackAliasMap = map[string]GameTrack{
-	"vanilla": ClassicGameTrack,
-	"tbc":     BCCGameTrack,
-	"wotlkc":  WrathGameTrack,
+var FlavorAliasMap = map[string]Flavor{
+	"vanilla": ClassicFlavor,
+	"tbc":     BCCFlavor,
+	"wotlkc":  WrathFlavor,
 }
 
-var interface_ranges_labels = []GameTrack{
-	MainlineGameTrack,
-	ClassicGameTrack,
-	MainlineGameTrack,
-	BCCGameTrack,
-	MainlineGameTrack,
-	WrathGameTrack,
-	CataGameTrack,
-	MainlineGameTrack,
+var interface_ranges_labels = []Flavor{
+	MainlineFlavor,
+	ClassicFlavor,
+	MainlineFlavor,
+	BCCFlavor,
+	MainlineFlavor,
+	WrathFlavor,
+	CataFlavor,
+	MainlineFlavor,
 }
 
 var interface_ranges = [][]int{
@@ -125,8 +125,8 @@ type GithubRepo struct {
 }
 
 type ReleaseJsonEntryMetadata struct {
-	Flavor    GameTrack `json:"flavor"`
-	Interface int       `json:"interface"`
+	Flavor    Flavor `json:"flavor"`
+	Interface int    `json:"interface"`
 }
 
 type ReleaseJsonEntry struct {
@@ -155,13 +155,12 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
-	//GameTrackList  []string
 	Name           string // AdiBags
 	FullName       string // AdiAddons/AdiBags
 	URL            string
 	Description    string
 	UpdatedDate    string
-	Flavors        []GameTrack // unique/set, rename 'GameTrackList'
+	FlavorList     []Flavor
 	ProjectIDMap   map[string]string
 	HasReleaseJSON bool
 	LastSeenDate   string
@@ -189,7 +188,7 @@ func ProjectFromCSVRow(row []string) Project {
 		"wago_id":  row[7],
 		"wowi_id":  row[8],
 	}
-	flavors := strings.Split(row[5], ",")
+	flavor_list := strings.Split(row[5], ",")
 	has_release_json := row[9] == "True"
 
 	return Project{
@@ -198,7 +197,7 @@ func ProjectFromCSVRow(row []string) Project {
 		URL:            row[2],
 		Description:    row[3],
 		UpdatedDate:    row[4],
-		Flavors:        flavors,
+		FlavorList:     flavor_list,
 		ProjectIDMap:   project_id_map,
 		HasReleaseJSON: has_release_json,
 		LastSeenDate:   row[10],
@@ -217,7 +216,7 @@ func (p Project) CSVRecord() []string {
 		p.URL,
 		p.Description,
 		p.UpdatedDate,
-		strings.Join(p.Flavors, ","),
+		strings.Join(p.FlavorList, ","),
 		p.ProjectIDMap["x-curse-project-id"],
 		p.ProjectIDMap["x-wago-id"],
 		p.ProjectIDMap["x-wowi-id"],
@@ -708,6 +707,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 // simplified .toc file parsing.
 // keys are lowercased.
 // does not handle duplicate keys, last key wins.
+// stops reading keyvals after the first blank line.
 func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error) {
 	slog.Info("parsing .toc file", "filename", filename)
 	line_list := strings.Split(strings.ReplaceAll(string(toc_bytes), "\r\n", "\n"), "\n")
@@ -728,34 +728,37 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 			slog.Debug("toc", "key", key, "val", val, "filename", filename)
 			interesting_lines[key] = val
 		}
+		if strings.TrimSpace(line) == "" {
+			// we've come to the end of the key=vals
+			break
+		}
 	}
 	return interesting_lines, nil
 }
 
-// builds a regular expression to match .toc filenames and extract known game tracks and aliases.
+// builds a regular expression to match .toc filenames and extract known flavors and aliases.
 func toc_filename_regexp() *regexp.Regexp {
-	game_track_list := []string{}
-	for _, game_track := range GameTrackList {
-		game_track_list = append(game_track_list, string(game_track))
+	flavor_list := []string{}
+	for _, flavor := range FlavorList {
+		flavor_list = append(flavor_list, string(flavor))
 	}
-	for game_track_alias := range GameTrackAliasMap {
-		game_track_list = append(game_track_list, game_track_alias)
+	for flavor_alias := range FlavorAliasMap {
+		flavor_list = append(flavor_list, flavor_alias)
 	}
-	game_tracks := strings.Join(game_track_list, "|") // "mainline|wrath|somealias"
-
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s))?\.toc$`, game_tracks)
+	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
 	return regexp.MustCompile(pattern)
 }
 
 var TOC_FILENAME_REGEXP = toc_filename_regexp()
 
 // parses the given `filename`,
-// extracting the filename sans ext and any game track,
-// returning a pair of (filename, game track).
-// matching is case insensitive and game tracks, if any, are returned lowercase.
-// when game track is absent, the second value is empty.
+// extracting the filename sans ext and any flavors,
+// returning a pair of (filename, flavor).
+// matching is case insensitive and flavor, if any, are returned lowercase.
+// when flavor is absent, the second value is empty.
 // when filename cannot be parsed, both values are empty.
-func parse_toc_filename(filename string) (string, GameTrack) {
+func parse_toc_filename(filename string) (string, Flavor) {
 	matches := TOC_FILENAME_REGEXP.FindStringSubmatch(filename)
 
 	if len(matches) == 2 {
@@ -765,19 +768,19 @@ func parse_toc_filename(filename string) (string, GameTrack) {
 	if len(matches) == 3 {
 		// "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
 		flavor := strings.ToLower(matches[2])
-		actual_flavor, is_alias := GameTrackAliasMap[flavor]
+		actual_flavor, is_alias := FlavorAliasMap[flavor]
 		if is_alias {
 			return matches[1], actual_flavor
 		}
-		return matches[1], GameTrack(flavor)
+		return matches[1], Flavor(flavor)
 	}
 	return "", ""
 }
 
 // parses the given `zip_file_entry` 'filename',
-// that we expect to look like: 'AddonName/AddonName.toc' or 'AddonName/AddonName-gametrack.ext',
+// that we expect to look like: 'AddonName/AddonName.toc' or 'AddonName/AddonName-flavor.ext',
 // returning `true` when both the dirname and filename sans ext are equal
-// and the gametrack, if present, is valid.
+// and the flavor, if present, is valid.
 func is_toc_file(zip_file_entry string) bool {
 	// golang doesn't support backreferences, so we can't use ?P= to match previous captures:
 	//   fmt.Sprintf(`^(?P<name>[^/]+)[/](?P=name)(?:[-_](?P<flavor>%s%s))?\.toc$`, ids, aliases)
@@ -793,7 +796,7 @@ func is_toc_file(zip_file_entry string) bool {
 }
 
 // "30403" => "wrath"
-func interface_number_to_flavor(interface_val string) (GameTrack, error) {
+func interface_number_to_flavor(interface_val string) (Flavor, error) {
 	interface_int, err := strconv.Atoi(interface_val)
 	if err != nil {
 		return "", fmt.Errorf("failed to convert interface value to integer: %w", err)
@@ -840,8 +843,8 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 // extract the flavors from the filenames
 // for 'flavorless' toc files,
 // parse the file contents looking for interface versions
-func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]GameTrack, error) {
-	flavors := []GameTrack{}
+func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]Flavor, error) {
+	flavors := []Flavor{}
 	for _, release_archive := range release_archive_list {
 
 		// future optimisation: original implementation only reads bytes if toc is 'flavorless'.
@@ -895,6 +898,7 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error)
 	err = STATE.Schema.Validate(raw)
 	if err != nil {
 		// future: error data is rich, can something nicer be emitted?
+		slog.Warn("failed to validate", "raw", raw, "error", err)
 		return nil, fmt.Errorf("release.json file failed to validate against schema: %w", err)
 	}
 
@@ -915,6 +919,9 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error)
 }
 
 // ---
+
+var ErrNoReleasesFound = fmt.Errorf("no releases found")
+var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
 // look for "release.json" in release assets
 // if found, fetch it, validate it as json and then validate as correct release-json data.
@@ -946,7 +953,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	if len(release_list) != 1 {
 		// we're fetching exactly one release, the most recent one.
 		// if one doesn't exist, skip repo.
-		return empty_response, fmt.Errorf("no releases found")
+		return empty_response, ErrNoReleasesFound
 	}
 
 	latest_github_release := release_list[0]
@@ -958,7 +965,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 				return empty_response, fmt.Errorf("failed to download release.json: %w", err)
 			}
 
-			// todo: custom unmarshall here to enforce gametrack, coerce aliases, validate, etc
+			// todo: custom unmarshall here to enforce flavor, coerce aliases, validate, etc
 			// todo: do we still have access to the bytes or were they consumed?
 			release_dot_json, err = parse_release_dot_json(asset_resp.Bytes)
 			if err != nil {
@@ -969,7 +976,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
-	flavors := []GameTrack{} // set of "wrath", "classic", etc
+	flavors := []Flavor{} // set of "wrath", "classic", etc
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
@@ -1010,7 +1017,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 
 		if len(release_archives) == 0 {
-			return empty_response, fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
+			return empty_response, ErrNoReleaseCandidateFound
 		}
 
 		// extract flavors ...
@@ -1029,7 +1036,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		URL:            repo.HTMLURL,
 		Description:    repo.Description,
 		UpdatedDate:    latest_github_release.PublishedAtDate,
-		Flavors:        flavors,
+		FlavorList:     flavors,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
 		ProjectIDMap:   project_id_map,
@@ -1041,16 +1048,13 @@ func parse_repo(repo GithubRepo) (Project, error) {
 // `GithubRepo` structs that fail to parse are excluded from the final list.
 func parse_repo_list(repo_list []GithubRepo) []Project {
 	project_list := []Project{}
-	i := 0 // todo: temporary during development
 	for _, repo := range repo_list {
-		i += 1
-		// todo: remove. this is an arbitrary limit while developing.
-		if false && i == 100 {
-			break
-		}
-
 		project, err := parse_repo(repo)
 		if err != nil {
+			if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
+				slog.Debug("undownloadable addon, skipping", "repo", repo.FullName, "reason", err)
+				continue
+			}
 			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 			continue
 		}
@@ -1210,7 +1214,7 @@ func get_projects() []GithubRepo {
 		for _, repo := range search_results_to_struct_list(search_results) {
 			_, excluded := REPO_EXCLUDES[repo.FullName]
 			if excluded {
-				slog.Warn("repo is blacklisted", "repo", repo.FullName)
+				slog.Warn("repository is blacklisted", "repo", repo.FullName)
 			} else {
 				struct_map[repo.FullName] = repo
 			}
