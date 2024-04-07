@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"log/slog"
@@ -20,6 +21,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strconv"
@@ -35,6 +37,24 @@ import (
 
 	bufra "github.com/avvmoto/buf-readerat"
 )
+
+type CLI struct {
+	In            string
+	LogLevelLabel string
+	LogLevel      slog.Level
+}
+
+type State struct {
+	CWD         string
+	GithubToken string
+	Client      *http.Client
+	Schema      *jsonschema.Schema
+	CLI         CLI
+}
+
+func NewState() *State {
+	return &State{}
+}
 
 type GameTrack = string
 
@@ -76,17 +96,6 @@ var interface_ranges = [][]int{
 	{3_04_00, 4_00_00},
 	{4_04_00, 5_00_00},
 	{4_00_00, 11_00_00},
-}
-
-type State struct {
-	CWD         string
-	GithubToken string
-	Client      *http.Client
-	Schema      *jsonschema.Schema
-}
-
-func NewState() *State {
-	return &State{}
 }
 
 type GithubRepoOwner struct {
@@ -146,7 +155,6 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
-	DownloadCount int
 	//GameTrackList  []string
 	Name           string // AdiBags
 	FullName       string // AdiAddons/AdiBags
@@ -157,12 +165,6 @@ type Project struct {
 	ProjectIDMap   map[string]string
 	HasReleaseJSON bool
 	LastSeenDate   string
-
-	/*
-		Source   string
-		SourceId string
-		TagList  []string
-	*/
 }
 
 func ProjectCSVHeader() []string {
@@ -178,6 +180,28 @@ func ProjectCSVHeader() []string {
 		"wowi_id",
 		"has_release_json",
 		"last_seen",
+	}
+}
+
+func ProjectFromCSVRow(row []string) Project {
+	project_id_map := map[string]string{
+		"curse_id": row[6],
+		"wago_id":  row[7],
+		"wowi_id":  row[8],
+	}
+	flavors := strings.Split(row[5], ",")
+	has_release_json := row[9] == "True"
+
+	return Project{
+		Name:           row[0],
+		FullName:       row[1],
+		URL:            row[2],
+		Description:    row[3],
+		UpdatedDate:    row[4],
+		Flavors:        flavors,
+		ProjectIDMap:   project_id_map,
+		HasReleaseJSON: has_release_json,
+		LastSeenDate:   row[10],
 	}
 }
 
@@ -247,6 +271,14 @@ func fatal() {
 func ensure(b bool, m string) {
 	if !b {
 		panic(m)
+	}
+}
+
+// when `b` is true, log an error and die.
+func die(b bool, m string) {
+	if b {
+		slog.Error(m)
+		fatal()
 	}
 }
 
@@ -1162,9 +1194,9 @@ func get_projects() []GithubRepo {
 	search_list := [][]string{
 		// order is important.
 		// duplicate 'code' results are replaced by 'repositories' results, etc.
-		// note! as of 2024-04-07 API search results differ from web search results.
-		// there are fewer results and notable absences.
-		//{"code", "path:.github/workflows bigwigsmods packager"},
+		// note! as of 2024-04-07 API search results differ from WEB search results,
+		// with fewer results and notable absences.
+		{"code", "path:.github/workflows bigwigsmods packager"},
 		{"code", "path:.github/workflows CF_API_KEY"},
 		{"code", "path:.github/workflows WOWI_API_TOKEN"},
 		{"repositories", "topic:wow-addon"},
@@ -1197,7 +1229,39 @@ func get_projects() []GithubRepo {
 	return struct_list
 }
 
-//
+func write_csv(project_list []Project) {
+	w := csv.NewWriter(os.Stdout)
+	w.Write(ProjectCSVHeader())
+	for _, p := range project_list {
+		w.Write(p.CSVRecord())
+	}
+	w.Flush()
+}
+
+func read_csv(path string) ([]Project, error) {
+	empty_response := []Project{}
+	fh, err := os.Open(path)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to open input file: %w", err)
+	}
+	defer fh.Close()
+	project_list := []Project{}
+	rdr := csv.NewReader(fh)
+
+	rdr.Read() // header
+
+	row_list, err := rdr.ReadAll()
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to read contents of input file: %w", err)
+	}
+	for _, row := range row_list {
+		project_list = append(project_list, ProjectFromCSVRow(row))
+	}
+	return project_list, nil
+
+}
+
+// bootstrap
 
 func configure_validator() *jsonschema.Schema {
 	label := "release.json"
@@ -1252,16 +1316,36 @@ func init_state() *State {
 	return state
 }
 
-func write_csv(project_list []Project) {
-	w := csv.NewWriter(os.Stdout)
-	w.Write(ProjectCSVHeader())
-	for _, p := range project_list {
-		w.Write(p.CSVRecord())
-	}
-	w.Flush()
+func path_exists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
 }
 
-// --- bootstrap
+func read_cli_args(arg_list []string) CLI {
+	cli := CLI{}
+	flag.StringVar(&cli.In, "in", "", "path to extant addons.csv file. input is merged with results")
+	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
+	flag.Parse()
+
+	if cli.In != "" {
+		die(!path_exists(cli.In), fmt.Sprintf("input path does not exist: %s", cli.In))
+		ext := filepath.Ext(cli.In)
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.In))
+		die(ext != ".csv", fmt.Sprintf("input path has unsupported extension: %s", ext))
+	}
+
+	log_level_label_map := map[string]slog.Level{
+		"debug": slog.LevelDebug,
+		"info":  slog.LevelInfo,
+		"warn":  slog.LevelWarn,
+		"error": slog.LevelError,
+	}
+	log_level, present := log_level_label_map[cli.LogLevelLabel]
+	die(!present, fmt.Sprintf("unknown log level: %s", cli.LogLevelLabel))
+	cli.LogLevel = log_level
+
+	return cli
+}
 
 func init() {
 	ensure(len(interface_ranges_labels) == len(interface_ranges), "interface ranges are not equal interface range labels")
@@ -1269,17 +1353,53 @@ func init() {
 		return
 	}
 	STATE = init_state()
-	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: slog.LevelDebug})))
+	STATE.CLI = read_cli_args(os.Args)
+	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.CLI.LogLevel})))
 }
 
 func main() {
-	slog.Info("searching for projects")
+	var err error
+	input_project_list := []Project{}
+
+	if STATE.CLI.In != "" {
+		slog.Info("reading projects from input", "path", STATE.CLI.In)
+		input_project_list, err = read_csv(STATE.CLI.In)
+		die(err != nil, fmt.Sprintf("%v", err))
+		slog.Info("found projects", "num", len(input_project_list))
+	}
+
+	slog.Info("searching for new projects")
 	github_repo_list := get_projects()
 	slog.Info("found projects", "num", len(github_repo_list))
 
 	slog.Info("parsing projects")
 	project_list := parse_repo_list(github_repo_list)
 	slog.Info("projects parsed", "num", len(github_repo_list), "viable", len(project_list))
+
+	if STATE.CLI.In != "" {
+		slog.Info("merging input with search results")
+
+		project_map := map[string]Project{}
+		for _, project := range input_project_list {
+			project_map[project.FullName] = project
+		}
+
+		// new results overwrite old
+		for _, project := range project_list {
+			project_map[project.FullName] = project
+		}
+
+		new_project_list := []Project{}
+		for _, project := range project_map {
+			new_project_list = append(new_project_list, project)
+		}
+		slices.SortFunc(new_project_list, func(a, b Project) int {
+			return strings.Compare(a.FullName, b.FullName)
+		})
+
+		project_list = new_project_list
+
+	}
 
 	write_csv(project_list)
 }
