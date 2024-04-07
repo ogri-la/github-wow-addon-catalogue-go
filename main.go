@@ -43,10 +43,11 @@ const (
 	ClassicGameTrack  GameTrack = "classic"
 	BCCGameTrack      GameTrack = "bcc"
 	WrathGameTrack    GameTrack = "wrath"
+	CataGameTrack     GameTrack = "cata"
 )
 
 var GameTrackList = []GameTrack{
-	MainlineGameTrack, ClassicGameTrack, BCCGameTrack, WrathGameTrack,
+	MainlineGameTrack, ClassicGameTrack, BCCGameTrack, WrathGameTrack, CataGameTrack,
 }
 
 var GameTrackAliasMap = map[string]GameTrack{
@@ -62,6 +63,7 @@ var interface_ranges_labels = []GameTrack{
 	BCCGameTrack,
 	MainlineGameTrack,
 	WrathGameTrack,
+	CataGameTrack,
 	MainlineGameTrack,
 }
 
@@ -72,6 +74,7 @@ var interface_ranges = [][]int{
 	{2_05_00, 3_00_00},
 	{3_00_00, 3_04_00},
 	{3_04_00, 4_00_00},
+	{4_04_00, 5_00_00},
 	{4_00_00, 11_00_00},
 }
 
@@ -315,7 +318,7 @@ func wait(resp ResponseWrapper) {
 			slog.Error("failed to convert value of 'X-Ratelimit-Remaining' header to an integer", "val", val)
 			pause = default_pause
 		} else {
-			pause = time.Until(time.Unix(int_val, 0)).Seconds()
+			pause = math.Ceil(time.Until(time.Unix(int_val, 0)).Seconds())
 			if pause > 120 {
 				slog.Warn("received unusual wait time, using default instead", "x-ratelimit-reset-header", val, "wait-time", pause, "default-wait-time", default_pause)
 				pause = default_pause
@@ -541,6 +544,14 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	}, nil
 }
 
+// just like `download` but adds an 'authorization' header to the request.
+func github_download(url string) (ResponseWrapper, error) {
+	headers := map[string]string{
+		"Authorization": "token " + STATE.GithubToken,
+	}
+	return download(url, headers)
+}
+
 // returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
@@ -618,14 +629,6 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	write_zip_cache_entry(zip_cache_key, file_bytes)
 
 	return file_bytes, nil
-}
-
-// just like `download` but adds an 'authorization' header to the request.
-func github_download(url string) (ResponseWrapper, error) {
-	headers := map[string]string{
-		"Authorization": "token " + STATE.GithubToken,
-	}
-	return download(url, headers)
 }
 
 func github_zip_download(url string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
@@ -1033,10 +1036,11 @@ func more_pages(page, per_page int, jsonstr string) (int, error) {
 		return 0, errors.New("expected field 'total_count' not found, cannot paginate")
 	}
 	total := int(val.Int())
-	ptr := page * per_page                              // 300
-	pos := total - ptr                                  // 743 - 300 = 443
-	remaining_pages := float64(pos) / float64(per_page) // 4.43
-	return int(math.Floor(remaining_pages)), nil        // 4
+	ptr := page * per_page            // 300
+	pos := total - ptr                // 743 - 300 = 443
+	remaining_pages := pos / per_page // 4.43
+	slog.Debug("pagination", "total-results", total, "current-page", page, "results-per-page", per_page, "remaining-pages", remaining_pages)
+	return remaining_pages, nil // 4
 }
 
 func search_github(endpoint string, search_query string) []string {
@@ -1047,34 +1051,41 @@ func search_github(endpoint string, search_query string) []string {
 	results := []string{} // blobs of json from github api
 	per_page := 100
 	page := 1
-	search_query = url.PathEscape(search_query)
+	search_query = url.QueryEscape(search_query)
 	var remaining_pages int
 
-	for {
-		url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, search_query, per_page, page)
-		resp, err := github_download_with_retries_and_backoff(url)
-		if err != nil {
-			// halt if we can't fetch every page from each of the search queries.
-			slog.Error("error requesting url", "url", url, "error", err)
-			fatal()
-		}
-		body := resp.Text
-		results = append(results, body)
+	// sort and order the search results in different ways in an attempt to get at the addons not being returned.
+	// note! these are *deprecated*.
+	sort_list := []string{"created", "updated"}
+	order_by_list := []string{"asc", "desc"}
+	for _, order_by := range order_by_list {
+		for _, sort_by := range sort_list {
+			for {
+				url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d&sort=%s&order=%s", endpoint, search_query, per_page, page, sort_by, order_by)
+				resp, err := github_download_with_retries_and_backoff(url)
+				if err != nil {
+					// halt if we can't fetch every page from each of the search queries.
+					slog.Error("error requesting url", "url", url, "error", err)
+					fatal()
+				}
+				body := resp.Text
+				results = append(results, body)
 
-		_remaining_pages, err := more_pages(page, per_page, body)
-		if err != nil {
-			// halt if we can't fetch every page from each of the search queries.
-			slog.Error("error finding next page of results", "current-page", page, "remaining-pages", remaining_pages, "error", err)
-			fatal()
-		}
-		remaining_pages = _remaining_pages
-		slog.Debug("pagination", "results-per-page", per_page, "current-page", page, "remaining-pages", remaining_pages)
+				_remaining_pages, err := more_pages(page, per_page, body)
+				if err != nil {
+					// halt if we can't fetch every page from each of the search queries.
+					slog.Error("error finding next page of results", "current-page", page, "remaining-pages", remaining_pages, "error", err)
+					fatal()
+				}
+				remaining_pages = _remaining_pages
 
-		if remaining_pages > 0 {
-			page = page + 1
-			continue
+				if remaining_pages > 0 {
+					page = page + 1
+					continue
+				}
+				break
+			}
 		}
-		break
 	}
 	return results
 }
@@ -1151,10 +1162,14 @@ func get_projects() []GithubRepo {
 	search_list := [][]string{
 		// order is important.
 		// duplicate 'code' results are replaced by 'repositories' results, etc.
-		{"code", "path:.github/workflows bigwigsmods packager"},
+		// note! as of 2024-04-07 API search results differ from web search results.
+		// there are fewer results and notable absences.
+		//{"code", "path:.github/workflows bigwigsmods packager"},
 		{"code", "path:.github/workflows CF_API_KEY"},
-		//{"code", "path:.github/workflows WOWI_API_TOKEN"},
+		{"code", "path:.github/workflows WOWI_API_TOKEN"},
 		{"repositories", "topic:wow-addon"},
+		{"repositories", "topic:world-of-warcraft-addon"},
+		{"repositories", "topic:warcraft-addon"},
 		{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"},
 	}
 	for _, pair := range search_list {
