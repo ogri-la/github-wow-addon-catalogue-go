@@ -44,18 +44,18 @@ type CLI struct {
 	LogLevel      slog.Level
 }
 
+// global state, see `STATE`
 type State struct {
-	CWD         string
-	GithubToken string
-	Client      *http.Client
-	Schema      *jsonschema.Schema
-	CLI         CLI
+	CWD          string
+	GithubToken  string             // Github credentials, pulled from ENV
+	Client       *http.Client       // shared HTTP client for persistent connections
+	Schema       *jsonschema.Schema // validate release.json files
+	CLI          CLI                // captures args passed in from the command line
+	RunStart     time.Time          // time app started
+	ExpireCaches bool               // global toggle for caching
 }
 
-func NewState() *State {
-	return &State{}
-}
-
+// type alias for the WoW 'flavor'
 type Flavor = string
 
 const (
@@ -66,10 +66,12 @@ const (
 	CataFlavor     Flavor = "cata"
 )
 
+// all known flavours.
 var FlavorList = []Flavor{
 	MainlineFlavor, ClassicFlavor, BCCFlavor, WrathFlavor, CataFlavor,
 }
 
+// mapping of alias=>canonical flavour
 var FlavorAliasMap = map[string]Flavor{
 	"vanilla": ClassicFlavor,
 	"tbc":     BCCFlavor,
@@ -98,30 +100,13 @@ var interface_ranges = [][]int{
 	{4_00_00, 11_00_00},
 }
 
-type GithubRepoOwner struct {
-	Login string `json:"login"`
-	Type  string `json:"type"`
-}
-
-// a Github search result
+// a Github search result.
+// different types of search return different types of information.
 type GithubRepo struct {
-	Name            string          `json:"name"`
-	FullName        string          `json:"full_name"`
-	Owner           GithubRepoOwner `json:"owner"`
-	Description     string          `json:"description"`
-	Fork            bool            `json:"fork"`
-	HTMLURL         string          `json:"html_url"`
-	CreatedAt       string          `json:"created_at"`
-	UpdatedAt       string          `json:"updated_at"`
-	PushedAt        string          `json:"pushed_at"`
-	Homepage        string          `json:"homepage"`
-	StargazersCount int             `json:"stargazers_count"`
-	Language        string          `json:"language"`
-	HasDownloads    bool            `json:"has_downloads"`
-	Archived        bool            `json:"archived"`
-	Disabled        bool            `json:"disabled"`
-	//License         string          `json:"license"` // needs more work
-	Topics []string `json:"topics"`
+	Name        string `json:"name"`
+	FullName    string `json:"full_name"`
+	Description string `json:"description"`
+	HTMLURL     string `json:"html_url"`
 }
 
 type ReleaseJsonEntryMetadata struct {
@@ -139,18 +124,18 @@ type ReleaseJson struct {
 	ReleaseJsonEntryList []ReleaseJsonEntry `json:"releases"`
 }
 
-// a Release has many Assets
-type Asset struct {
+// a release has many assets
+type GithubReleaseAsset struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
 	ContentType        string `json:"content_type"`
 }
 
-// a repository release
+// a repository has many releases
 type GithubRelease struct {
-	Name            string  `json:"name"` // "2.2.2"
-	AssetList       []Asset `json:"assets"`
-	PublishedAtDate string  `json:"published_at"`
+	Name            string               `json:"name"` // "2.2.2"
+	AssetList       []GithubReleaseAsset `json:"assets"`
+	PublishedAtDate string               `json:"published_at"`
 }
 
 // what we'll render out
@@ -259,6 +244,10 @@ var REPO_EXCLUDES = map[string]bool{
 	"ynazar1/Arh":                    true, // Fork
 }
 
+var CACHE_DURATION = 24       // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2 // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1   // hours. how long cached zipfile entries should live for.
+
 // --- utils
 
 // cannot continue, exit immediately. use `panic` if you need a stracktrace.
@@ -324,15 +313,20 @@ func in_range(v, s, e int) bool {
 	return v >= s && v <= e
 }
 
+// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'
+func long_rfc3339(ts time.Time) string {
+	return strings.TrimSuffix(ts.Format(time.RFC3339), "Z") + "+00:00"
+}
+
+// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'
+func long_rfc3339_string(ts string) string {
+	return strings.TrimSuffix(ts, "Z") + "+00:00"
+}
+
 // --- http utils
 
-// inspects HTTP response `resp` and determines if it was throttled.
 func throttled(resp ResponseWrapper) bool {
-	if resp.StatusCode == 403 {
-		slog.Debug("throttled")
-		return true
-	}
-	return false
+	return resp.StatusCode == 403
 }
 
 // inspects HTTP response `resp` and determines how long to wait. then waits.
@@ -386,7 +380,17 @@ func make_cache_key(r *http.Request) string {
 	// inconsistent case and url params etc will cause cache misses
 	key := r.URL.String()
 	md5sum := md5.Sum([]byte(key))
-	return hex.EncodeToString(md5sum[:])
+	cache_key := hex.EncodeToString(md5sum[:]) // fb9f36f59023fbb3681a895823ae9ba0
+	if strings.HasPrefix(r.URL.Path, "/search") {
+		return cache_key + "-search" // fb9f36f59023fbb3681a895823ae9ba0-search
+	}
+	if strings.HasSuffix(r.URL.Path, ".zip") {
+		return cache_key + "-zip"
+	}
+	if strings.HasSuffix(r.URL.Path, "/release.json") {
+		return cache_key + "-release.json"
+	}
+	return cache_key
 }
 
 // reads the cached response as if it were the result of `httputil.Dumpresponse`,
@@ -446,8 +450,47 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
 }
 
+// returns true if the given `path` hasn't been modified for a certain duration.
+// different paths have different durations.
+// assumes `path` exists.
+// returns `true` when an error occurs stat'ing `path`.
 func cache_expired(path string) bool {
-	return false
+	if !STATE.ExpireCaches {
+		// global toggle is on
+		return false
+	}
+
+	bits := strings.Split(filepath.Base(path), "-")
+	suffix := ""
+	if len(bits) == 2 {
+		suffix = bits[1]
+	}
+
+	var cache_duration_hrs int
+	switch suffix {
+	case "-search":
+		cache_duration_hrs = CACHE_DURATION_SEARCH
+	case "-zip":
+		cache_duration_hrs = CACHE_DURATION_ZIP
+	case "-release.json":
+		cache_duration_hrs = CACHE_DURATION_ZIP
+	default:
+		cache_duration_hrs = CACHE_DURATION
+	}
+
+	if cache_duration_hrs == -1 {
+		return false // given `path` never expires
+	}
+
+	stat, err := os.Stat(path)
+	if err != nil {
+		slog.Warn("failed to stat cache file, assuming missing/bad cache file", "cache-path", path, "expired", true)
+		return true
+	}
+
+	diff := STATE.RunStart.Sub(stat.ModTime())
+	hours := int(math.Floor(diff.Hours()))
+	return hours >= cache_duration_hrs
 }
 
 type FileCachingRequest struct{}
@@ -465,11 +508,10 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	cache_key := make_cache_key(req)    // "711f20df1f76da140218e51445a6fc47"
 	cache_path := cache_path(cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 	cached_resp, err := read_cache_entry(cache_key)
-	if err == nil {
-		if !cache_expired(cache_path) {
-			slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
-			return cached_resp, nil
-		}
+	if err == nil && !cache_expired(cache_path) {
+		// a cache entry was found and it's still valid, use that.
+		slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
+		return cached_resp, nil
 	}
 	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
 
@@ -603,14 +645,14 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 
 	// ---
 
-	zip_cache_key := make_cache_key(req) + "-zip" // fb9f36f59023fbb3681a895823ae9ba0-zip
-	cached_zip_file, err := read_zip_cache_entry(zip_cache_key)
+	cache_key := make_cache_key(req)
+	cached_zip_file, err := read_zip_cache_entry(cache_key)
 	if err == nil {
-		slog.Debug("HTTP GET .zip cache HIT", "url", url, "cache-path", cache_path(zip_cache_key))
+		slog.Debug("HTTP GET .zip cache HIT", "url", url, "cache-path", cache_path(cache_key))
 		return cached_zip_file, nil
 	}
 
-	slog.Debug("HTTP GET .zip cache MISS", "url", url, "cache-path", cache_path(zip_cache_key))
+	slog.Debug("HTTP GET .zip cache MISS", "url", url, "cache-path", cache_path(cache_key))
 
 	// ---
 
@@ -659,7 +701,7 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 		}
 	}
 
-	write_zip_cache_entry(zip_cache_key, file_bytes)
+	write_zip_cache_entry(cache_key, file_bytes)
 
 	return file_bytes, nil
 }
@@ -674,7 +716,7 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
 	var resp ResponseWrapper
 	var err error
-	num_attempts := 10 // todo: see original for handling "X-RateLimit-Reset"
+	num_attempts := 5
 
 	for i := 1; i <= num_attempts; i++ {
 		resp, err = github_download(url)
@@ -845,7 +887,7 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 // extract the flavors from the filenames
 // for 'flavorless' toc files,
 // parse the file contents looking for interface versions
-func extract_game_flavors_from_tocs(release_archive_list []Asset) ([]Flavor, error) {
+func extract_game_flavors_from_tocs(release_archive_list []GithubReleaseAsset) ([]Flavor, error) {
 	flavors := []Flavor{}
 	for _, release_archive := range release_archive_list {
 
@@ -1009,7 +1051,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		// there is no release.json file,
 		// look for .zip assets instead and try our luck.
 		slog.Debug("no release.json found in latest release, looking for .zip files instead")
-		release_archives := []Asset{}
+		release_archives := []GithubReleaseAsset{}
 		for _, asset := range release_list[0].AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 				if strings.HasSuffix(asset.Name, ".zip") {
@@ -1037,10 +1079,10 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		Name:           repo.Name,
 		URL:            repo.HTMLURL,
 		Description:    repo.Description,
-		UpdatedDate:    latest_github_release.PublishedAtDate,
+		UpdatedDate:    long_rfc3339_string(latest_github_release.PublishedAtDate),
 		FlavorList:     flavors,
 		HasReleaseJSON: release_dot_json != nil,
-		LastSeenDate:   time.Now().UTC().Format(time.RFC3339),
+		LastSeenDate:   long_rfc3339(time.Now().UTC()),
 		ProjectIDMap:   project_id_map,
 	}
 	return project, nil
@@ -1088,9 +1130,7 @@ func search_github(endpoint string, search_query string) []string {
 	}
 	results := []string{} // blobs of json from github api
 	per_page := 100
-	page := 1
 	search_query = url.QueryEscape(search_query)
-	var remaining_pages int
 
 	// sort and order the search results in different ways in an attempt to get at the addons not being returned.
 	// note! these are *deprecated*.
@@ -1098,6 +1138,8 @@ func search_github(endpoint string, search_query string) []string {
 	order_by_list := []string{"asc", "desc"}
 	for _, order_by := range order_by_list {
 		for _, sort_by := range sort_list {
+			page := 1
+			remaining_pages := 0
 			for {
 				url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d&sort=%s&order=%s", endpoint, search_query, per_page, page, sort_by, order_by)
 				resp, err := github_download_with_retries_and_backoff(url)
@@ -1308,7 +1350,10 @@ func configure_validator() *jsonschema.Schema {
 }
 
 func init_state() *State {
-	state := NewState()
+	state := &State{
+		RunStart:     time.Now(),
+		ExpireCaches: false, // just while developing
+	}
 
 	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
 	if !present {
