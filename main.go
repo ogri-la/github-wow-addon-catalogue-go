@@ -38,6 +38,88 @@ import (
 	bufra "github.com/avvmoto/buf-readerat"
 )
 
+// --- utils
+
+// cannot continue, exit immediately. use `panic` if you need a stracktrace.
+func fatal() {
+	fmt.Println("cannot continue")
+	os.Exit(1)
+}
+
+// assert `b` is true, otherwise panic with message `m`.
+// ideally these would be compile-time checks, but eh, can't do that.
+func ensure(b bool, m string) {
+	if !b {
+		panic(m)
+	}
+}
+
+// when `b` is true, log an error and die.
+func die(b bool, m string) {
+	if b {
+		slog.Error(m)
+		fatal()
+	}
+}
+
+// returns `true` if tests are being run.
+func is_testing() bool {
+	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
+	return strings.HasSuffix(os.Args[0], ".test")
+}
+
+func title_case(s string) string {
+	caser := cases.Title(language.English)
+	return caser.String(s)
+}
+
+func unique[T comparable](list []T) []T {
+	idx := make(map[T]bool)
+	var result []T
+	for _, item := range list {
+		_, present := idx[item]
+		if !present {
+			idx[item] = true
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func quick_json(blob string) string {
+	// convert into a simple map then
+	var foo map[string]any
+	json.Unmarshal([]byte(blob), &foo)
+
+	b, err := json.MarshalIndent(foo, "", "\t")
+	if err != nil {
+		slog.Error("failed to coerce string blob to json", "blob", blob, "error", err)
+		fatal()
+	}
+	return string(b)
+}
+
+func pprint(thing any) {
+	s, _ := json.MarshalIndent(thing, "", "\t")
+	fmt.Println(string(s))
+}
+
+func in_range(v, s, e int) bool {
+	return v >= s && v <= e
+}
+
+// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'
+func long_rfc3339(ts time.Time) string {
+	return strings.TrimSuffix(ts.Format(time.RFC3339), "Z") + "+00:00"
+}
+
+// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'
+func long_rfc3339_string(ts string) string {
+	return strings.TrimSuffix(ts, "Z") + "+00:00"
+}
+
+// --- structs
+
 type CLI struct {
 	In            string
 	LogLevelLabel string
@@ -189,11 +271,6 @@ func ProjectFromCSVRow(row []string) Project {
 	}
 }
 
-func title_case(s string) string {
-	caser := cases.Title(language.English)
-	return caser.String(s)
-}
-
 func (p Project) CSVRecord() []string {
 	return []string{
 		p.Name,
@@ -224,103 +301,43 @@ var API_URL = "https://api.github.com"
 
 // case insensitive repository prefixes
 var REPO_EXCLUDES = map[string]bool{
-	"foo/":                           true, // dummy, for testing
-	"alchem1ster/AddOns-Update-Tool": true, // Not an add-on
-	"alchem1ster/AddOnsFixer":        true, // Not an add-on
-	"BilboTheGreedy/Azerite":         true, // Not an add-on
-	"Centias/BankItems":              true, // Fork
-	"DaMitchell/HelloWorld":          true,
-	"dratr/BattlePetCount":           true, // Fork
-	"HappyRot/AddOns":                true, // Compilation
-	"hippuli/":                       true, // Fork galore
-	"JsMacros/":                      true, // Minecraft stuff
-	"Kirri777/WorldQuestsList":       true, // Fork
-	"livepeer/":                      true, // Minecraft stuff
-	"lowlee/MikScrollingBattleText":  true, // Fork
-	"lowlee/MSBTOptions":             true, // Fork
-	"MikeD89/KarazhanChess":          true, // Hijacking BigWigs' TOC IDs, probably by accident
-	"smashedr/MethodAltManager":      true, // Fork
-	"wagyourtail/JsMacros":           true, // More Minecraft stuff
-	"ynazar1/Arh":                    true, // Fork
-}
+	"foo/": true, // dummy, for testing
+	//"ogri-la/elvui":                            true, // Mirror
+	//"ogri-la/tukui":                            true, // Mirror
 
-var CACHE_DURATION = 24       // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2 // hours. how long cached *search* files should live for.
-var CACHE_DURATION_ZIP = -1   // hours. how long cached zipfile entries should live for.
-
-// --- utils
-
-// cannot continue, exit immediately. use `panic` if you need a stracktrace.
-func fatal() {
-	fmt.Println("cannot continue")
-	os.Exit(1)
-}
-
-// assert `b` is true, otherwise panic with message `m`.
-// ideally these would be compile-time checks, but eh, can't do that.
-func ensure(b bool, m string) {
-	if !b {
-		panic(m)
-	}
-}
-
-// when `b` is true, log an error and die.
-func die(b bool, m string) {
-	if b {
-		slog.Error(m)
-		fatal()
-	}
-}
-
-// returns `true` if tests are being run.
-func is_testing() bool {
-	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
-	return strings.HasSuffix(os.Args[0], ".test")
-}
-
-func unique[T comparable](list []T) []T {
-	idx := make(map[T]bool)
-	var result []T
-	for _, item := range list {
-		_, present := idx[item]
-		if !present {
-			idx[item] = true
-			result = append(result, item)
-		}
-	}
-	return result
-}
-
-func quick_json(blob string) string {
-	// convert into a simple map then
-	var foo map[string]any
-	json.Unmarshal([]byte(blob), &foo)
-
-	b, err := json.MarshalIndent(foo, "", "\t")
-	if err != nil {
-		slog.Error("failed to coerce string blob to json", "blob", blob, "error", err)
-		fatal()
-	}
-	return string(b)
-}
-
-func pprint(thing any) {
-	s, _ := json.MarshalIndent(thing, "", "\t")
-	fmt.Println(string(s))
-}
-
-func in_range(v, s, e int) bool {
-	return v >= s && v <= e
-}
-
-// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'
-func long_rfc3339(ts time.Time) string {
-	return strings.TrimSuffix(ts.Format(time.RFC3339), "Z") + "+00:00"
-}
-
-// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'
-func long_rfc3339_string(ts string) string {
-	return strings.TrimSuffix(ts, "Z") + "+00:00"
+	"alchem1ster/AddOns-Update-Tool":           true, // Not an add-on
+	"alchem1ster/AddOnsFixer":                  true, // Not an add-on
+	"Aviana/":                                  true,
+	"BilboTheGreedy/Azerite":                   true, // Not an add-on
+	"blazer404/TargetCharmsRe":                 true, // Fork
+	"Centias/BankItems":                        true, // Fork
+	"DaMitchell/HelloWorld":                    true, // Dummy add-on
+	"dratr/BattlePetCount":                     true, // Fork
+	"gorilla-devs/":                            true, // Minecraft stuff
+	"HappyRot/AddOns":                          true, // Compilation
+	"hippuli/":                                 true, // Fork galore
+	"JsMacros/":                                true, // Minecraft stuff
+	"juraj-hrivnak/Underdog":                   true, // Minecraft stuff
+	"kamoo1/Kamoo-s-TSM-App":                   true, // Not an add-on
+	"Kirri777/WorldQuestsList":                 true, // Fork
+	"livepeer/":                                true, // Minecraft stuff
+	"lowlee/MikScrollingBattleText":            true, // Fork
+	"lowlee/MSBTOptions":                       true, // Fork
+	"MikeD89/KarazhanChess":                    true, // Hijacking BigWigs' TOC IDs, probably by accident
+	"Oppzippy/HuokanGoldLogger":                true, // Archived
+	"pinged-eu/wow-addon-helloworld":           true, // Dummy add-on
+	"rePublic-Studios/rPLauncher":              true, // Minecraft stuff
+	"smashedr/MethodAltManager":                true, // Fork
+	"szjunklol/Accountant":                     true, // Fork
+	"unix/curseforge-release":                  true, // Template
+	"unrealshape/AddOns":                       true, // Add-on compilation
+	"vicitafirea/InterfaceColors-Addon":        true, // Custom client add-on
+	"vicitafirea/TimeOfDayIndicator-AddOn":     true, // Custom client add-on
+	"vicitafirea/TurtleHardcoreMessages-AddOn": true, // Custom client add-on
+	"vicitafirea/WarcraftUI-UpperBar-AddOn":    true, // Custom client add-on
+	"wagyourtail/JsMacros":                     true, // More Minecraft stuff
+	"WowUp/WowUp":                              true, // Not an add-on
+	"ynazar1/Arh":                              true, // Fork
 }
 
 // --- http utils
@@ -367,6 +384,10 @@ func trace_context() context.Context {
 }
 
 // --- caching
+
+var CACHE_DURATION = 24       // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2 // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1   // hours. how long cached zipfile entries should live for.
 
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 func cache_path(cache_key string) string {
