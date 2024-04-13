@@ -125,6 +125,11 @@ func long_rfc3339_string(ts string) string {
 	return strings.TrimSuffix(ts, "Z") + "+00:00"
 }
 
+func path_exists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
+}
+
 // --- structs
 
 type CLI struct {
@@ -192,6 +197,7 @@ var interface_ranges = [][]int{
 // a Github search result.
 // different types of search return different types of information.
 type GithubRepo struct {
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	FullName    string `json:"full_name"`
 	Description string `json:"description"`
@@ -229,6 +235,7 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
+	ID             int
 	Name           string // AdiBags
 	FullName       string // AdiAddons/AdiBags
 	URL            string // https://github/AdiAddons/AdiBags
@@ -242,6 +249,7 @@ type Project struct {
 
 func ProjectCSVHeader() []string {
 	return []string{
+		"id",
 		"name",
 		"full_name",
 		"url",
@@ -256,32 +264,48 @@ func ProjectCSVHeader() []string {
 	}
 }
 
-// create a Project from a csv `row`.
+// read a csv `row` and return a `Project` struct.
 func ProjectFromCSVRow(row []string) Project {
-	project_id_map := map[string]string{
-		"curse_id": row[6],
-		"wago_id":  row[7],
-		"wowi_id":  row[8],
+	id, err := strconv.Atoi(row[0])
+	if err != nil {
+		slog.Error("failed to convert 'id' value in CSV to an integer", "row", row, "val", row[0], "error", err)
+		fatal()
 	}
-	flavor_list := strings.Split(row[5], ",")
-	has_release_json := row[9] == "True"
+	flavor_list := strings.Split(row[6], ",")
+	project_id_map := map[string]string{
+		"curse_id": row[7],
+		"wago_id":  row[8],
+		"wowi_id":  row[9],
+	}
+	has_release_json := row[10] == "True"
 
 	return Project{
-		Name:           row[0],
-		FullName:       row[1],
-		URL:            row[2],
-		Description:    row[3],
-		UpdatedDate:    row[4],
+		ID:             id,
+		Name:           row[1],
+		FullName:       row[2],
+		URL:            row[3],
+		Description:    row[4],
+		UpdatedDate:    row[5],
 		FlavorList:     flavor_list,
 		ProjectIDMap:   project_id_map,
 		HasReleaseJSON: has_release_json,
-		LastSeenDate:   row[10],
+		LastSeenDate:   row[11],
 	}
 }
 
-// create a csv row from a Project `p`.
+// read a Project struct `p` and return a csv row.
 func ProjectToCSVRow(p Project) []string {
+
+	// todo: switch LastSeenDate to a timestamp and preserve unnecessary precision here for sake of consistency with original
+	// 'last_seen' date has unnecessary precision, trim it off.
+	last_seen := p.LastSeenDate
+	last_seen_bits := strings.Split(last_seen, ".")
+	if len(last_seen_bits) == 2 {
+		last_seen = last_seen_bits[0] + "+00:00"
+	}
+
 	return []string{
+		strconv.Itoa(p.ID),
 		p.Name,
 		p.FullName,
 		p.URL,
@@ -292,7 +316,7 @@ func ProjectToCSVRow(p Project) []string {
 		p.ProjectIDMap["x-wago-id"],
 		p.ProjectIDMap["x-wowi-id"],
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
-		p.LastSeenDate,
+		last_seen,
 	}
 }
 
@@ -1106,6 +1130,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	slices.Sort(flavors)
 
 	project := Project{
+		ID:             repo.ID,
 		FullName:       repo.FullName,
 		Name:           repo.Name,
 		URL:            repo.HTMLURL,
@@ -1280,7 +1305,7 @@ func is_excluded(repo_fullname string) (string, bool) {
 // de-duplicates and sorts results,
 // returns a set of unique `GithubRepo` structs.
 func get_projects() []GithubRepo {
-	struct_map := map[string]GithubRepo{}
+	repo_idx := map[int]GithubRepo{}
 	search_list := [][]string{
 		// order is important.
 		// duplicate 'code' results are replaced by 'repositories' results, etc.
@@ -1302,14 +1327,14 @@ func get_projects() []GithubRepo {
 			if excluded {
 				slog.Warn("repository is blacklisted", "repo", repo.FullName, "pattern", pattern)
 			} else {
-				struct_map[repo.FullName] = repo
+				repo_idx[repo.ID] = repo
 			}
 		}
 	}
 
 	// convert map to a list, then sort the list
 	struct_list := []GithubRepo{}
-	for _, repo := range struct_map {
+	for _, repo := range repo_idx {
 		struct_list = append(struct_list, repo)
 	}
 	slices.SortFunc(struct_list, func(a, b GithubRepo) int {
@@ -1408,11 +1433,6 @@ func init_state() *State {
 	return state
 }
 
-func path_exists(path string) bool {
-	_, err := os.Stat(path)
-	return !errors.Is(err, os.ErrNotExist)
-}
-
 func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
 	flag.StringVar(&cli.In, "in", "", "path to extant addons.csv file. input is merged with results")
@@ -1472,18 +1492,18 @@ func main() {
 	if len(input_project_list) > 0 {
 		slog.Info("merging input with search results")
 
-		project_map := map[string]Project{}
+		project_idx := map[int]Project{}
 		for _, project := range input_project_list {
-			project_map[project.FullName] = project
+			project_idx[project.ID] = project
 		}
 
 		// new results overwrite old
 		for _, project := range project_list {
-			project_map[project.FullName] = project
+			project_idx[project.ID] = project
 		}
 
 		new_project_list := []Project{}
-		for _, project := range project_map {
+		for _, project := range project_idx {
 			new_project_list = append(new_project_list, project)
 		}
 		slices.SortFunc(new_project_list, func(a, b Project) int {
