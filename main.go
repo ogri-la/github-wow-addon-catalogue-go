@@ -124,7 +124,9 @@ func path_exists(path string) bool {
 
 type CLI struct {
 	InputFile       string
+	InputFileExt    string
 	OutputFile      string
+	OutputFileExt   string
 	LogLevelLabel   string
 	LogLevel        slog.Level
 	UseExpiredCache bool
@@ -226,16 +228,16 @@ type GithubRelease struct {
 
 // what we'll render out
 type Project struct {
-	ID             int
-	Name           string // AdiBags
-	FullName       string // AdiAddons/AdiBags
-	URL            string // https://github/AdiAddons/AdiBags
-	Description    string
-	UpdatedDate    time.Time
-	FlavorList     []Flavor
-	ProjectIDMap   map[string]string // {"x-wowi-id": "foobar", ...}
-	HasReleaseJSON bool
-	LastSeenDate   time.Time
+	ID             int               `json:"id"`
+	Name           string            `json:"name"`      // AdiBags
+	FullName       string            `json:"full-name"` // AdiAddons/AdiBags
+	URL            string            `json:"url"`       // https://github/AdiAddons/AdiBags
+	Description    string            `json:"description"`
+	UpdatedDate    time.Time         `json:"updated-date"`
+	FlavorList     []Flavor          `json:"flavor-list"`
+	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
+	HasReleaseJSON bool              `json:"has-release-json"`
+	LastSeenDate   time.Time         `json:"last-seen-date"`
 }
 
 func ProjectCSVHeader() []string {
@@ -1341,6 +1343,57 @@ func get_projects() []GithubRepo {
 	return struct_list
 }
 
+// --- json i/o
+
+// write a list of Projects as a JSON array to the given `output_file`,
+// or to stdout if `output_file` is empty.
+func write_json(project_list []Project, output_file string) {
+	bytes, err := json.MarshalIndent(project_list, "", "\t")
+	if err != nil {
+		slog.Error("failed to marshal project list to JSON", "error", err)
+		fatal()
+	}
+
+	if output_file == "" {
+		fmt.Println(string(bytes))
+		return
+	}
+
+	err = os.WriteFile(output_file, bytes, 0644)
+	if err != nil {
+		slog.Error("failed to write JSON to file", "output-file", output_file, "error", err)
+		fatal()
+	}
+}
+
+// read a list of Projects from the given JSON file at `path`.
+func read_json(path string) ([]Project, error) {
+	var empty_response []Project
+	fh, err := os.Open(path)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to open JSON file for reading: %w", err)
+	}
+
+	bytes, err := io.ReadAll(fh)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to read bytes in JSON file: %w", err)
+	}
+
+	project_list := []Project{}
+	err = json.Unmarshal(bytes, &project_list)
+	if err != nil {
+		return empty_response, fmt.Errorf("failed to parse JSON in file: %w", err)
+	}
+
+	// todo: validate
+
+	return project_list, nil
+}
+
+// --- csv i/o
+
+// write a list of Projects as a CSV to the given `output_file`,
+// or to stdout if `output_file` is empty.
 func write_csv(project_list []Project, output_file string) {
 	var output io.Writer
 	if output_file == "" {
@@ -1367,6 +1420,8 @@ func write_csv(project_list []Project, output_file string) {
 	}
 }
 
+// read a list of Projects from the given CSV file at `path`.
+// CSV structure follows original script.
 func read_csv(path string) ([]Project, error) {
 	empty_response := []Project{}
 	fh, err := os.Open(path)
@@ -1387,7 +1442,6 @@ func read_csv(path string) ([]Project, error) {
 		project_list = append(project_list, ProjectFromCSVRow(row))
 	}
 	return project_list, nil
-
 }
 
 // bootstrap
@@ -1459,7 +1513,15 @@ func read_cli_args(arg_list []string) CLI {
 		die(!path_exists(cli.InputFile), fmt.Sprintf("input path does not exist: %s", cli.InputFile))
 		ext := filepath.Ext(cli.InputFile)
 		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
-		die(ext != ".csv", fmt.Sprintf("input path has unsupported extension: %s", ext))
+		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
+		cli.InputFileExt = ext
+	}
+
+	if cli.OutputFile != "" {
+		ext := filepath.Ext(cli.OutputFile)
+		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFile))
+		die(ext != ".csv" && ext != ".json", fmt.Sprintf("output path has unsupported extension: %s", ext))
+		cli.OutputFileExt = ext
 	}
 
 	log_level_label_map := map[string]slog.Level{
@@ -1491,7 +1553,12 @@ func main() {
 
 	if STATE.CLI.InputFile != "" {
 		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
-		input_project_list, err = read_csv(STATE.CLI.InputFile)
+		switch STATE.CLI.InputFileExt {
+		case ".csv":
+			input_project_list, err = read_csv(STATE.CLI.InputFile)
+		case ".json":
+			input_project_list, err = read_json(STATE.CLI.InputFile)
+		}
 		die(err != nil, fmt.Sprintf("%v", err))
 		slog.Info("found projects", "num", len(input_project_list))
 	}
@@ -1528,5 +1595,12 @@ func main() {
 		project_list = new_project_list
 	}
 
-	write_csv(project_list, STATE.CLI.OutputFile)
+	switch STATE.CLI.OutputFileExt {
+	case ".csv":
+		write_csv(project_list, STATE.CLI.OutputFile)
+	case ".json":
+		write_json(project_list, STATE.CLI.OutputFile)
+	default:
+		write_json(project_list, "")
+	}
 }
