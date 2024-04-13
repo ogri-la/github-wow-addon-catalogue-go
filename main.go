@@ -133,7 +133,8 @@ func path_exists(path string) bool {
 // --- structs
 
 type CLI struct {
-	In              string
+	InputFile       string
+	OutputFile      string
 	LogLevelLabel   string
 	LogLevel        slog.Level
 	UseExpiredCache bool
@@ -1344,13 +1345,30 @@ func get_projects() []GithubRepo {
 	return struct_list
 }
 
-func write_csv(project_list []Project) {
-	w := csv.NewWriter(os.Stdout)
-	w.Write(ProjectCSVHeader())
-	for _, p := range project_list {
-		w.Write(ProjectToCSVRow(p))
+func write_csv(project_list []Project, output_file string) {
+	var output io.Writer
+	if output_file == "" {
+		output = os.Stdout
+	} else {
+		fh, err := os.Create(output_file)
+		if err != nil {
+			slog.Error("failed to open file for writing CSV", "output-file", output_file, "error", err)
+			fatal()
+		}
+		defer fh.Close()
+		output = fh
 	}
-	w.Flush()
+
+	writer := csv.NewWriter(output)
+	writer.Write(ProjectCSVHeader())
+	for _, project := range project_list {
+		writer.Write(ProjectToCSVRow(project))
+	}
+	writer.Flush()
+
+	if output_file != "" {
+		slog.Info("wrote CSV file", "output-file", output_file)
+	}
 }
 
 func read_csv(path string) ([]Project, error) {
@@ -1435,15 +1453,16 @@ func init_state() *State {
 
 func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
-	flag.StringVar(&cli.In, "in", "", "path to extant addons.csv file. input is merged with results")
+	flag.StringVar(&cli.InputFile, "in", "", "path to extant addons.csv file. input is merged with results")
+	flag.StringVar(&cli.OutputFile, "out", "", "write results to file and not stdout")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.Parse()
 
-	if cli.In != "" {
-		die(!path_exists(cli.In), fmt.Sprintf("input path does not exist: %s", cli.In))
-		ext := filepath.Ext(cli.In)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.In))
+	if cli.InputFile != "" {
+		die(!path_exists(cli.InputFile), fmt.Sprintf("input path does not exist: %s", cli.InputFile))
+		ext := filepath.Ext(cli.InputFile)
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
 		die(ext != ".csv", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
 
@@ -1474,9 +1493,9 @@ func main() {
 	var err error
 	input_project_list := []Project{}
 
-	if STATE.CLI.In != "" {
-		slog.Info("reading projects from input", "path", STATE.CLI.In)
-		input_project_list, err = read_csv(STATE.CLI.In)
+	if STATE.CLI.InputFile != "" {
+		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
+		input_project_list, err = read_csv(STATE.CLI.InputFile)
 		die(err != nil, fmt.Sprintf("%v", err))
 		slog.Info("found projects", "num", len(input_project_list))
 	}
@@ -1513,5 +1532,5 @@ func main() {
 		project_list = new_project_list
 	}
 
-	write_csv(project_list)
+	write_csv(project_list, STATE.CLI.OutputFile)
 }
