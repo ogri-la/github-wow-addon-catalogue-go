@@ -14,6 +14,10 @@ To build upon the results of a previous scrape:
 
     ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --in old.csv > new.csv
 
+To always use cached responses, even if they've expired:
+
+    ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --use-expired-cache
+
 ## Licence
 
 Copyright © 2024 Torkus

@@ -40,25 +40,25 @@ import (
 
 // --- utils
 
-// cannot continue, exit immediately. use `panic` if you need a stracktrace.
+// cannot continue, exit immediately without a stacktrace.
+// just use `panic` if you do need a stracktrace.
 func fatal() {
 	fmt.Println("cannot continue")
 	os.Exit(1)
 }
 
-// assert `b` is true, otherwise panic with message `m`.
-// ideally these would be compile-time checks, but eh, can't do that.
-func ensure(b bool, m string) {
-	if !b {
-		panic(m)
+// when `b` is true, log error `msg` and die quietly.
+func die(b bool, msg string) {
+	if b {
+		slog.Error(msg)
+		fatal()
 	}
 }
 
-// when `b` is true, log an error and die.
-func die(b bool, m string) {
-	if b {
-		slog.Error(m)
-		fatal()
+// assert `b` is true, otherwise panic with message `msg`.
+func ensure(b bool, msg string) {
+	if !b {
+		panic(msg)
 	}
 }
 
@@ -68,11 +68,15 @@ func is_testing() bool {
 	return strings.HasSuffix(os.Args[0], ".test")
 }
 
+// "title case" => "Title Case"
+// `strings.ToTitle` behaves strangely and isn't safe with unicode.
 func title_case(s string) string {
 	caser := cases.Title(language.English)
 	return caser.String(s)
 }
 
+// returns just the unique items in `list`.
+// order is preserved.
 func unique[T comparable](list []T) []T {
 	idx := make(map[T]bool)
 	var result []T
@@ -86,6 +90,7 @@ func unique[T comparable](list []T) []T {
 	return result
 }
 
+// pretty-print a json blob
 func quick_json(blob string) string {
 	// convert into a simple map then
 	var foo map[string]any
@@ -99,21 +104,23 @@ func quick_json(blob string) string {
 	return string(b)
 }
 
+// pretty-print any `thing`.
 func pprint(thing any) {
 	s, _ := json.MarshalIndent(thing, "", "\t")
 	fmt.Println(string(s))
 }
 
-func in_range(v, s, e int) bool {
-	return v >= s && v <= e
+// returns true if `i` is within the `lower` and `upper` bounds (inclusive).
+func in_range(i, lower, upper int) bool {
+	return i >= lower && i <= upper
 }
 
-// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'
+// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'.
 func long_rfc3339(ts time.Time) string {
 	return strings.TrimSuffix(ts.Format(time.RFC3339), "Z") + "+00:00"
 }
 
-// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'
+// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'.
 func long_rfc3339_string(ts string) string {
 	return strings.TrimSuffix(ts, "Z") + "+00:00"
 }
@@ -121,20 +128,20 @@ func long_rfc3339_string(ts string) string {
 // --- structs
 
 type CLI struct {
-	In            string
-	LogLevelLabel string
-	LogLevel      slog.Level
+	In              string
+	LogLevelLabel   string
+	LogLevel        slog.Level
+	UseExpiredCache bool
 }
 
 // global state, see `STATE`
 type State struct {
-	CWD          string
-	GithubToken  string             // Github credentials, pulled from ENV
-	Client       *http.Client       // shared HTTP client for persistent connections
-	Schema       *jsonschema.Schema // validate release.json files
-	CLI          CLI                // captures args passed in from the command line
-	RunStart     time.Time          // time app started
-	ExpireCaches bool               // global toggle for caching
+	CWD         string
+	GithubToken string             // Github credentials, pulled from ENV
+	Client      *http.Client       // shared HTTP client for persistent connections
+	Schema      *jsonschema.Schema // validate release.json files
+	CLI         CLI                // captures args passed in from the command line
+	RunStart    time.Time          // time app started
 }
 
 // type alias for the WoW 'flavor'
@@ -224,11 +231,11 @@ type GithubRelease struct {
 type Project struct {
 	Name           string // AdiBags
 	FullName       string // AdiAddons/AdiBags
-	URL            string
+	URL            string // https://github/AdiAddons/AdiBags
 	Description    string
 	UpdatedDate    string
 	FlavorList     []Flavor
-	ProjectIDMap   map[string]string
+	ProjectIDMap   map[string]string // {"x-wowi-id": "foobar", ...}
 	HasReleaseJSON bool
 	LastSeenDate   string
 }
@@ -249,6 +256,7 @@ func ProjectCSVHeader() []string {
 	}
 }
 
+// create a Project from a csv `row`.
 func ProjectFromCSVRow(row []string) Project {
 	project_id_map := map[string]string{
 		"curse_id": row[6],
@@ -271,7 +279,8 @@ func ProjectFromCSVRow(row []string) Project {
 	}
 }
 
-func (p Project) CSVRecord() []string {
+// create a csv row from a Project `p`.
+func ProjectToCSVRow(p Project) []string {
 	return []string{
 		p.Name,
 		p.FullName,
@@ -348,7 +357,7 @@ func throttled(resp ResponseWrapper) bool {
 
 // inspects HTTP response `resp` and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
-	default_pause := float64(10) // seconds
+	default_pause := float64(5) // seconds.
 	pause := default_pause
 
 	// inspect cache to see an example of this value
@@ -369,8 +378,10 @@ func wait(resp ResponseWrapper) {
 			}
 		}
 	}
-	slog.Info(fmt.Sprintf("throttled, waiting %vs", pause))
-	time.Sleep(time.Duration(pause) * time.Second)
+	if pause > 0 {
+		slog.Info("throttled", "pause", pause)
+		time.Sleep(time.Duration(pause) * time.Second)
+	}
 }
 
 // logs whether the HTTP request's underlying TCP connection was re-used.
@@ -476,8 +487,7 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 // assumes `path` exists.
 // returns `true` when an error occurs stat'ing `path`.
 func cache_expired(path string) bool {
-	if !STATE.ExpireCaches {
-		// global toggle is on
+	if STATE.CLI.UseExpiredCache {
 		return false
 	}
 
@@ -1313,7 +1323,7 @@ func write_csv(project_list []Project) {
 	w := csv.NewWriter(os.Stdout)
 	w.Write(ProjectCSVHeader())
 	for _, p := range project_list {
-		w.Write(p.CSVRecord())
+		w.Write(ProjectToCSVRow(p))
 	}
 	w.Flush()
 }
@@ -1372,8 +1382,7 @@ func configure_validator() *jsonschema.Schema {
 
 func init_state() *State {
 	state := &State{
-		RunStart:     time.Now(),
-		ExpireCaches: false, // just while developing
+		RunStart: time.Now(),
 	}
 
 	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
@@ -1408,6 +1417,7 @@ func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
 	flag.StringVar(&cli.In, "in", "", "path to extant addons.csv file. input is merged with results")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
+	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.Parse()
 
 	if cli.In != "" {

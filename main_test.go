@@ -38,3 +38,18 @@ func Test_is_excluded(t *testing.T) {
 		assert.Equal(t, expected, actual)
 	}
 }
+
+func Test_title_case(t *testing.T) {
+	cases := map[string]string{
+		"":           "",
+		"title case": "Title Case",
+		"Title case": "Title Case",
+		"Title Case": "Title Case",
+		"title-case": "Title-Case",
+		"title_case": "Title_case",
+		"TITLE CASE": "Title Case",
+	}
+	for given, expected := range cases {
+		assert.Equal(t, expected, title_case(given))
+	}
+}
