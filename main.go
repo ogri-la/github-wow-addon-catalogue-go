@@ -115,16 +115,6 @@ func in_range(i, lower, upper int) bool {
 	return i >= lower && i <= upper
 }
 
-// replaces the trailing 'Z' in a RFC3339 timestamp with the longer '+00:00'.
-func long_rfc3339(ts time.Time) string {
-	return strings.TrimSuffix(ts.Format(time.RFC3339), "Z") + "+00:00"
-}
-
-// replaces the trailing 'Z' in a RFC3339 string with the longer '+00:00'.
-func long_rfc3339_string(ts string) string {
-	return strings.TrimSuffix(ts, "Z") + "+00:00"
-}
-
 func path_exists(path string) bool {
 	_, err := os.Stat(path)
 	return !errors.Is(err, os.ErrNotExist)
@@ -231,7 +221,7 @@ type GithubReleaseAsset struct {
 type GithubRelease struct {
 	Name            string               `json:"name"` // "2.2.2"
 	AssetList       []GithubReleaseAsset `json:"assets"`
-	PublishedAtDate string               `json:"published_at"`
+	PublishedAtDate time.Time            `json:"published_at"`
 }
 
 // what we'll render out
@@ -241,11 +231,11 @@ type Project struct {
 	FullName       string // AdiAddons/AdiBags
 	URL            string // https://github/AdiAddons/AdiBags
 	Description    string
-	UpdatedDate    string
+	UpdatedDate    time.Time
 	FlavorList     []Flavor
 	ProjectIDMap   map[string]string // {"x-wowi-id": "foobar", ...}
 	HasReleaseJSON bool
-	LastSeenDate   string
+	LastSeenDate   time.Time
 }
 
 func ProjectCSVHeader() []string {
@@ -272,6 +262,13 @@ func ProjectFromCSVRow(row []string) Project {
 		slog.Error("failed to convert 'id' value in CSV to an integer", "row", row, "val", row[0], "error", err)
 		fatal()
 	}
+
+	updated_date, err := time.Parse(time.RFC3339, row[5])
+	if err != nil {
+		slog.Error("failed to convert 'date_updated' value in CSV to an RFC3339 timestamp", "value", row[5], "error", err)
+		fatal()
+	}
+
 	flavor_list := strings.Split(row[6], ",")
 	project_id_map := map[string]string{
 		"curse_id": row[7],
@@ -280,44 +277,43 @@ func ProjectFromCSVRow(row []string) Project {
 	}
 	has_release_json := row[10] == "True"
 
+	last_seen, err := time.Parse(time.RFC3339, row[11])
+	if err != nil {
+		slog.Error("failed to convert 'last_seen' value in CSV to an RFC3339 timestamp", "value", row[11], "error", err)
+		fatal()
+	}
+	// whatever offset was given, convert it to UTC
+	last_seen = last_seen.UTC()
+
 	return Project{
 		ID:             id,
 		Name:           row[1],
 		FullName:       row[2],
 		URL:            row[3],
 		Description:    row[4],
-		UpdatedDate:    row[5],
+		UpdatedDate:    updated_date,
 		FlavorList:     flavor_list,
 		ProjectIDMap:   project_id_map,
 		HasReleaseJSON: has_release_json,
-		LastSeenDate:   row[11],
+		LastSeenDate:   last_seen,
 	}
 }
 
 // read a Project struct `p` and return a csv row.
 func ProjectToCSVRow(p Project) []string {
-
-	// todo: switch LastSeenDate to a timestamp and preserve unnecessary precision here for sake of consistency with original
-	// 'last_seen' date has unnecessary precision, trim it off.
-	last_seen := p.LastSeenDate
-	last_seen_bits := strings.Split(last_seen, ".")
-	if len(last_seen_bits) == 2 {
-		last_seen = last_seen_bits[0] + "+00:00"
-	}
-
 	return []string{
 		strconv.Itoa(p.ID),
 		p.Name,
 		p.FullName,
 		p.URL,
 		p.Description,
-		p.UpdatedDate,
+		p.UpdatedDate.Format(time.RFC3339),
 		strings.Join(p.FlavorList, ","),
 		p.ProjectIDMap["x-curse-project-id"],
 		p.ProjectIDMap["x-wago-id"],
 		p.ProjectIDMap["x-wowi-id"],
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
-		last_seen,
+		p.LastSeenDate.Format(time.RFC3339),
 	}
 }
 
@@ -1136,10 +1132,10 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		Name:           repo.Name,
 		URL:            repo.HTMLURL,
 		Description:    repo.Description,
-		UpdatedDate:    long_rfc3339_string(latest_github_release.PublishedAtDate),
+		UpdatedDate:    latest_github_release.PublishedAtDate,
 		FlavorList:     flavors,
 		HasReleaseJSON: release_dot_json != nil,
-		LastSeenDate:   long_rfc3339(time.Now().UTC()),
+		LastSeenDate:   STATE.RunStart,
 		ProjectIDMap:   project_id_map,
 	}
 	return project, nil
@@ -1425,7 +1421,7 @@ func configure_validator() *jsonschema.Schema {
 
 func init_state() *State {
 	state := &State{
-		RunStart: time.Now(),
+		RunStart: time.Now().UTC(),
 	}
 
 	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
