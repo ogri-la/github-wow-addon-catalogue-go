@@ -110,9 +110,10 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
-// returns true if `i` is within the `lower` and `upper` bounds (inclusive).
+// returns true if `i` is greater than or equal to the lower bound,
+// and not higher than the upper bound.
 func in_range(i, lower, upper int) bool {
-	return i >= lower && i <= upper
+	return i >= lower && i < upper
 }
 
 func path_exists(path string) bool {
@@ -123,13 +124,15 @@ func path_exists(path string) bool {
 // --- structs
 
 type CLI struct {
-	InputFile       string
-	InputFileExt    string
-	OutputFile      string
-	OutputFileExt   string
-	LogLevelLabel   string
-	LogLevel        slog.Level
-	UseExpiredCache bool
+	InputFile           string
+	InputFileExt        string
+	OutputFile          string
+	OutputFileExt       string
+	LogLevelLabel       string
+	LogLevel            slog.Level
+	UseExpiredCache     bool
+	FilterPattern       string
+	FilterPatternRegexp *regexp.Regexp
 }
 
 // global state, see `STATE`
@@ -162,6 +165,7 @@ var FlavorList = []Flavor{
 var FlavorAliasMap = map[string]Flavor{
 	"vanilla": ClassicFlavor,
 	"tbc":     BCCFlavor,
+	"wotlk":   WrathFlavor,
 	"wotlkc":  WrathFlavor,
 }
 
@@ -826,10 +830,6 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 			slog.Debug("toc", "key", key, "val", val, "filename", filename)
 			interesting_lines[key] = val
 		}
-		if strings.TrimSpace(line) == "" {
-			// we've come to the end of the key=vals
-			break
-		}
 	}
 	return interesting_lines, nil
 }
@@ -844,7 +844,7 @@ func toc_filename_regexp() *regexp.Regexp {
 		flavor_list = append(flavor_list, flavor_alias)
 	}
 	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[^-]+)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w-_.]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
 	return regexp.MustCompile(pattern)
 }
 
@@ -889,8 +889,19 @@ func is_toc_file(zip_file_entry string) bool {
 		return false
 	}
 	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo"
-	filename, _ := parse_toc_filename(rest)
-	return prefix == filename && filename != ""
+	filename, flavor := parse_toc_filename(rest)
+	slog.Debug("zip file entry", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match?", filename, "flavor?", flavor)
+	if filename != "" {
+		if prefix == filename {
+			return true
+		} else {
+			if strings.EqualFold(prefix, filename) {
+				slog.Warn("mixed filename casing", "prefix", prefix, "filename", filename)
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // "30403" => "wrath"
@@ -920,6 +931,10 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	toc_file_map, err := github_zip_download(asset_url, is_toc_file)
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to process remote zip file: %w", err)
+	}
+
+	if len(toc_file_map) == 0 {
+		slog.Warn("no .toc files found in .zip asset", "url", asset_url)
 	}
 
 	selected_key_vals := map[string]string{}
@@ -953,6 +968,10 @@ func extract_game_flavors_from_tocs(release_archive_list []GithubReleaseAsset) (
 		if err != nil {
 			slog.Error("failed to process remote zip file", "error", err)
 			continue
+		}
+
+		if len(toc_file_map) == 0 {
+			slog.Warn("no .toc files found in .zip asset", "url", release_archive.BrowserDownloadURL)
 		}
 
 		for toc_filename, toc_contents := range toc_file_map {
@@ -1288,9 +1307,19 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	return results
 }
 
-func is_excluded(repo_fullname string) (string, bool) {
+func is_excluded(blacklist map[string]bool, filter *regexp.Regexp, repo_fullname string) (string, bool) {
+
+	// first, check repo against any given regexp.
+	if filter != nil {
+		// if the repo name doesn't match the filter pattern, the repo is excluded.
+		if !filter.MatchString(repo_fullname) {
+			return filter.String(), true
+		}
+	}
+
+	// then, check against the blacklist
 	repo_fullname_lower := strings.ToLower(repo_fullname)
-	for prefix := range REPO_EXCLUDES {
+	for prefix := range blacklist {
 		prefix_lower := strings.ToLower(prefix) // wasteful, I know
 		if strings.HasPrefix(repo_fullname_lower, prefix_lower) {
 			return prefix, true
@@ -1299,11 +1328,13 @@ func is_excluded(repo_fullname string) (string, bool) {
 	return "", false
 }
 
+var WARNED = map[string]bool{}
+
 // searches Github for addon repositories,
 // converts results to `GithubRepo` structs,
 // de-duplicates and sorts results,
 // returns a set of unique `GithubRepo` structs.
-func get_projects() []GithubRepo {
+func get_projects(filter *regexp.Regexp) []GithubRepo {
 	repo_idx := map[int]GithubRepo{}
 	search_list := [][]string{
 		// order is important.
@@ -1322,9 +1353,13 @@ func get_projects() []GithubRepo {
 		endpoint, query := pair[0], pair[1]
 		search_results := search_github(endpoint, query)
 		for _, repo := range search_results_to_struct_list(search_results) {
-			pattern, excluded := is_excluded(repo.FullName)
+			pattern, excluded := is_excluded(REPO_EXCLUDES, filter, repo.FullName)
 			if excluded {
-				slog.Warn("repository is blacklisted", "repo", repo.FullName, "pattern", pattern)
+				_, present := WARNED[repo.FullName]
+				if !present {
+					slog.Warn("repository is blacklisted", "repo", repo.FullName, "pattern", pattern)
+					WARNED[repo.FullName] = true
+				}
 			} else {
 				repo_idx[repo.ID] = repo
 			}
@@ -1507,6 +1542,7 @@ func read_cli_args(arg_list []string) CLI {
 	flag.StringVar(&cli.OutputFile, "out", "", "write results to file and not stdout")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
+	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
 	flag.Parse()
 
 	if cli.InputFile != "" {
@@ -1522,6 +1558,15 @@ func read_cli_args(arg_list []string) CLI {
 		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFile))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("output path has unsupported extension: %s", ext))
 		cli.OutputFileExt = ext
+	}
+
+	if cli.FilterPattern != "" {
+		pattern, err := regexp.Compile(cli.FilterPattern)
+		if err != nil {
+			slog.Error(fmt.Sprintf("filter could not be compiled to a regular expression: %v", err.Error()))
+			fatal()
+		}
+		cli.FilterPatternRegexp = pattern
 	}
 
 	log_level_label_map := map[string]slog.Level{
@@ -1564,7 +1609,7 @@ func main() {
 	}
 
 	slog.Info("searching for new projects")
-	github_repo_list := get_projects()
+	github_repo_list := get_projects(STATE.CLI.FilterPatternRegexp)
 	slog.Info("found projects", "num", len(github_repo_list))
 
 	slog.Info("parsing projects")
