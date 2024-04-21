@@ -32,96 +32,61 @@ import (
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/snabb/httpreaderat"
 	"github.com/tidwall/gjson"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 
 	bufra "github.com/avvmoto/buf-readerat"
 )
 
-// --- utils
+var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
+var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
 
-// cannot continue, exit immediately without a stacktrace.
-// just use `panic` if you do need a stracktrace.
-func fatal() {
-	fmt.Println("cannot continue")
-	os.Exit(1)
+// prevents issuing the same warning multiple times where going backwards and forwards
+// and upside down through the search results.
+var WARNED = map[string]bool{}
+
+var API_URL = "https://api.github.com"
+
+// case insensitive repository prefixes
+var REPO_BLACKLIST = map[string]bool{
+	"foo/": true, // dummy, for testing
+	//"ogri-la/elvui":                            true, // Mirror
+	//"ogri-la/tukui":                            true, // Mirror
+
+	"alchem1ster/AddOns-Update-Tool":           true, // Not an add-on
+	"alchem1ster/AddOnsFixer":                  true, // Not an add-on
+	"Aviana/":                                  true,
+	"BilboTheGreedy/Azerite":                   true, // Not an add-on
+	"blazer404/TargetCharmsRe":                 true, // Fork
+	"Centias/BankItems":                        true, // Fork
+	"DaMitchell/HelloWorld":                    true, // Dummy add-on
+	"dratr/BattlePetCount":                     true, // Fork
+	"gorilla-devs/":                            true, // Minecraft stuff
+	"HappyRot/AddOns":                          true, // Compilation
+	"hippuli/":                                 true, // Fork galore
+	"JsMacros/":                                true, // Minecraft stuff
+	"juraj-hrivnak/Underdog":                   true, // Minecraft stuff
+	"kamoo1/Kamoo-s-TSM-App":                   true, // Not an add-on
+	"Kirri777/WorldQuestsList":                 true, // Fork
+	"livepeer/":                                true, // Minecraft stuff
+	"lowlee/MikScrollingBattleText":            true, // Fork
+	"lowlee/MSBTOptions":                       true, // Fork
+	"MikeD89/KarazhanChess":                    true, // Hijacking BigWigs' TOC IDs, probably by accident
+	"Oppzippy/HuokanGoldLogger":                true, // Archived
+	"pinged-eu/wow-addon-helloworld":           true, // Dummy add-on
+	"rePublic-Studios/rPLauncher":              true, // Minecraft stuff
+	"smashedr/MethodAltManager":                true, // Fork
+	"szjunklol/Accountant":                     true, // Fork
+	"unix/curseforge-release":                  true, // Template
+	"unrealshape/AddOns":                       true, // Add-on compilation
+	"vicitafirea/InterfaceColors-Addon":        true, // Custom client add-on
+	"vicitafirea/TimeOfDayIndicator-AddOn":     true, // Custom client add-on
+	"vicitafirea/TurtleHardcoreMessages-AddOn": true, // Custom client add-on
+	"vicitafirea/WarcraftUI-UpperBar-AddOn":    true, // Custom client add-on
+	"wagyourtail/JsMacros":                     true, // More Minecraft stuff
+	"WowUp/WowUp":                              true, // Not an add-on
+	"ynazar1/Arh":                              true, // Fork
 }
-
-// when `b` is true, log error `msg` and die quietly.
-func die(b bool, msg string) {
-	if b {
-		slog.Error(msg)
-		fatal()
-	}
-}
-
-// assert `b` is true, otherwise panic with message `msg`.
-func ensure(b bool, msg string) {
-	if !b {
-		panic(msg)
-	}
-}
-
-// returns `true` if tests are being run.
-func is_testing() bool {
-	// https://stackoverflow.com/questions/14249217/how-do-i-know-im-running-within-go-test
-	return strings.HasSuffix(os.Args[0], ".test")
-}
-
-// "title case" => "Title Case"
-// `strings.ToTitle` behaves strangely and isn't safe with unicode.
-func title_case(s string) string {
-	caser := cases.Title(language.English)
-	return caser.String(s)
-}
-
-// returns just the unique items in `list`.
-// order is preserved.
-func unique[T comparable](list []T) []T {
-	idx := make(map[T]bool)
-	var result []T
-	for _, item := range list {
-		_, present := idx[item]
-		if !present {
-			idx[item] = true
-			result = append(result, item)
-		}
-	}
-	return result
-}
-
-// pretty-print a json blob
-func quick_json(blob string) string {
-	// convert into a simple map then
-	var foo map[string]any
-	json.Unmarshal([]byte(blob), &foo)
-
-	b, err := json.MarshalIndent(foo, "", "\t")
-	if err != nil {
-		slog.Error("failed to coerce string blob to json", "blob", blob, "error", err)
-		fatal()
-	}
-	return string(b)
-}
-
-// pretty-print any `thing`.
-func pprint(thing any) {
-	s, _ := json.MarshalIndent(thing, "", "\t")
-	fmt.Println(string(s))
-}
-
-// returns true if `i` is greater than or equal to the lower bound,
-// and not higher than the upper bound.
-func in_range(i, lower, upper int) bool {
-	return i >= lower && i < upper
-}
-
-func path_exists(path string) bool {
-	_, err := os.Stat(path)
-	return !errors.Is(err, os.ErrNotExist)
-}
-
-// --- structs
 
 type CLI struct {
 	InputFile           string
@@ -145,7 +110,10 @@ type State struct {
 	RunStart    time.Time          // time app started
 }
 
-// type alias for the WoW 'flavor'
+var STATE *State
+
+// type alias for the WoW 'flavor'.
+// TitleCase because these are *types*.
 type Flavor = string
 
 const (
@@ -157,19 +125,19 @@ const (
 )
 
 // all known flavours.
-var FlavorList = []Flavor{
+var FLAVOR_LIST = []Flavor{
 	MainlineFlavor, ClassicFlavor, BCCFlavor, WrathFlavor, CataFlavor,
 }
 
 // mapping of alias=>canonical flavour
-var FlavorAliasMap = map[string]Flavor{
+var FLAVOR_ALIAS_MAP = map[string]Flavor{
 	"vanilla": ClassicFlavor,
 	"tbc":     BCCFlavor,
 	"wotlk":   WrathFlavor,
 	"wotlkc":  WrathFlavor,
 }
 
-var interface_ranges_labels = []Flavor{
+var INTERFACE_RANGES_LABELS = []Flavor{
 	MainlineFlavor,
 	ClassicFlavor,
 	MainlineFlavor,
@@ -180,7 +148,7 @@ var interface_ranges_labels = []Flavor{
 	MainlineFlavor,
 }
 
-var interface_ranges = [][]int{
+var INTERFACE_RANGES = [][]int{
 	{1_00_00, 1_13_00},
 	{1_13_00, 2_00_00},
 	{2_00_00, 2_05_00},
@@ -277,9 +245,9 @@ func ProjectFromCSVRow(row []string) Project {
 
 	flavor_list := strings.Split(row[6], ",")
 	project_id_map := map[string]string{
-		"curse_id": row[7],
-		"wago_id":  row[8],
-		"wowi_id":  row[9],
+		"x-curse-project-id": row[7],
+		"x-wago-id":          row[8],
+		"x-wowi-id":          row[9],
 	}
 	has_release_json := row[10] == "True"
 
@@ -329,53 +297,6 @@ type ResponseWrapper struct {
 	Text  string
 }
 
-// -- globals
-
-var STATE *State
-
-var API_URL = "https://api.github.com"
-
-// case insensitive repository prefixes
-var REPO_EXCLUDES = map[string]bool{
-	"foo/": true, // dummy, for testing
-	//"ogri-la/elvui":                            true, // Mirror
-	//"ogri-la/tukui":                            true, // Mirror
-
-	"alchem1ster/AddOns-Update-Tool":           true, // Not an add-on
-	"alchem1ster/AddOnsFixer":                  true, // Not an add-on
-	"Aviana/":                                  true,
-	"BilboTheGreedy/Azerite":                   true, // Not an add-on
-	"blazer404/TargetCharmsRe":                 true, // Fork
-	"Centias/BankItems":                        true, // Fork
-	"DaMitchell/HelloWorld":                    true, // Dummy add-on
-	"dratr/BattlePetCount":                     true, // Fork
-	"gorilla-devs/":                            true, // Minecraft stuff
-	"HappyRot/AddOns":                          true, // Compilation
-	"hippuli/":                                 true, // Fork galore
-	"JsMacros/":                                true, // Minecraft stuff
-	"juraj-hrivnak/Underdog":                   true, // Minecraft stuff
-	"kamoo1/Kamoo-s-TSM-App":                   true, // Not an add-on
-	"Kirri777/WorldQuestsList":                 true, // Fork
-	"livepeer/":                                true, // Minecraft stuff
-	"lowlee/MikScrollingBattleText":            true, // Fork
-	"lowlee/MSBTOptions":                       true, // Fork
-	"MikeD89/KarazhanChess":                    true, // Hijacking BigWigs' TOC IDs, probably by accident
-	"Oppzippy/HuokanGoldLogger":                true, // Archived
-	"pinged-eu/wow-addon-helloworld":           true, // Dummy add-on
-	"rePublic-Studios/rPLauncher":              true, // Minecraft stuff
-	"smashedr/MethodAltManager":                true, // Fork
-	"szjunklol/Accountant":                     true, // Fork
-	"unix/curseforge-release":                  true, // Template
-	"unrealshape/AddOns":                       true, // Add-on compilation
-	"vicitafirea/InterfaceColors-Addon":        true, // Custom client add-on
-	"vicitafirea/TimeOfDayIndicator-AddOn":     true, // Custom client add-on
-	"vicitafirea/TurtleHardcoreMessages-AddOn": true, // Custom client add-on
-	"vicitafirea/WarcraftUI-UpperBar-AddOn":    true, // Custom client add-on
-	"wagyourtail/JsMacros":                     true, // More Minecraft stuff
-	"WowUp/WowUp":                              true, // Not an add-on
-	"ynazar1/Arh":                              true, // Fork
-}
-
 // --- http utils
 
 func throttled(resp ResponseWrapper) bool {
@@ -422,10 +343,6 @@ func trace_context() context.Context {
 }
 
 // --- caching
-
-var CACHE_DURATION = 24       // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2 // hours. how long cached *search* files should live for.
-var CACHE_DURATION_ZIP = -1   // hours. how long cached zipfile entries should live for.
 
 // returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 func cache_path(cache_key string) string {
@@ -531,13 +448,13 @@ func cache_expired(path string) bool {
 	case "-zip":
 		cache_duration_hrs = CACHE_DURATION_ZIP
 	case "-release.json":
-		cache_duration_hrs = CACHE_DURATION_ZIP
+		cache_duration_hrs = CACHE_DURATION_RELEASE_JSON
 	default:
 		cache_duration_hrs = CACHE_DURATION
 	}
 
 	if cache_duration_hrs == -1 {
-		return false // given `path` never expires
+		return false // cache at given `path` never expires
 	}
 
 	stat, err := os.Stat(path)
@@ -812,6 +729,12 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 // stops reading keyvals after the first blank line.
 func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error) {
 	slog.Info("parsing .toc file", "filename", filename)
+
+	toc_bytes, err := elide_bom(toc_bytes)
+	if err != nil {
+		slog.Warn("failed detecting/eliding BOM in toc file", "filename", filename, "error", err)
+	}
+
 	line_list := strings.Split(strings.ReplaceAll(string(toc_bytes), "\r\n", "\n"), "\n")
 	interesting_lines := map[string]string{}
 	for _, line := range line_list {
@@ -837,10 +760,10 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 // builds a regular expression to match .toc filenames and extract known flavors and aliases.
 func toc_filename_regexp() *regexp.Regexp {
 	flavor_list := []string{}
-	for _, flavor := range FlavorList {
+	for _, flavor := range FLAVOR_LIST {
 		flavor_list = append(flavor_list, string(flavor))
 	}
-	for flavor_alias := range FlavorAliasMap {
+	for flavor_alias := range FLAVOR_ALIAS_MAP {
 		flavor_list = append(flavor_list, flavor_alias)
 	}
 	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
@@ -866,7 +789,7 @@ func parse_toc_filename(filename string) (string, Flavor) {
 	if len(matches) == 3 {
 		// "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
 		flavor := strings.ToLower(matches[2])
-		actual_flavor, is_alias := FlavorAliasMap[flavor]
+		actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
 		if is_alias {
 			return matches[1], actual_flavor
 		}
@@ -911,9 +834,9 @@ func interface_number_to_flavor(interface_val string) (Flavor, error) {
 		return "", fmt.Errorf("failed to convert interface value to integer: %w", err)
 	}
 
-	for i, pair := range interface_ranges {
+	for i, pair := range INTERFACE_RANGES {
 		if in_range(interface_int, pair[0], pair[1]) {
-			return interface_ranges_labels[i], nil
+			return INTERFACE_RANGES_LABELS[i], nil
 		}
 	}
 
@@ -1207,9 +1130,8 @@ func search_github(endpoint string, search_query string) []string {
 	search_query = url.QueryEscape(search_query)
 
 	// sort and order the search results in different ways in an attempt to get at the addons not being returned.
-	// note! these are *deprecated*.
-	sort_list := []string{"created", "updated"}
-	order_by_list := []string{"asc", "desc"}
+	sort_list := []string{"created", "updated"} // note! these are *deprecated*.
+	order_by_list := []string{"asc", "desc"}    // note! also *deprecated*.
 	for _, order_by := range order_by_list {
 		for _, sort_by := range sort_list {
 			page := 1
@@ -1259,10 +1181,6 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 			slog.Error("failed to unmarshal 'code' search result to GithubRepo struct", "search-result", search_result, "error", err)
 			return repo, err
 		}
-
-		//fmt.Println("code")
-		//fmt.Println(quick_json(search_result))
-
 		return repo, nil
 	}
 
@@ -1272,10 +1190,6 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 		slog.Error("failed to unmarshal 'repository' search result to GithubRepo struct", "search-result", search_result, "error", err)
 		return repo, err
 	}
-
-	//fmt.Println("repo")
-	//fmt.Println(quick_json(search_result))
-
 	return repo, nil
 }
 
@@ -1307,6 +1221,8 @@ func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	return results
 }
 
+// a repository may be excluded because it is on a blacklist,
+// or because it doesn't match a user provided `filter`.
 func is_excluded(blacklist map[string]bool, filter *regexp.Regexp, repo_fullname string) (string, bool) {
 
 	// first, check repo against any given regexp.
@@ -1327,8 +1243,6 @@ func is_excluded(blacklist map[string]bool, filter *regexp.Regexp, repo_fullname
 	}
 	return "", false
 }
-
-var WARNED = map[string]bool{}
 
 // searches Github for addon repositories,
 // converts results to `GithubRepo` structs,
@@ -1353,11 +1267,11 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 		endpoint, query := pair[0], pair[1]
 		search_results := search_github(endpoint, query)
 		for _, repo := range search_results_to_struct_list(search_results) {
-			pattern, excluded := is_excluded(REPO_EXCLUDES, filter, repo.FullName)
+			pattern, excluded := is_excluded(REPO_BLACKLIST, filter, repo.FullName)
 			if excluded {
 				_, present := WARNED[repo.FullName]
 				if !present {
-					slog.Warn("repository is blacklisted", "repo", repo.FullName, "pattern", pattern)
+					slog.Warn("repository blacklisted", "repo", repo.FullName, "pattern", pattern)
 					WARNED[repo.FullName] = true
 				}
 			} else {
@@ -1583,7 +1497,7 @@ func read_cli_args(arg_list []string) CLI {
 }
 
 func init() {
-	ensure(len(interface_ranges_labels) == len(interface_ranges), "interface ranges are not equal interface range labels")
+	ensure(len(INTERFACE_RANGES_LABELS) == len(INTERFACE_RANGES), "interface ranges are not equal to interface range labels")
 	if is_testing() {
 		return
 	}
