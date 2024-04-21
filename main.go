@@ -50,9 +50,14 @@ var API_URL = "https://api.github.com"
 // case insensitive repository prefixes
 var REPO_BLACKLIST = map[string]bool{
 	"foo/": true, // dummy, for testing
+
+	// mine
+	"WOWRainbowUI/RainbowUI-Retail": true, // addon bundle, very large, incorrect filestructure
+	"WOWRainbowUI/RainbowUI-Era":    true, // addon bundle, very large, incorrect filestructure
+
+	// layday's blacklist
 	//"ogri-la/elvui":                            true, // Mirror
 	//"ogri-la/tukui":                            true, // Mirror
-
 	"alchem1ster/AddOns-Update-Tool":           true, // Not an add-on
 	"alchem1ster/AddOnsFixer":                  true, // Not an add-on
 	"Aviana/":                                  true,
@@ -426,6 +431,10 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
 }
 
+func remove_cache_entry(cache_key string) error {
+	return os.Remove(cache_path(cache_key))
+}
+
 // returns true if the given `path` hasn't been modified for a certain duration.
 // different paths have different durations.
 // assumes `path` exists.
@@ -624,6 +633,17 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	cached_zip_file, err := read_zip_cache_entry(cache_key)
 	if err == nil {
 		slog.Debug("HTTP GET .zip cache HIT", "url", url, "cache-path", cache_path(cache_key))
+
+		/*
+			if len(cached_zip_file) == 0 {
+				err = remove_cache_entry(cache_key)
+				if err != nil {
+					slog.Error("failed to remove cache entry", "cache-path", cache_path(cache_key))
+				}
+			} else {
+				return cached_zip_file, nil
+			}
+		*/
 		return cached_zip_file, nil
 	}
 
@@ -741,7 +761,7 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 		if strings.HasPrefix(line, "##") {
 			bits := strings.SplitN(line, ":", 2)
 			if len(bits) != 2 {
-				slog.Warn("ignoring line in .toc file, key has no value", "filename", filename, "line", line)
+				slog.Debug("ignoring line in .toc file, key has no value", "filename", filename, "line", line)
 				continue
 			}
 			key, val := bits[0], bits[1]
@@ -757,6 +777,41 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 	return interesting_lines, nil
 }
 
+// searches given string `v` for a game track.
+// it's pretty unsophisticated, be careful.
+func flavor_regexp() *regexp.Regexp {
+	flavor_list := []string{}
+	for _, flavor := range FLAVOR_LIST {
+		flavor_list = append(flavor_list, string(flavor))
+	}
+	for flavor_alias := range FLAVOR_ALIAS_MAP {
+		flavor_list = append(flavor_list, flavor_alias)
+	}
+	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
+	pattern := fmt.Sprintf(`(?i)(?P<flavor>%s)`, flavors)
+	return regexp.MustCompile(pattern)
+}
+
+// searches given string `v` for a game track.
+// it's pretty unsophisticated, be careful.
+// returns the flavor that was matched and it's canonical value.
+func guess_game_track(v string) (string, Flavor) {
+	matches := FLAVOR_REGEXP.FindStringSubmatch(v)
+
+	if len(matches) == 2 {
+		// "Foo-Vanilla" => [Foo-Vanilla Vanilla]
+		flavor := strings.ToLower(matches[1])
+		actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
+		if is_alias {
+			return matches[1], actual_flavor
+		}
+		return matches[1], Flavor(flavor)
+	}
+	return "", ""
+}
+
+var FLAVOR_REGEXP = flavor_regexp()
+
 // builds a regular expression to match .toc filenames and extract known flavors and aliases.
 func toc_filename_regexp() *regexp.Regexp {
 	flavor_list := []string{}
@@ -767,7 +822,7 @@ func toc_filename_regexp() *regexp.Regexp {
 		flavor_list = append(flavor_list, flavor_alias)
 	}
 	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w-_.]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w-_. ]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
 	return regexp.MustCompile(pattern)
 }
 
@@ -813,13 +868,36 @@ func is_toc_file(zip_file_entry string) bool {
 	}
 	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo"
 	filename, flavor := parse_toc_filename(rest)
-	slog.Debug("zip file entry", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match?", filename, "flavor?", flavor)
+	slog.Debug("zip file entry", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match", filename, "flavor", flavor)
 	if filename != "" {
 		if prefix == filename {
+			// perfect
 			return true
 		} else {
 			if strings.EqualFold(prefix, filename) {
-				slog.Warn("mixed filename casing", "prefix", prefix, "filename", filename)
+				// less perfect
+				slog.Debug("mixed filename casing", "prefix", prefix, "filename", filename)
+				return true
+			}
+
+			// edge cases: bundles, where a release contains multiple other addons but none it's own.
+			// WOWRainbowUI/RainbowUI-Era
+			// WOWRainbowUI/RainbowUI-Retail
+
+			// edge case: BetterZoneStats-v1.0/BetterZoneStats.toc
+			// addon name has suffix '-v1.0' which doesn't match the .toc is_toc_file
+			// improperly structured release, won't fix.
+
+			// edge case: addon name contains flavour: "JadeUI-Classic/JadeUI-Classic.toc"
+			// prefix: "JadeUI-Classic"
+			// rest:   "JadeUI-Classic.toc"
+			// filename: "JadeUI"
+			// flavor: "classic"
+
+			// shortcoming in my code, this hack helps
+			prefix_match, prefix_flavor := guess_game_track(prefix)
+			if prefix_match != "" && prefix_flavor == flavor {
+				slog.Warn("edge case, addon name contains flavour", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match", filename, "flavor", flavor)
 				return true
 			}
 		}
@@ -857,7 +935,7 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	}
 
 	if len(toc_file_map) == 0 {
-		slog.Warn("no .toc files found in .zip asset", "url", asset_url)
+		slog.Warn("no .toc files found in .zip asset while extracting project ids", "url", asset_url)
 	}
 
 	selected_key_vals := map[string]string{}
@@ -894,7 +972,7 @@ func extract_game_flavors_from_tocs(release_archive_list []GithubReleaseAsset) (
 		}
 
 		if len(toc_file_map) == 0 {
-			slog.Warn("no .toc files found in .zip asset", "url", release_archive.BrowserDownloadURL)
+			slog.Warn("no .toc files found in .zip asset while extracting game flavours", "url", release_archive.BrowserDownloadURL)
 		}
 
 		for toc_filename, toc_contents := range toc_file_map {
@@ -1271,7 +1349,7 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 			if excluded {
 				_, present := WARNED[repo.FullName]
 				if !present {
-					slog.Warn("repository blacklisted", "repo", repo.FullName, "pattern", pattern)
+					slog.Debug("repository blacklisted", "repo", repo.FullName, "pattern", pattern)
 					WARNED[repo.FullName] = true
 				}
 			} else {

@@ -36,6 +36,9 @@ func Test_parse_toc_filename(t *testing.T) {
 		"Foo-1.0-wotlkc.toc": {"Foo-1.0", WrathFlavor},
 
 		"Foo-1.0-cata.toc": {"Foo-1.0", CataFlavor},
+
+		// bit of an edgecase, filename has a space in it.
+		"Loot-A-Rang Matic Reforged.toc": {"Loot-A-Rang Matic Reforged", ""},
 	}
 	for given, expected := range cases {
 		actual_filename, actual_flavor := parse_toc_filename(given)
@@ -64,6 +67,14 @@ func Test_is_toc_file(t *testing.T) {
 		// case insensitive
 		"Foo/Foo-WRATH.toc": true,
 		"Foo/Foo-WrAtH.ToC": true,
+
+		// addon name contain itself contains a game track (Classic)
+		"JadeUI-Classic/JadeUI-Classic.toc": true,
+		"JadeUI-Vanilla/JadeUI-Vanilla.toc": true,
+		"JadeUI-Vanilla/JadeUI-Classic.toc": true, // works because flavors coerced from aliases
+
+		// space in name
+		"Loot-A-Rang Matic Reforged/Loot-A-Rang Matic Reforged.toc": true,
 	}
 	for given, expected := range cases {
 		assert.Equal(t, expected, is_toc_file(given), given)
@@ -120,5 +131,22 @@ func Test_interface_number_to_flavor(t *testing.T) {
 		actual, err := interface_number_to_flavor(interface_number)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, actual)
+	}
+}
+
+func Test_guess_game_track(t *testing.T) {
+	cases := map[string][]string{
+		"":              {"", ""},
+		"foo":           {"", ""},
+		"classic":       {"classic", ClassicFlavor},
+		"vanilla":       {"vanilla", ClassicFlavor},
+		"fooclassicbar": {"classic", ClassicFlavor},
+		"foovanillabar": {"vanilla", ClassicFlavor},
+	}
+	for given, expected := range cases {
+		expected_match, expected_flavor := expected[0], expected[1]
+		actual_match, actual_flavor := guess_game_track(given)
+		assert.Equal(t, expected_match, actual_match)
+		assert.Equal(t, expected_flavor, actual_flavor)
 	}
 }
