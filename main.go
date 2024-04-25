@@ -172,8 +172,16 @@ var INTERFACE_RANGES = [][]int{
 }
 
 // returns a single list of unique, sorted, `Flavor` strings.
-func uniqe_sorted_flavor_list(fll ...[]Flavor) []Flavor {
-	flavor_list := unique(flatten(fll...))
+func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
+	flavor_list := flatten(fll...)
+	for i, flavor := range flavor_list {
+		flavor := strings.ToLower(flavor)
+		actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
+		if is_alias {
+			flavor_list[i] = actual_flavor
+		}
+	}
+	flavor_list = unique(flavor_list)
 	sort.Slice(flavor_list, func(i, j int) bool {
 		return FLAVOR_WEIGHTS[flavor_list[i]] < FLAVOR_WEIGHTS[flavor_list[j]]
 	})
@@ -264,7 +272,7 @@ func project_from_csv_row(row []string) Project {
 		fatal()
 	}
 
-	flavor_list := strings.Split(row[6], ",")
+	flavor_list := unique_sorted_flavor_list(strings.Split(row[6], ","))
 	project_id_map := map[string]string{
 		"x-curse-project-id": row[7],
 		"x-wago-id":          row[8],
@@ -314,7 +322,7 @@ func project_to_csv_row(p Project) []string {
 
 // business logic for merging two Project structs.
 func merge_projects(old, new Project) Project {
-	new.FlavorList = uniqe_sorted_flavor_list(old.FlavorList, new.FlavorList)
+	new.FlavorList = unique_sorted_flavor_list(old.FlavorList, new.FlavorList)
 	return new
 }
 
@@ -799,8 +807,8 @@ func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error
 	return interesting_lines, nil
 }
 
-// searches given string `v` for a game track.
-// it's pretty unsophisticated, be careful.
+// returns a regular expression that matches against any known flavor.
+// ignores word boundaries.
 func flavor_regexp() *regexp.Regexp {
 	flavor_list := []string{}
 	for _, flavor := range FLAVOR_LIST {
@@ -858,7 +866,6 @@ var TOC_FILENAME_REGEXP = toc_filename_regexp()
 // when filename cannot be parsed, both values are empty.
 func parse_toc_filename(filename string) (string, Flavor) {
 	matches := TOC_FILENAME_REGEXP.FindStringSubmatch(filename)
-
 	if len(matches) == 2 {
 		// "Bar.toc" => [Bar.toc Bar]
 		return matches[1], ""
@@ -866,11 +873,7 @@ func parse_toc_filename(filename string) (string, Flavor) {
 	if len(matches) == 3 {
 		// "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
 		flavor := strings.ToLower(matches[2])
-		actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
-		if is_alias {
-			return matches[1], actual_flavor
-		}
-		return matches[1], Flavor(flavor)
+		return matches[1], flavor
 	}
 	return "", ""
 }
@@ -1053,23 +1056,22 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 		return nil, fmt.Errorf("failed to parse release.json as JSON: %w", err)
 	}
 
-	// todo: coerce any values.
-	// for example, alias to canonical
-
 	// coerce game flavor values
-	for i, entry := range release_dot_json.ReleaseJsonEntryList {
-		for j, meta := range entry.Metadata {
-			flavor := strings.ToLower(meta.Flavor)
-			actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
-			if is_alias {
-				meta.Flavor = actual_flavor
+	// works but is unnecessary. flavors pulled from the release.json are normalised before output.
+	/*
+		for i, entry := range release_dot_json.ReleaseJsonEntryList {
+			for j, meta := range entry.Metadata {
+				actual_flavor, is_alias := FLAVOR_ALIAS_MAP[meta.Flavor]
+				if is_alias {
+					meta.Flavor = actual_flavor
+				}
+				release_dot_json.ReleaseJsonEntryList[i].Metadata[j] = meta
 			}
-			release_dot_json.ReleaseJsonEntryList[i].Metadata[j] = meta
+			release_dot_json.ReleaseJsonEntryList[i] = entry
 		}
-		release_dot_json.ReleaseJsonEntryList[i] = entry
-	}
+	*/
 
-	// ...
+	// ... anything else?
 
 	return &release_dot_json, nil
 }
@@ -1185,7 +1187,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
-	flavor_list = uniqe_sorted_flavor_list(flavor_list)
+	flavor_list = unique_sorted_flavor_list(flavor_list)
 
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
 
@@ -1661,6 +1663,9 @@ func main() {
 		for _, project := range project_list {
 			old_project, present := project_idx[project.ID]
 			if present {
+				// future: new problem, old and unsupported flavors accumulating.
+				// perhaps identify addons that are doing a release per-version-per-flavor and
+				// fetch N (number of flavors) releases of theirs at once?
 				project = merge_projects(old_project, project)
 			}
 			project_idx[project.ID] = project
