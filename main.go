@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -121,8 +122,10 @@ var STATE *State
 // TitleCase because these are *types*.
 type Flavor = string
 
-// https://wowpedia.fandom.com/wiki/TOC_format
-// https://github.com/Stanzilla/WoWUIBugs/issues/68#issuecomment-889431675
+// "For avoidance of doubt, these are all the file name formats presently supported on all clients and the order that each client will attempt to load them in currently.
+// On the wiki we're recommending that people use a single specific suffix for each client for overall consistency, which corresponds to the first file in each sub-list below and is the format used by Blizzard."
+// - https://github.com/Stanzilla/WoWUIBugs/issues/68#issuecomment-889431675
+// - https://wowpedia.fandom.com/wiki/TOC_format
 const (
 	MainlineFlavor Flavor = "mainline"
 	VanillaFlavor  Flavor = "vanilla"
@@ -142,6 +145,14 @@ var FLAVOR_ALIAS_MAP = map[string]Flavor{
 	"bcc":     TBCFlavor,
 	"wotlk":   WrathFlavor,
 	"wotlkc":  WrathFlavor,
+}
+
+var FLAVOR_WEIGHTS = map[Flavor]int{
+	MainlineFlavor: 0,
+	VanillaFlavor:  1,
+	TBCFlavor:      2,
+	WrathFlavor:    3,
+	CataFlavor:     4,
 }
 
 var INTERFACE_RANGES_LABELS = []Flavor{
@@ -1050,6 +1061,19 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 	// todo: coerce any values.
 	// for example, alias to canonical
 
+	// coerce game flavor values
+	for i, entry := range release_dot_json.ReleaseJsonEntryList {
+		for j, meta := range entry.Metadata {
+			flavor := strings.ToLower(meta.Flavor)
+			actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
+			if is_alias {
+				meta.Flavor = actual_flavor
+			}
+			release_dot_json.ReleaseJsonEntryList[i].Metadata[j] = meta
+		}
+		release_dot_json.ReleaseJsonEntryList[i] = entry
+	}
+
 	// ...
 
 	return &release_dot_json, nil
@@ -1167,7 +1191,9 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	}
 
 	flavor_list = unique(flavor_list)
-	slices.Sort(flavor_list)
+	sort.Slice(flavor_list, func(i, j int) bool {
+		return FLAVOR_WEIGHTS[flavor_list[i]] < FLAVOR_WEIGHTS[flavor_list[j]]
+	})
 
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
 
