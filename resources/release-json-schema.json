@@ -3,10 +3,10 @@
     "type": "object",
     "definitions": {
         "flavor": {
-            "enum": ["mainline", "classic", "bcc", "wrath", "cata"]
+            "enum": ["mainline", "vanilla", "tbc", "wrath", "cata"]
         },
         "flavor-alias": {
-            "enum": ["vanilla", "tbc", "wotlkc"]
+            "enum": ["classic", "bcc", "wotlk", "wotlkc"]
         }
     },
     "properties": {
