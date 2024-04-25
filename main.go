@@ -121,47 +121,63 @@ var STATE *State
 // TitleCase because these are *types*.
 type Flavor = string
 
+// https://wowpedia.fandom.com/wiki/TOC_format
+// https://github.com/Stanzilla/WoWUIBugs/issues/68#issuecomment-889431675
 const (
 	MainlineFlavor Flavor = "mainline"
-	ClassicFlavor  Flavor = "classic"
-	BCCFlavor      Flavor = "bcc"
+	VanillaFlavor  Flavor = "vanilla"
+	TBCFlavor      Flavor = "tbc"
 	WrathFlavor    Flavor = "wrath"
 	CataFlavor     Flavor = "cata"
 )
 
 // all known flavours.
 var FLAVOR_LIST = []Flavor{
-	MainlineFlavor, ClassicFlavor, BCCFlavor, WrathFlavor, CataFlavor,
+	MainlineFlavor, VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor,
 }
 
 // mapping of alias=>canonical flavour
 var FLAVOR_ALIAS_MAP = map[string]Flavor{
-	"vanilla": ClassicFlavor,
-	"tbc":     BCCFlavor,
+	"classic": VanillaFlavor,
+	"bcc":     TBCFlavor,
 	"wotlk":   WrathFlavor,
 	"wotlkc":  WrathFlavor,
 }
 
 var INTERFACE_RANGES_LABELS = []Flavor{
-	MainlineFlavor,
-	ClassicFlavor,
-	MainlineFlavor,
-	BCCFlavor,
-	MainlineFlavor,
+	VanillaFlavor,
+	TBCFlavor,
 	WrathFlavor,
 	CataFlavor,
 	MainlineFlavor,
+
+	// might be technically correct, but it's a faff and causing mislabelling.
+	//MainlineFlavor,
+	//ClassicFlavor,
+	//MainlineFlavor,
+	//TBCFlavor,
+	//MainlineFlavor,
+	//WrathFlavor,
+	//CataFlavor,
+	//MainlineFlavor,
 }
 
 var INTERFACE_RANGES = [][]int{
-	{1_00_00, 1_13_00},
-	{1_13_00, 2_00_00},
-	{2_00_00, 2_05_00},
-	{2_05_00, 3_00_00},
-	{3_00_00, 3_04_00},
-	{3_04_00, 4_00_00},
-	{4_04_00, 5_00_00},
-	{4_00_00, 11_00_00},
+	{1_00_00, 2_00_00},
+	{2_00_00, 3_00_00},
+	{3_00_00, 4_00_00},
+	{4_00_00, 5_00_00},
+	{5_00_00, 11_00_00},
+
+	// might be technically correct, but it's a faff and causing mislabelling.
+	//{1_00_00, 1_13_00},
+	//{1_13_00, 2_00_00},
+	//{2_00_00, 2_05_00},
+	//{2_05_00, 3_00_00},
+	//{3_00_00, 3_04_00},
+	//{3_04_00, 4_00_00},
+	//{4_04_00, 5_00_00},
+	//{4_00_00, 11_00_00},
 }
 
 // a Github search result.
@@ -185,7 +201,7 @@ type ReleaseJsonEntry struct {
 	Metadata []ReleaseJsonEntryMetadata `json:"metadata"`
 }
 
-type ReleaseJson struct {
+type ReleaseDotJson struct {
 	ReleaseJsonEntryList []ReleaseJsonEntry `json:"releases"`
 }
 
@@ -214,7 +230,7 @@ type Project struct {
 	FlavorList     []Flavor          `json:"flavor-list"`
 	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 	HasReleaseJSON bool              `json:"has-release-json"`
-	LastSeenDate   time.Time         `json:"last-seen-date"`
+	LastSeenDate   time.Time         `json:"-"` //last-seen-date"`
 }
 
 func ProjectCSVHeader() []string {
@@ -957,30 +973,32 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 // extract the flavors from the filenames
 // for 'flavorless' toc files,
 // parse the file contents looking for interface versions
-func extract_game_flavors_from_tocs(release_archive_list []GithubReleaseAsset) ([]Flavor, error) {
-	flavors := []Flavor{}
-	for _, release_archive := range release_archive_list {
+func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, error) {
+	flavor_list := []Flavor{}
+	for _, asset := range asset_list {
 
-		// future optimisation: original implementation only reads bytes if toc is 'flavorless'.
+		// future: original implementation only reads bytes if toc is 'flavorless'.
 		// what might also be interesting is preserving *everything* for analysis later,
 		// like finding all "X-*" keys ever used.
 
-		toc_file_map, err := github_zip_download(release_archive.BrowserDownloadURL, is_toc_file)
+		toc_file_map, err := github_zip_download(asset.BrowserDownloadURL, is_toc_file)
 		if err != nil {
 			slog.Error("failed to process remote zip file", "error", err)
 			continue
 		}
 
 		if len(toc_file_map) == 0 {
-			slog.Warn("no .toc files found in .zip asset while extracting game flavours", "url", release_archive.BrowserDownloadURL)
+			slog.Warn("no .toc files found in .zip asset while extracting game flavours", "url", asset.BrowserDownloadURL)
 		}
 
 		for toc_filename, toc_contents := range toc_file_map {
 			_, flavor := parse_toc_filename(toc_filename)
 			if flavor != "" {
-				flavors = append(flavors, flavor)
+				slog.Debug("found flavor in .toc filename, not inspecting .toc contents", "flavor", flavor, "url", asset.BrowserDownloadURL)
+				flavor_list = append(flavor_list, flavor)
 			} else {
 				// 'flavorless', parse the toc contents
+				slog.Debug("flavorless .toc file, inspecting .toc contents for flavor", "url", asset.BrowserDownloadURL)
 				keyvals, err := parse_toc_file(toc_filename, toc_contents)
 				if err != nil {
 					// couldn't parse this .toc file for some reason, move on to next .toc file
@@ -989,23 +1007,24 @@ func extract_game_flavors_from_tocs(release_archive_list []GithubReleaseAsset) (
 				}
 				interface_value, present := keyvals["interface"]
 				if !present {
-					slog.Warn("no 'interface' value found in toc file", "filename", toc_filename, "release", release_archive.BrowserDownloadURL)
+					slog.Warn("no 'interface' value found in toc file", "filename", toc_filename, "asset", asset.BrowserDownloadURL)
 				} else {
 					flavor, err := interface_number_to_flavor(interface_value)
 					if err != nil {
 						slog.Error("failed to parse interface number to a flavor", "error", err)
 						continue
 					}
-					flavors = append(flavors, flavor)
+					slog.Debug("found flavor in .toc file contents", "flavor", flavor)
+					flavor_list = append(flavor_list, flavor)
 				}
 			}
 		}
 	}
 
-	return flavors, nil
+	return flavor_list, nil
 }
 
-func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error) {
+func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, error) {
 
 	var raw interface{}
 	err := json.Unmarshal(release_dot_json_bytes, &raw)
@@ -1022,7 +1041,7 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseJson, error)
 
 	// data is valid, unmarshal to a ReleaseJson
 
-	var release_dot_json ReleaseJson
+	var release_dot_json ReleaseDotJson
 	err = json.Unmarshal(release_dot_json_bytes, &release_dot_json)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse release.json as JSON: %w", err)
@@ -1075,7 +1094,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	}
 
 	latest_github_release := release_list[0]
-	var release_dot_json *ReleaseJson
+	var release_dot_json *ReleaseDotJson
 	for _, asset := range latest_github_release.AssetList {
 		if asset.Name == "release.json" {
 			asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
@@ -1087,6 +1106,8 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			// todo: do we still have access to the bytes or were they consumed?
 			release_dot_json, err = parse_release_dot_json(asset_resp.Bytes)
 			if err != nil {
+				// todo: if we return here then the addon is skipped entirely.
+				// instead, should probably just ignore the release.json and move on.
 				return empty_response, fmt.Errorf("failed to parse release.json: %w", err)
 			}
 
@@ -1094,7 +1115,8 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
-	flavors := []Flavor{} // set of "wrath", "classic", etc
+	// todo: how to merge these with the addon data we already know about that was passed in?
+	flavor_list := []Flavor{} // set of "wrath", "classic", etc
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
@@ -1103,7 +1125,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		// ensure at least one release in 'releases' is available
 		for _, entry := range release_dot_json.ReleaseJsonEntryList {
 			for _, metadata := range entry.Metadata {
-				flavors = append(flavors, metadata.Flavor)
+				flavor_list = append(flavor_list, metadata.Flavor)
 			}
 		}
 
@@ -1111,7 +1133,6 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		first_release_json_entry := release_dot_json.ReleaseJsonEntryList[0]
 		for _, asset := range latest_github_release.AssetList {
 			if asset.Name == first_release_json_entry.Filename {
-				//slog.Debug("match", "repo", repo.FullName, "asset-name", asset.Name, "release.json-name", first_release_json_entry.Filename)
 				project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
 				if err != nil {
 					slog.Error("failed to extract project ids", "error", err)
@@ -1124,29 +1145,31 @@ func parse_repo(repo GithubRepo) (Project, error) {
 
 		// there is no release.json file,
 		// look for .zip assets instead and try our luck.
-		slog.Debug("no release.json found in latest release, looking for .zip files instead")
-		release_archives := []GithubReleaseAsset{}
+		slog.Debug("no release.json found in latest release, looking for .zip file assets instead", "repo", repo.FullName)
+		zip_file_asset_list := []GithubReleaseAsset{}
 		for _, asset := range release_list[0].AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 				if strings.HasSuffix(asset.Name, ".zip") {
-					release_archives = append(release_archives, asset)
+					zip_file_asset_list = append(zip_file_asset_list, asset)
 				}
 			}
 		}
 
-		if len(release_archives) == 0 {
+		if len(zip_file_asset_list) == 0 {
 			return empty_response, ErrNoReleaseCandidateFound
 		}
 
 		// extract flavors ...
-		flavors, err = extract_game_flavors_from_tocs(release_archives)
+		flavor_list, err = extract_game_flavors_from_tocs(zip_file_asset_list)
 		if err != nil {
 			return empty_response, fmt.Errorf("failed to parse .toc files in assets")
 		}
 	}
 
-	flavors = unique(flavors)
-	slices.Sort(flavors)
+	flavor_list = unique(flavor_list)
+	slices.Sort(flavor_list)
+
+	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
 
 	project := Project{
 		ID:             repo.ID,
@@ -1155,7 +1178,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		URL:            repo.HTMLURL,
 		Description:    repo.Description,
 		UpdatedDate:    latest_github_release.PublishedAtDate,
-		FlavorList:     flavors,
+		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   STATE.RunStart,
 		ProjectIDMap:   project_id_map,
@@ -1174,7 +1197,7 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 				slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
 				continue
 			}
-			slog.Warn("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
+			slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 			continue
 		}
 		project_list = append(project_list, project)
