@@ -65,6 +65,15 @@ func unique[T comparable](list []T) []T {
 	return result
 }
 
+// takes N lists of things `T` and returns a single list of them.
+func flatten[T any](tll ...[]T) []T {
+	final_tl := []T{}
+	for _, tl := range tll {
+		final_tl = append(final_tl, tl...)
+	}
+	return final_tl
+}
+
 // pretty-print a json blob
 func quick_json(blob string) string {
 	// convert into a simple map then

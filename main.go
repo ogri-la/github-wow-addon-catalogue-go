@@ -161,16 +161,6 @@ var INTERFACE_RANGES_LABELS = []Flavor{
 	WrathFlavor,
 	CataFlavor,
 	MainlineFlavor,
-
-	// might be technically correct, but it's a faff and causing mislabelling.
-	//MainlineFlavor,
-	//ClassicFlavor,
-	//MainlineFlavor,
-	//TBCFlavor,
-	//MainlineFlavor,
-	//WrathFlavor,
-	//CataFlavor,
-	//MainlineFlavor,
 }
 
 var INTERFACE_RANGES = [][]int{
@@ -179,16 +169,15 @@ var INTERFACE_RANGES = [][]int{
 	{3_00_00, 4_00_00},
 	{4_00_00, 5_00_00},
 	{5_00_00, 11_00_00},
+}
 
-	// might be technically correct, but it's a faff and causing mislabelling.
-	//{1_00_00, 1_13_00},
-	//{1_13_00, 2_00_00},
-	//{2_00_00, 2_05_00},
-	//{2_05_00, 3_00_00},
-	//{3_00_00, 3_04_00},
-	//{3_04_00, 4_00_00},
-	//{4_04_00, 5_00_00},
-	//{4_00_00, 11_00_00},
+// returns a single list of unique, sorted, `Flavor` strings.
+func uniqe_sorted_flavor_list(fll ...[]Flavor) []Flavor {
+	flavor_list := unique(flatten(fll...))
+	sort.Slice(flavor_list, func(i, j int) bool {
+		return FLAVOR_WEIGHTS[flavor_list[i]] < FLAVOR_WEIGHTS[flavor_list[j]]
+	})
+	return flavor_list
 }
 
 // a Github search result.
@@ -241,7 +230,7 @@ type Project struct {
 	FlavorList     []Flavor          `json:"flavor-list"`
 	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 	HasReleaseJSON bool              `json:"has-release-json"`
-	LastSeenDate   time.Time         `json:"-"` //last-seen-date"`
+	LastSeenDate   time.Time         `json:"last-seen-date"`
 }
 
 func ProjectCSVHeader() []string {
@@ -262,7 +251,7 @@ func ProjectCSVHeader() []string {
 }
 
 // read a csv `row` and return a `Project` struct.
-func ProjectFromCSVRow(row []string) Project {
+func project_from_csv_row(row []string) Project {
 	id, err := strconv.Atoi(row[0])
 	if err != nil {
 		slog.Error("failed to convert 'id' value in CSV to an integer", "row", row, "val", row[0], "error", err)
@@ -306,7 +295,7 @@ func ProjectFromCSVRow(row []string) Project {
 }
 
 // read a Project struct `p` and return a csv row.
-func ProjectToCSVRow(p Project) []string {
+func project_to_csv_row(p Project) []string {
 	return []string{
 		strconv.Itoa(p.ID),
 		p.Name,
@@ -321,6 +310,12 @@ func ProjectToCSVRow(p Project) []string {
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
 		p.LastSeenDate.Format(time.RFC3339),
 	}
+}
+
+// business logic for merging two Project structs.
+func merge_projects(old, new Project) Project {
+	new.FlavorList = uniqe_sorted_flavor_list(old.FlavorList, new.FlavorList)
+	return new
 }
 
 type ResponseWrapper struct {
@@ -1190,10 +1185,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
-	flavor_list = unique(flavor_list)
-	sort.Slice(flavor_list, func(i, j int) bool {
-		return FLAVOR_WEIGHTS[flavor_list[i]] < FLAVOR_WEIGHTS[flavor_list[j]]
-	})
+	flavor_list = uniqe_sorted_flavor_list(flavor_list)
 
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
 
@@ -1487,7 +1479,7 @@ func write_csv(project_list []Project, output_file string) {
 	writer := csv.NewWriter(output)
 	writer.Write(ProjectCSVHeader())
 	for _, project := range project_list {
-		writer.Write(ProjectToCSVRow(project))
+		writer.Write(project_to_csv_row(project))
 	}
 	writer.Flush()
 
@@ -1515,7 +1507,7 @@ func read_csv(path string) ([]Project, error) {
 		return empty_response, fmt.Errorf("failed to read contents of input file: %w", err)
 	}
 	for _, row := range row_list {
-		project_list = append(project_list, ProjectFromCSVRow(row))
+		project_list = append(project_list, project_from_csv_row(row))
 	}
 	return project_list, nil
 }
@@ -1667,6 +1659,10 @@ func main() {
 
 		// new results overwrite old
 		for _, project := range project_list {
+			old_project, present := project_idx[project.ID]
+			if present {
+				project = merge_projects(old_project, project)
+			}
 			project_idx[project.ID] = project
 		}
 
