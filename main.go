@@ -322,7 +322,12 @@ func project_to_csv_row(p Project) []string {
 
 // business logic for merging two Project structs.
 func merge_projects(old, new Project) Project {
-	new.FlavorList = unique_sorted_flavor_list(old.FlavorList, new.FlavorList)
+	// disabled. this allows bad/incorrect/old data to accumulate with no current means of removing it.
+	// it was added because I suspect the original is doing it and because some addons release a version over
+	// several github releases.
+	// a better solution will be target these weirdo addons and their weirdo release process and examine more
+	// releases rather than just the latest.
+	//new.FlavorList = unique_sorted_flavor_list(old.FlavorList, new.FlavorList)
 	return new
 }
 
@@ -1392,7 +1397,7 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 			if excluded {
 				_, present := WARNED[repo.FullName]
 				if !present {
-					slog.Debug("repository blacklisted", "repo", repo.FullName, "pattern", pattern)
+					slog.Debug("repository ignored", "repo", repo.FullName, "pattern", pattern)
 					WARNED[repo.FullName] = true
 				}
 			} else {
