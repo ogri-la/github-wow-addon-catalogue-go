@@ -147,6 +147,7 @@ var FLAVOR_ALIAS_MAP = map[string]Flavor{
 	"wotlkc":  WrathFlavor,
 }
 
+// for sorting output
 var FLAVOR_WEIGHTS = map[Flavor]int{
 	MainlineFlavor: 0,
 	VanillaFlavor:  1,
@@ -155,20 +156,18 @@ var FLAVOR_WEIGHTS = map[Flavor]int{
 	CataFlavor:     4,
 }
 
-var INTERFACE_RANGES_LABELS = []Flavor{
-	VanillaFlavor,
-	TBCFlavor,
-	WrathFlavor,
-	CataFlavor,
-	MainlineFlavor,
-}
-
-var INTERFACE_RANGES = [][]int{
-	{1_00_00, 2_00_00},
-	{2_00_00, 3_00_00},
-	{3_00_00, 4_00_00},
-	{4_00_00, 5_00_00},
-	{5_00_00, 11_00_00},
+var INTERFACE_RANGES = map[int]Flavor{
+	1_00_00:  VanillaFlavor,
+	2_00_00:  TBCFlavor,
+	3_00_00:  WrathFlavor,
+	4_00_00:  CataFlavor,
+	5_00_00:  MainlineFlavor,
+	6_00_00:  MainlineFlavor,
+	7_00_00:  MainlineFlavor,
+	8_00_00:  MainlineFlavor,
+	9_00_00:  MainlineFlavor,
+	10_00_00: MainlineFlavor,
+	11_00_00: MainlineFlavor,
 }
 
 // returns a single list of unique, sorted, `Flavor` strings.
@@ -273,11 +272,18 @@ func project_from_csv_row(row []string) Project {
 	}
 
 	flavor_list := unique_sorted_flavor_list(strings.Split(row[6], ","))
-	project_id_map := map[string]string{
-		"x-curse-project-id": row[7],
-		"x-wago-id":          row[8],
-		"x-wowi-id":          row[9],
+
+	project_id_map := map[string]string{}
+	if row[7] != "" {
+		project_id_map["x-curse-project-id"] = row[7]
 	}
+	if row[8] != "" {
+		project_id_map["x-wago-id"] = row[8]
+	}
+	if row[9] != "" {
+		project_id_map["x-wowi-id"] = row[9]
+	}
+
 	has_release_json := row[10] == "True"
 
 	last_seen, err := time.Parse(time.RFC3339, row[11])
@@ -420,7 +426,7 @@ func read_cache_entry(cache_key string) (*http.Response, error) {
 }
 
 // zipfile caches are JSON maps of zipfile-entry-filenames => base64-encoded-bytes.
-func read_zip_cache_entry(zip_cache_key string) (map[string][]byte, error) {
+func read_zip_cache_entry(zip_cache_key string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 	empty_response := map[string][]byte{}
 
 	fh, err := os.Open(cache_path(zip_cache_key))
@@ -440,12 +446,20 @@ func read_zip_cache_entry(zip_cache_key string) (map[string][]byte, error) {
 	}
 
 	result := map[string][]byte{}
+	placeholder := []byte{0x66, 0xFC, 0x72}
 	for zipfile_entry_filename, zipfile_entry_encoded_bytes := range cached_zip_file_contents {
-		bytes, err := base64.StdEncoding.DecodeString(zipfile_entry_encoded_bytes)
+		decoded_bytes, err := base64.StdEncoding.DecodeString(zipfile_entry_encoded_bytes)
 		if err != nil {
 			return empty_response, err
 		}
-		result[zipfile_entry_filename] = bytes
+
+		if zipped_file_filter(zipfile_entry_filename) && bytes.Equal(decoded_bytes, placeholder) {
+			// placeholder found.
+			// the `zipped_file_filter` fn has changed and this zip file entry now needs to be read.
+			return empty_response, fmt.Errorf("file filter has changed and is attempting to read a file that wasn't originally fetched")
+		}
+
+		result[zipfile_entry_filename] = decoded_bytes
 	}
 
 	return result, nil
@@ -665,20 +679,9 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	// ---
 
 	cache_key := make_cache_key(req)
-	cached_zip_file, err := read_zip_cache_entry(cache_key)
+	cached_zip_file, err := read_zip_cache_entry(cache_key, zipped_file_filter)
 	if err == nil {
 		slog.Debug("HTTP GET .zip cache HIT", "url", url, "cache-path", cache_path(cache_key))
-
-		/*
-			if len(cached_zip_file) == 0 {
-				err = remove_cache_entry(cache_key)
-				if err != nil {
-					slog.Error("failed to remove cache entry", "cache-path", cache_path(cache_key))
-				}
-			} else {
-				return cached_zip_file, nil
-			}
-		*/
 		return cached_zip_file, nil
 	}
 
@@ -708,6 +711,7 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	}
 
 	file_bytes := map[string][]byte{}
+	placeholder := []byte{0x66, 0xFC, 0x72}
 
 	for _, zipped_file_entry := range zip_rdr.File {
 		if zipped_file_filter(zipped_file_entry.Name) {
@@ -728,6 +732,8 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 			// note: so much other great stuff available to us in zipped_file! can we use it?
 
 			file_bytes[zipped_file_entry.Name] = bl
+		} else {
+			file_bytes[zipped_file_entry.Name] = placeholder
 		}
 	}
 
@@ -857,7 +863,7 @@ func toc_filename_regexp() *regexp.Regexp {
 		flavor_list = append(flavor_list, flavor_alias)
 	}
 	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w-_. ]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w'-_. ]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
 	return regexp.MustCompile(pattern)
 }
 
@@ -878,6 +884,10 @@ func parse_toc_filename(filename string) (string, Flavor) {
 	if len(matches) == 3 {
 		// "Bar-wrath.toc" => [Bar-wrath.toc, Bar, wrath]
 		flavor := strings.ToLower(matches[2])
+		actual_flavor, is_alias := FLAVOR_ALIAS_MAP[flavor]
+		if is_alias {
+			return matches[1], actual_flavor
+		}
 		return matches[1], flavor
 	}
 	return "", ""
@@ -913,6 +923,7 @@ func is_toc_file(zip_file_entry string) bool {
 			// edge cases: bundles, where a release contains multiple other addons but none it's own.
 			// WOWRainbowUI/RainbowUI-Era
 			// WOWRainbowUI/RainbowUI-Retail
+			// won't fix
 
 			// edge case: BetterZoneStats-v1.0/BetterZoneStats.toc
 			// addon name has suffix '-v1.0' which doesn't match the .toc is_toc_file
@@ -937,18 +948,32 @@ func is_toc_file(zip_file_entry string) bool {
 
 // "30403" => "wrath"
 func interface_number_to_flavor(interface_val string) (Flavor, error) {
-	interface_int, err := strconv.Atoi(interface_val)
+	interface_int, err := strconv.Atoi(strings.TrimSpace(interface_val))
 	if err != nil {
 		return "", fmt.Errorf("failed to convert interface value to integer: %w", err)
 	}
 
-	for i, pair := range INTERFACE_RANGES {
-		if in_range(interface_int, pair[0], pair[1]) {
-			return INTERFACE_RANGES_LABELS[i], nil
-		}
+	idx := (interface_int / 1_00_00) * 1_00_00 // 12345 => 1 => 10000
+	flavor, present := INTERFACE_RANGES[idx]
+	if !present {
+		return "", fmt.Errorf("interface value out of range: %d", interface_int)
 	}
+	return flavor, nil
+}
 
-	return "", fmt.Errorf("interface value out of range: %d", interface_int)
+// "100206, 40400, 11502" => [mainline, cata, vanilla]
+func interface_value_to_flavor_list(interface_val string) ([]Flavor, error) {
+	empty_response := []Flavor{}
+	flavor_list := []Flavor{}
+	for _, bit := range strings.Split(interface_val, ",") {
+		flavor, err := interface_number_to_flavor(bit)
+		if err != nil {
+			// one (possibly all) values are bad. fail noisily.
+			return empty_response, err
+		}
+		flavor_list = append(flavor_list, flavor)
+	}
+	return flavor_list, nil
 }
 
 // downloads a file asset from a github release,
@@ -968,14 +993,24 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 		slog.Warn("no .toc files found in .zip asset while extracting project ids", "url", asset_url)
 	}
 
+	project_id_list := []string{
+		"x-curse-project-id",
+		"x-wago-id",
+		"x-wowi-id",
+	}
+
 	selected_key_vals := map[string]string{}
 	for zipfile_entry, toc_bytes := range toc_file_map {
+		if !is_toc_file(zipfile_entry) {
+			continue
+		}
 		keyvals, err := parse_toc_file(zipfile_entry, toc_bytes)
 		if err != nil {
 			return empty_response, fmt.Errorf("failed to parse .toc contents: %w", err)
 		}
-		for key, val := range keyvals {
-			if key == "x-curse-project-id" || key == "x-wago-id" || key == "x-wowi-id" {
+		for _, key := range project_id_list {
+			val, present := keyvals[key]
+			if present {
 				selected_key_vals[key] = val
 			}
 		}
@@ -1023,13 +1058,13 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 				if !present {
 					slog.Warn("no 'interface' value found in toc file", "filename", toc_filename, "asset", asset.BrowserDownloadURL)
 				} else {
-					flavor, err := interface_number_to_flavor(interface_value)
+					flavors, err := interface_value_to_flavor_list(interface_value)
 					if err != nil {
 						slog.Error("failed to parse interface number to a flavor", "error", err)
 						continue
 					}
-					slog.Debug("found flavor in .toc file contents", "flavor", flavor)
-					flavor_list = append(flavor_list, flavor)
+					slog.Debug("found flavor(s) in .toc file contents", "flavor", flavors)
+					flavor_list = append(flavor_list, flavors...)
 				}
 			}
 		}
@@ -1156,12 +1191,12 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 
 		// find the matching asset
-		first_release_json_entry := release_dot_json.ReleaseJsonEntryList[0]
+		first_release_dot_json_entry := release_dot_json.ReleaseJsonEntryList[0]
 		for _, asset := range latest_github_release.AssetList {
-			if asset.Name == first_release_json_entry.Filename {
+			if asset.Name == first_release_dot_json_entry.Filename {
 				project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
 				if err != nil {
-					slog.Error("failed to extract project ids", "error", err)
+					slog.Error("failed to extract project ids from release.json", "error", err)
 				}
 				break
 			}
@@ -1189,6 +1224,17 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		flavor_list, err = extract_game_flavors_from_tocs(zip_file_asset_list)
 		if err != nil {
 			return empty_response, fmt.Errorf("failed to parse .toc files in assets")
+		}
+
+		// todo: I just plonked this in here while sick, review
+		for _, asset := range zip_file_asset_list {
+			project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
+			if err != nil {
+				slog.Error("failed to extract project ids", "error", err)
+			}
+			if len(project_id_map) != 0 {
+				break
+			}
 		}
 	}
 
@@ -1460,9 +1506,17 @@ func read_json(path string) ([]Project, error) {
 		return empty_response, fmt.Errorf("failed to parse JSON in file: %w", err)
 	}
 
+	filtered_project_list := []Project{}
+	for _, project := range filtered_project_list {
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, project.FullName)
+		if !excluded {
+			filtered_project_list = append(filtered_project_list, project)
+		}
+	}
+
 	// todo: validate
 
-	return project_list, nil
+	return filtered_project_list, nil
 }
 
 // --- csv i/o
@@ -1514,7 +1568,11 @@ func read_csv(path string) ([]Project, error) {
 		return empty_response, fmt.Errorf("failed to read contents of input file: %w", err)
 	}
 	for _, row := range row_list {
-		project_list = append(project_list, project_from_csv_row(row))
+		project := project_from_csv_row(row)
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, project.FullName)
+		if !excluded {
+			project_list = append(project_list, project)
+		}
 	}
 	return project_list, nil
 }
@@ -1623,7 +1681,6 @@ func read_cli_args(arg_list []string) CLI {
 }
 
 func init() {
-	ensure(len(INTERFACE_RANGES_LABELS) == len(INTERFACE_RANGES), "interface ranges are not equal to interface range labels")
 	if is_testing() {
 		return
 	}

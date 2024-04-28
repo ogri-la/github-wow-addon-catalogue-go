@@ -75,6 +75,9 @@ func Test_is_toc_file(t *testing.T) {
 
 		// space in name
 		"Loot-A-Rang Matic Reforged/Loot-A-Rang Matic Reforged.toc": true,
+
+		// apostrophe
+		"Ranoth's utility/Ranoth's utility.toc": true,
 	}
 	for given, expected := range cases {
 		assert.Equal(t, expected, is_toc_file(given), given)
@@ -116,25 +119,67 @@ func Test_title_case(t *testing.T) {
 
 func Test_interface_number_to_flavor(t *testing.T) {
 	cases := map[string]Flavor{
-		"10000": VanillaFlavor,
-		"13000": VanillaFlavor,
-		"20000": TBCFlavor,
-		"20500": TBCFlavor,
-		"30000": WrathFlavor,
-		"30400": WrathFlavor,
-		"30403": WrathFlavor,
-		"40000": CataFlavor,
-		"40400": CataFlavor,
-		"50000": MainlineFlavor,
+		"10000":  VanillaFlavor,
+		"13000":  VanillaFlavor,
+		"20000":  TBCFlavor,
+		"20500":  TBCFlavor,
+		"30000":  WrathFlavor,
+		"30400":  WrathFlavor,
+		"30403":  WrathFlavor,
+		"40000":  CataFlavor,
+		"40400":  CataFlavor,
+		"50000":  MainlineFlavor,
+		"100206": MainlineFlavor,
+		"110000": MainlineFlavor,
+		//"120000": "",
 
-		// ---
+		// whitespace is ignored
 
-		"30300": WrathFlavor,
+		" 100206 ": MainlineFlavor,
 	}
 	for interface_number, expected := range cases {
 		actual, err := interface_number_to_flavor(interface_number)
 		assert.Nil(t, err)
 		assert.Equal(t, expected, actual)
+	}
+}
+
+func Test_interface_value_to_flavor_list(t *testing.T) {
+	cases := map[string][]Flavor{
+		"10000": {VanillaFlavor},
+
+		"20000":  {TBCFlavor},
+		"30000":  {WrathFlavor},
+		"40000":  {CataFlavor},
+		"50000":  {MainlineFlavor},
+		"110000": {MainlineFlavor},
+
+		"10000, 20000":               {VanillaFlavor, TBCFlavor},
+		"10000, 20000, 30000":        {VanillaFlavor, TBCFlavor, WrathFlavor},
+		"10000, 20000, 30000, 40000": {VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor},
+
+		// from the wiki
+		"100206, 40400, 11502": {MainlineFlavor, CataFlavor, VanillaFlavor},
+
+		// whitespace is ignored
+		" 100206 ": {MainlineFlavor},
+	}
+	for interface_number, expected := range cases {
+		actual, err := interface_value_to_flavor_list(interface_number)
+		assert.Nil(t, err)
+		assert.Equal(t, expected, actual)
+	}
+}
+
+func Test_interface_value_to_flavor_list__bad_cases(t *testing.T) {
+	cases := []string{
+		"",         // empty
+		"120000",   // outside known range
+		"100206, ", // trailing comma
+	}
+	for _, given := range cases {
+		_, err := interface_value_to_flavor_list(given)
+		assert.NotNil(t, err)
 	}
 }
 

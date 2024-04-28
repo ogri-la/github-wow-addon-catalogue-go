@@ -94,12 +94,6 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
-// returns true if `i` is greater than or equal to the lower bound,
-// and not higher than the upper bound.
-func in_range(i, lower, upper int) bool {
-	return i >= lower && i < upper
-}
-
 func path_exists(path string) bool {
 	_, err := os.Stat(path)
 	return !errors.Is(err, os.ErrNotExist)
