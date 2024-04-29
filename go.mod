@@ -9,6 +9,7 @@ require (
 	github.com/lmittmann/tint v1.0.4
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/snabb/httpreaderat v1.0.1
+	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
 	github.com/tidwall/gjson v1.14.4
 	golang.org/x/text v0.14.0

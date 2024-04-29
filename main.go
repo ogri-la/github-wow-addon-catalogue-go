@@ -11,7 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"flag"
+
 	"fmt"
 	"io"
 	"log/slog"
@@ -32,6 +32,7 @@ import (
 	"github.com/lmittmann/tint"
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	"github.com/snabb/httpreaderat"
+	flag "github.com/spf13/pflag"
 	"github.com/tidwall/gjson"
 
 	bufra "github.com/avvmoto/buf-readerat"
@@ -95,8 +96,7 @@ var REPO_BLACKLIST = map[string]bool{
 }
 
 type CLI struct {
-	InputFile           string
-	InputFileExt        string
+	InputFile           []string
 	OutputFile          string
 	OutputFileExt       string
 	LogLevelLabel       string
@@ -1636,19 +1636,20 @@ func init_state() *State {
 
 func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
-	flag.StringVar(&cli.InputFile, "in", "", "path to extant addons.csv file. input is merged with results")
+	flag.StringArrayVar(&cli.InputFile, "in", []string{}, "path to extant addons.csv file. input is merged with results")
 	flag.StringVar(&cli.OutputFile, "out", "", "write results to file and not stdout")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
 	flag.Parse()
 
-	if cli.InputFile != "" {
-		die(!path_exists(cli.InputFile), fmt.Sprintf("input path does not exist: %s", cli.InputFile))
-		ext := filepath.Ext(cli.InputFile)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
-		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
-		cli.InputFileExt = ext
+	for _, input_file := range cli.InputFile {
+		if input_file != "" {
+			die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
+			ext := filepath.Ext(input_file)
+			die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
+			die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
+		}
 	}
 
 	if cli.OutputFile != "" {
@@ -1693,28 +1694,35 @@ func main() {
 	var err error
 	input_project_list := []Project{}
 
-	if STATE.CLI.InputFile != "" {
+	if len(STATE.CLI.InputFile) > 0 {
 		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
-		switch STATE.CLI.InputFileExt {
-		case ".csv":
-			input_project_list, err = read_csv(STATE.CLI.InputFile)
-		case ".json":
-			input_project_list, err = read_json(STATE.CLI.InputFile)
+		for _, input_file := range STATE.CLI.InputFile {
+			ext := filepath.Ext(input_file)
+			var _input_project_list []Project
+
+			switch ext {
+			case ".csv":
+				_input_project_list, err = read_csv(input_file)
+			case ".json":
+				_input_project_list, err = read_json(input_file)
+			}
+			die(err != nil, fmt.Sprintf("%v", err))
+			slog.Info("found projects", "num", len(_input_project_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
+			input_project_list = append(input_project_list, _input_project_list...)
 		}
-		die(err != nil, fmt.Sprintf("%v", err))
-		slog.Info("found projects", "num", len(input_project_list))
+		slog.Info("found projects", "num", len(input_project_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
 	}
 
-	slog.Info("searching for new projects")
+	slog.Info("searching for new repositories")
 	github_repo_list := get_projects(STATE.CLI.FilterPatternRegexp)
-	slog.Info("found projects", "num", len(github_repo_list))
+	slog.Info("found repositories", "num", len(github_repo_list))
 
-	slog.Info("parsing projects")
+	slog.Info("parsing repositories into projects")
 	project_list := parse_repo_list(github_repo_list)
-	slog.Info("projects parsed", "num", len(github_repo_list), "viable", len(project_list))
+	slog.Info("repositories parsed", "num", len(github_repo_list), "viable", len(project_list))
 
 	if len(input_project_list) > 0 {
-		slog.Info("merging input with search results")
+		slog.Info("merging input files with search results")
 
 		project_idx := map[int]Project{}
 		for _, project := range input_project_list {
@@ -1743,6 +1751,8 @@ func main() {
 
 		project_list = new_project_list
 	}
+
+	slog.Info("projects", "num", len(project_list))
 
 	switch STATE.CLI.OutputFileExt {
 	case ".csv":
