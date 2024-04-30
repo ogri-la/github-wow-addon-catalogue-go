@@ -97,8 +97,7 @@ var REPO_BLACKLIST = map[string]bool{
 
 type CLI struct {
 	InputFile           []string
-	OutputFile          string
-	OutputFileExt       string
+	OutputFile          []string
 	LogLevelLabel       string
 	LogLevel            slog.Level
 	UseExpiredCache     bool
@@ -1637,26 +1636,23 @@ func init_state() *State {
 func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
 	flag.StringArrayVar(&cli.InputFile, "in", []string{}, "path to extant addons.csv file. input is merged with results")
-	flag.StringVar(&cli.OutputFile, "out", "", "write results to file and not stdout")
+	flag.StringArrayVar(&cli.OutputFile, "out", []string{}, "write results to file and not stdout")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
 	flag.Parse()
 
 	for _, input_file := range cli.InputFile {
-		if input_file != "" {
-			die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
-			ext := filepath.Ext(input_file)
-			die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
-			die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
-		}
+		die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
+		ext := filepath.Ext(input_file)
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
+		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
 
-	if cli.OutputFile != "" {
-		ext := filepath.Ext(cli.OutputFile)
+	for _, output_file := range cli.OutputFile {
+		ext := filepath.Ext(output_file)
 		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFile))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("output path has unsupported extension: %s", ext))
-		cli.OutputFileExt = ext
 	}
 
 	if cli.FilterPattern != "" {
@@ -1754,12 +1750,17 @@ func main() {
 
 	slog.Info("projects", "num", len(project_list))
 
-	switch STATE.CLI.OutputFileExt {
-	case ".csv":
-		write_csv(project_list, STATE.CLI.OutputFile)
-	case ".json":
-		write_json(project_list, STATE.CLI.OutputFile)
-	default:
+	if len(STATE.CLI.OutputFile) > 0 {
+		for _, output_file := range STATE.CLI.OutputFile {
+			ext := filepath.Ext(output_file)
+			switch ext {
+			case ".csv":
+				write_csv(project_list, output_file)
+			case ".json":
+				write_json(project_list, output_file)
+			}
+		}
+	} else {
 		write_json(project_list, "")
 	}
 }
