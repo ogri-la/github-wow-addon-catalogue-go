@@ -51,7 +51,8 @@ var API_URL = "https://api.github.com"
 
 // case insensitive repository prefixes
 var REPO_BLACKLIST = map[string]bool{
-	"foo/": true, // dummy, for testing
+	"foo/":                      true, // dummy, for unit tests
+	"layday/wow-addon-template": true, // template
 
 	// mine
 	"WOWRainbowUI/RainbowUI-Retail": true, // addon bundle, very large, incorrect filestructure
@@ -190,10 +191,27 @@ func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
 // different types of search return different types of information.
 type GithubRepo struct {
 	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	FullName    string `json:"full_name"`
+	Name        string `json:"name"`      // AdiBags
+	FullName    string `json:"full-name"` // AdiAddons/AdiBags
 	Description string `json:"description"`
-	HTMLURL     string `json:"html_url"`
+	URL         string `json:"url"` // https://github/AdiAddons/AdiBags
+}
+
+// read a csv `row` and return a `Project` struct.
+func repo_from_csv_row(row []string) GithubRepo {
+	id, err := strconv.Atoi(row[0])
+	if err != nil {
+		slog.Error("failed to convert 'id' value in CSV to an integer", "row", row, "val", row[0], "error", err)
+		fatal()
+	}
+
+	return GithubRepo{
+		ID:          id,
+		Name:        row[1],
+		FullName:    row[2],
+		URL:         row[3],
+		Description: row[4],
+	}
 }
 
 type ReleaseJsonEntryMetadata struct {
@@ -207,6 +225,7 @@ type ReleaseJsonEntry struct {
 	Metadata []ReleaseJsonEntryMetadata `json:"metadata"`
 }
 
+// a `release.json` file.
 type ReleaseDotJson struct {
 	ReleaseJsonEntryList []ReleaseJsonEntry `json:"releases"`
 }
@@ -225,13 +244,9 @@ type GithubRelease struct {
 	PublishedAtDate time.Time            `json:"published_at"`
 }
 
-// what we'll render out
+// what is captured and rendered out
 type Project struct {
-	ID             int               `json:"id"`
-	Name           string            `json:"name"`      // AdiBags
-	FullName       string            `json:"full-name"` // AdiAddons/AdiBags
-	URL            string            `json:"url"`       // https://github/AdiAddons/AdiBags
-	Description    string            `json:"description"`
+	GithubRepo
 	UpdatedDate    time.Time         `json:"updated-date"`
 	FlavorList     []Flavor          `json:"flavor-list"`
 	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
@@ -256,57 +271,6 @@ func ProjectCSVHeader() []string {
 	}
 }
 
-// read a csv `row` and return a `Project` struct.
-func project_from_csv_row(row []string) Project {
-	id, err := strconv.Atoi(row[0])
-	if err != nil {
-		slog.Error("failed to convert 'id' value in CSV to an integer", "row", row, "val", row[0], "error", err)
-		fatal()
-	}
-
-	updated_date, err := time.Parse(time.RFC3339, row[5])
-	if err != nil {
-		slog.Error("failed to convert 'date_updated' value in CSV to an RFC3339 timestamp", "value", row[5], "error", err)
-		fatal()
-	}
-
-	flavor_list := unique_sorted_flavor_list(strings.Split(row[6], ","))
-
-	project_id_map := map[string]string{}
-	if row[7] != "" {
-		project_id_map["x-curse-project-id"] = row[7]
-	}
-	if row[8] != "" {
-		project_id_map["x-wago-id"] = row[8]
-	}
-	if row[9] != "" {
-		project_id_map["x-wowi-id"] = row[9]
-	}
-
-	has_release_json := row[10] == "True"
-
-	last_seen, err := time.Parse(time.RFC3339, row[11])
-	if err != nil {
-		slog.Error("failed to convert 'last_seen' value in CSV to an RFC3339 timestamp", "value", row[11], "error", err)
-		fatal()
-	}
-	// whatever offset was given, convert it to UTC
-	last_seen = last_seen.UTC()
-
-	return Project{
-		ID:             id,
-		Name:           row[1],
-		FullName:       row[2],
-		URL:            row[3],
-		Description:    row[4],
-		UpdatedDate:    updated_date,
-		FlavorList:     flavor_list,
-		ProjectIDMap:   project_id_map,
-		HasReleaseJSON: has_release_json,
-		LastSeenDate:   last_seen,
-	}
-}
-
 // read a Project struct `p` and return a csv row.
 func project_to_csv_row(p Project) []string {
 	return []string{
@@ -323,17 +287,6 @@ func project_to_csv_row(p Project) []string {
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
 		p.LastSeenDate.Format(time.RFC3339),
 	}
-}
-
-// business logic for merging two Project structs.
-func merge_projects(old, new Project) Project {
-	// disabled. this allows bad/incorrect/old data to accumulate with no current means of removing it.
-	// it was added because I suspect the original is doing it and because some addons release a version over
-	// several github releases.
-	// a better solution will be target these weirdo addons and their weirdo release process and examine more
-	// releases rather than just the latest.
-	//new.FlavorList = unique_sorted_flavor_list(old.FlavorList, new.FlavorList)
-	return new
 }
 
 type ResponseWrapper struct {
@@ -1242,11 +1195,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
 
 	project := Project{
-		ID:             repo.ID,
-		FullName:       repo.FullName,
-		Name:           repo.Name,
-		URL:            repo.HTMLURL,
-		Description:    repo.Description,
+		GithubRepo:     repo,
 		UpdatedDate:    latest_github_release.PublishedAtDate,
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
@@ -1487,8 +1436,8 @@ func write_json(project_list []Project, output_file string) {
 }
 
 // read a list of Projects from the given JSON file at `path`.
-func read_json(path string) ([]Project, error) {
-	var empty_response []Project
+func read_json(path string) ([]GithubRepo, error) {
+	var empty_response []GithubRepo
 	fh, err := os.Open(path)
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to open JSON file for reading: %w", err)
@@ -1499,17 +1448,17 @@ func read_json(path string) ([]Project, error) {
 		return empty_response, fmt.Errorf("failed to read bytes in JSON file: %w", err)
 	}
 
-	project_list := []Project{}
+	project_list := []GithubRepo{}
 	err = json.Unmarshal(bytes, &project_list)
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to parse JSON in file: %w", err)
 	}
 
-	filtered_project_list := []Project{}
-	for _, project := range filtered_project_list {
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, project.FullName)
+	filtered_project_list := []GithubRepo{}
+	for _, repo := range filtered_project_list {
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, repo.FullName)
 		if !excluded {
-			filtered_project_list = append(filtered_project_list, project)
+			filtered_project_list = append(filtered_project_list, repo)
 		}
 	}
 
@@ -1542,22 +1491,19 @@ func write_csv(project_list []Project, output_file string) {
 		writer.Write(project_to_csv_row(project))
 	}
 	writer.Flush()
-
-	if output_file != "" {
-		slog.Info("wrote CSV file", "output-file", output_file)
-	}
 }
 
-// read a list of Projects from the given CSV file at `path`.
+// read a list of `GithubRepo` structs from the given CSV file at `path`.
+// note: *not* `Project` structs. Everything read also needs to be scraped from Github.
 // CSV structure follows original script.
-func read_csv(path string) ([]Project, error) {
-	empty_response := []Project{}
+func read_csv(path string) ([]GithubRepo, error) {
+	empty_response := []GithubRepo{}
 	fh, err := os.Open(path)
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to open input file: %w", err)
 	}
 	defer fh.Close()
-	project_list := []Project{}
+	repo_list := []GithubRepo{}
 	rdr := csv.NewReader(fh)
 
 	rdr.Read() // header
@@ -1567,13 +1513,13 @@ func read_csv(path string) ([]Project, error) {
 		return empty_response, fmt.Errorf("failed to read contents of input file: %w", err)
 	}
 	for _, row := range row_list {
-		project := project_from_csv_row(row)
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, project.FullName)
+		repo := repo_from_csv_row(row)
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, repo.FullName)
 		if !excluded {
-			project_list = append(project_list, project)
+			repo_list = append(repo_list, repo)
 		}
 	}
-	return project_list, nil
+	return repo_list, nil
 }
 
 // bootstrap
@@ -1688,65 +1634,58 @@ func init() {
 
 func main() {
 	var err error
-	input_project_list := []Project{}
+	input_repo_list := []GithubRepo{}
 
 	if len(STATE.CLI.InputFile) > 0 {
 		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
 		for _, input_file := range STATE.CLI.InputFile {
 			ext := filepath.Ext(input_file)
-			var _input_project_list []Project
+			var repo_list []GithubRepo
 
 			switch ext {
 			case ".csv":
-				_input_project_list, err = read_csv(input_file)
+				repo_list, err = read_csv(input_file)
 			case ".json":
-				_input_project_list, err = read_json(input_file)
+				repo_list, err = read_json(input_file)
 			}
 			die(err != nil, fmt.Sprintf("%v", err))
-			slog.Info("found projects", "num", len(_input_project_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
-			input_project_list = append(input_project_list, _input_project_list...)
+			slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
+			input_repo_list = append(input_repo_list, repo_list...)
 		}
-		slog.Info("found projects", "num", len(input_project_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
+		slog.Info("found projects", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
 	}
 
 	slog.Info("searching for new repositories")
 	github_repo_list := get_projects(STATE.CLI.FilterPatternRegexp)
 	slog.Info("found repositories", "num", len(github_repo_list))
 
-	slog.Info("parsing repositories into projects")
-	project_list := parse_repo_list(github_repo_list)
-	slog.Info("repositories parsed", "num", len(github_repo_list), "viable", len(project_list))
-
-	if len(input_project_list) > 0 {
+	if len(input_repo_list) > 0 {
 		slog.Info("merging input files with search results")
 
-		project_idx := map[int]Project{}
-		for _, project := range input_project_list {
-			project_idx[project.ID] = project
+		repo_idx := map[int]GithubRepo{}
+		for _, repo := range input_repo_list {
+			repo_idx[repo.ID] = repo
 		}
 
-		// new results overwrite old
-		for _, project := range project_list {
-			old_project, present := project_idx[project.ID]
-			if present {
-				// future: new problem, old and unsupported flavors accumulating.
-				// perhaps identify addons that are doing a release per-version-per-flavor and
-				// fetch N (number of flavors) releases of theirs at once?
-				project = merge_projects(old_project, project)
-			}
-			project_idx[project.ID] = project
+		// search results overwrite results from input files
+		for _, repo := range github_repo_list {
+			repo_idx[repo.ID] = repo
 		}
 
-		new_project_list := []Project{}
-		for _, project := range project_idx {
-			new_project_list = append(new_project_list, project)
+		new_github_repo_list := []GithubRepo{}
+		for _, repo := range repo_idx {
+			new_github_repo_list = append(new_github_repo_list, repo)
 		}
-		slices.SortFunc(new_project_list, func(a, b Project) int {
+		slices.SortFunc(new_github_repo_list, func(a, b GithubRepo) int {
 			return strings.Compare(a.FullName, b.FullName)
 		})
 
-		project_list = new_project_list
+		github_repo_list = new_github_repo_list
 	}
+
+	slog.Info("parsing repositories into projects")
+	project_list := parse_repo_list(github_repo_list)
+	slog.Info("repositories parsed", "num", len(github_repo_list), "viable", len(project_list))
 
 	slog.Info("projects", "num", len(project_list))
 
@@ -1759,6 +1698,7 @@ func main() {
 			case ".json":
 				write_json(project_list, output_file)
 			}
+			slog.Info(fmt.Sprintf("wrote %s file", ext), "output-file", output_file)
 		}
 	} else {
 		write_json(project_list, "")
