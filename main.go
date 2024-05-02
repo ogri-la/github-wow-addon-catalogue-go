@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"sync"
 
 	"fmt"
 	"io"
@@ -101,9 +102,10 @@ type CLI struct {
 	OutputFile          []string
 	LogLevelLabel       string
 	LogLevel            slog.Level
-	UseExpiredCache     bool
-	FilterPattern       string
-	FilterPatternRegexp *regexp.Regexp
+	UseExpiredCache     bool           // use cached data, even if it's expired.
+	FilterPattern       string         // a regex to be applied to `project.FullName`
+	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
+	Async               bool           // some bits can be run asynchronously at the expense of out-of-order logs
 }
 
 // global state, see `STATE`
@@ -119,7 +121,6 @@ type State struct {
 var STATE *State
 
 // type alias for the WoW 'flavor'.
-// TitleCase because these are *types*.
 type Flavor = string
 
 // "For avoidance of doubt, these are all the file name formats presently supported on all clients and the order that each client will attempt to load them in currently.
@@ -192,9 +193,9 @@ func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
 type GithubRepo struct {
 	ID          int    `json:"id"`
 	Name        string `json:"name"`      // AdiBags
-	FullName    string `json:"full-name"` // AdiAddons/AdiBags
+	FullName    string `json:"full_name"` // AdiAddons/AdiBags
+	URL         string `json:"html_url"`  // https://github/AdiAddons/AdiBags
 	Description string `json:"description"`
-	URL         string `json:"url"` // https://github/AdiAddons/AdiBags
 }
 
 // read a csv `row` and return a `Project` struct.
@@ -251,7 +252,7 @@ type Project struct {
 	FlavorList     []Flavor          `json:"flavor-list"`
 	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 	HasReleaseJSON bool              `json:"has-release-json"`
-	LastSeenDate   time.Time         `json:"last-seen-date"`
+	LastSeenDate   *time.Time        `json:"last-seen-date,omitempty"`
 }
 
 func ProjectCSVHeader() []string {
@@ -378,15 +379,11 @@ func read_cache_entry(cache_key string) (*http.Response, error) {
 }
 
 // zipfile caches are JSON maps of zipfile-entry-filenames => base64-encoded-bytes.
+// todo: remove zipped_file_filter
 func read_zip_cache_entry(zip_cache_key string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 	empty_response := map[string][]byte{}
 
-	fh, err := os.Open(cache_path(zip_cache_key))
-	if err != nil {
-		return empty_response, err
-	}
-
-	data, err := io.ReadAll(fh)
+	data, err := os.ReadFile(cache_path(zip_cache_key))
 	if err != nil {
 		return empty_response, err
 	}
@@ -398,20 +395,16 @@ func read_zip_cache_entry(zip_cache_key string, zipped_file_filter func(string) 
 	}
 
 	result := map[string][]byte{}
-	placeholder := []byte{0x66, 0xFC, 0x72}
+	//placeholder := []byte{0x66, 0xFC, 0x72}
 	for zipfile_entry_filename, zipfile_entry_encoded_bytes := range cached_zip_file_contents {
 		decoded_bytes, err := base64.StdEncoding.DecodeString(zipfile_entry_encoded_bytes)
 		if err != nil {
 			return empty_response, err
 		}
 
-		if zipped_file_filter(zipfile_entry_filename) && bytes.Equal(decoded_bytes, placeholder) {
-			// placeholder found.
-			// the `zipped_file_filter` fn has changed and this zip file entry now needs to be read.
-			return empty_response, fmt.Errorf("file filter has changed and is attempting to read a file that wasn't originally fetched")
+		if zipped_file_filter(zipfile_entry_filename) {
+			result[zipfile_entry_filename] = decoded_bytes
 		}
-
-		result[zipfile_entry_filename] = decoded_bytes
 	}
 
 	return result, nil
@@ -663,8 +656,6 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	}
 
 	file_bytes := map[string][]byte{}
-	placeholder := []byte{0x66, 0xFC, 0x72}
-
 	for _, zipped_file_entry := range zip_rdr.File {
 		if zipped_file_filter(zipped_file_entry.Name) {
 			slog.Debug("found zip file entry name match", "filename", zipped_file_entry.Name)
@@ -674,6 +665,7 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 				// this file is probably busted, stop trying to read it altogether.
 				return empty_response, fmt.Errorf("failed to open zip file entry: %w", err)
 			}
+			defer fh.Close()
 
 			bl, err := io.ReadAll(fh)
 			if err != nil {
@@ -684,8 +676,6 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 			// note: so much other great stuff available to us in zipped_file! can we use it?
 
 			file_bytes[zipped_file_entry.Name] = bl
-		} else {
-			file_bytes[zipped_file_entry.Name] = placeholder
 		}
 	}
 
@@ -846,7 +836,7 @@ func parse_toc_filename(filename string) (string, Flavor) {
 }
 
 // parses the given `zip_file_entry` 'filename',
-// that we expect to look like: 'AddonName/AddonName.toc' or 'AddonName/AddonName-flavor.ext',
+// that we expect to look like: 'AddonName/AddonName.toc' or 'AddonName/AddonName-flavor.toc',
 // returning `true` when both the dirname and filename sans ext are equal
 // and the flavor, if present, is valid.
 func is_toc_file(zip_file_entry string) bool {
@@ -993,6 +983,11 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 		}
 
 		for toc_filename, toc_contents := range toc_file_map {
+			// todo: remove this once cache cleaned up
+			if !is_toc_file(toc_filename) {
+				continue
+			}
+
 			_, flavor := parse_toc_filename(toc_filename)
 			if flavor != "" {
 				slog.Debug("found flavor in .toc filename, not inspecting .toc contents", "flavor", flavor, "url", asset.BrowserDownloadURL)
@@ -1199,7 +1194,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		UpdatedDate:    latest_github_release.PublishedAtDate,
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
-		LastSeenDate:   STATE.RunStart,
+		LastSeenDate:   &STATE.RunStart,
 		ProjectIDMap:   project_id_map,
 	}
 	return project, nil
@@ -1209,18 +1204,36 @@ func parse_repo(repo GithubRepo) (Project, error) {
 // `GithubRepo` structs that fail to parse are excluded from the final list.
 func parse_repo_list(repo_list []GithubRepo) []Project {
 	project_list := []Project{}
+	var wg sync.WaitGroup
+
 	for _, repo := range repo_list {
-		project, err := parse_repo(repo)
-		if err != nil {
-			if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
-				slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
-				continue
-			}
-			slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
-			continue
+		repo := repo
+		if STATE.CLI.Async {
+			wg.Add(1)
 		}
-		project_list = append(project_list, project)
+		closure := func() {
+			if STATE.CLI.Async {
+				defer wg.Done()
+			}
+			project, err := parse_repo(repo)
+			if err != nil {
+				if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
+					slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
+					return
+				}
+				slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
+				return
+			}
+			project_list = append(project_list, project)
+		}
+
+		if STATE.CLI.Async {
+			go closure()
+		} else {
+			closure()
+		}
 	}
+	wg.Wait()
 	return project_list
 }
 
@@ -1291,6 +1304,8 @@ func search_github(endpoint string, search_query string) []string {
 // the two types have different sets of available fields.
 func search_result_to_struct(search_result string) (GithubRepo, error) {
 
+	empty_response := GithubRepo{}
+
 	// 'code' result, many missing fields
 	repo_field := gjson.Get(search_result, "repository")
 	var repo GithubRepo
@@ -1299,7 +1314,7 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 		err = json.Unmarshal([]byte(repo_field.String()), &repo)
 		if err != nil {
 			slog.Error("failed to unmarshal 'code' search result to GithubRepo struct", "search-result", search_result, "error", err)
-			return repo, err
+			return empty_response, err
 		}
 		return repo, nil
 	}
@@ -1310,6 +1325,7 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 		slog.Error("failed to unmarshal 'repository' search result to GithubRepo struct", "search-result", search_result, "error", err)
 		return repo, err
 	}
+
 	return repo, nil
 }
 
@@ -1383,6 +1399,9 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 		{"repositories", "topic:warcraft-addon"},
 		{"repositories", "topics:>2 topic:world-of-warcraft topic:addon"},
 	}
+
+	// note: no real savings with async here, Github throttles searches heavily
+
 	for _, pair := range search_list {
 		endpoint, query := pair[0], pair[1]
 		search_results := search_github(endpoint, query)
@@ -1417,7 +1436,15 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 // write a list of Projects as a JSON array to the given `output_file`,
 // or to stdout if `output_file` is empty.
 func write_json(project_list []Project, output_file string) {
-	bytes, err := json.MarshalIndent(project_list, "", "\t")
+
+	foo := []Project{}
+	for _, p := range project_list {
+		p.LastSeenDate = nil
+		foo = append(foo, p)
+	}
+
+	//bytes, err := json.MarshalIndent(project_list, "", "\t")
+	bytes, err := json.MarshalIndent(foo, "", "\t")
 	if err != nil {
 		slog.Error("failed to marshal project list to JSON", "error", err)
 		fatal()
@@ -1457,9 +1484,10 @@ func read_json(path string) ([]GithubRepo, error) {
 	filtered_project_list := []GithubRepo{}
 	for _, repo := range filtered_project_list {
 		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, repo.FullName)
-		if !excluded {
-			filtered_project_list = append(filtered_project_list, repo)
+		if excluded {
+			continue
 		}
+		filtered_project_list = append(filtered_project_list, repo)
 	}
 
 	// todo: validate
@@ -1586,6 +1614,7 @@ func read_cli_args(arg_list []string) CLI {
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
+	flag.BoolVar(&cli.Async, "async", false, "asynchronous operations, not recommended for debugging")
 	flag.Parse()
 
 	for _, input_file := range cli.InputFile {
@@ -1637,21 +1666,38 @@ func main() {
 	input_repo_list := []GithubRepo{}
 
 	if len(STATE.CLI.InputFile) > 0 {
+		var wg sync.WaitGroup
 		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
 		for _, input_file := range STATE.CLI.InputFile {
-			ext := filepath.Ext(input_file)
-			var repo_list []GithubRepo
-
-			switch ext {
-			case ".csv":
-				repo_list, err = read_csv(input_file)
-			case ".json":
-				repo_list, err = read_json(input_file)
+			input_file := input_file
+			if STATE.CLI.Async {
+				wg.Add(1)
 			}
-			die(err != nil, fmt.Sprintf("%v", err))
-			slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
-			input_repo_list = append(input_repo_list, repo_list...)
+
+			closure := func() {
+				if STATE.CLI.Async {
+					defer wg.Done()
+				}
+				ext := filepath.Ext(input_file)
+				var repo_list []GithubRepo
+
+				switch ext {
+				case ".csv":
+					repo_list, err = read_csv(input_file)
+				case ".json":
+					repo_list, err = read_json(input_file)
+				}
+				die(err != nil, fmt.Sprintf("%v", err))
+				slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
+				input_repo_list = append(input_repo_list, repo_list...)
+			}
+			if STATE.CLI.Async {
+				go closure()
+			} else {
+				closure()
+			}
 		}
+		wg.Wait()
 		slog.Info("found projects", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
 	}
 
@@ -1688,6 +1734,10 @@ func main() {
 	slog.Info("repositories parsed", "num", len(github_repo_list), "viable", len(project_list))
 
 	slog.Info("projects", "num", len(project_list))
+
+	slices.SortFunc(project_list, func(a, b Project) int {
+		return strings.Compare(a.FullName, b.FullName)
+	})
 
 	if len(STATE.CLI.OutputFile) > 0 {
 		for _, output_file := range STATE.CLI.OutputFile {
