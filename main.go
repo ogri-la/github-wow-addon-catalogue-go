@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"runtime"
 	"sync"
 
 	"fmt"
@@ -54,6 +55,15 @@ var API_URL = "https://api.github.com"
 var REPO_BLACKLIST = map[string]bool{
 	"foo/":                      true, // dummy, for unit tests
 	"layday/wow-addon-template": true, // template
+
+	// quite large
+	/*
+		"Duugu/SkuAudioData":         true,
+		"Duugu/SkuAudioData_en":      true,
+		"Duugu/SkuAudioData_fast_de": true,
+		"Duugu/SkuBeaconSoundsets":   true,
+		"Duugu/SkuMapper":            true,
+	*/
 
 	// mine
 	"WOWRainbowUI/RainbowUI-Retail": true, // addon bundle, very large, incorrect filestructure
@@ -105,7 +115,6 @@ type CLI struct {
 	UseExpiredCache     bool           // use cached data, even if it's expired.
 	FilterPattern       string         // a regex to be applied to `project.FullName`
 	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
-	Async               bool           // some bits can be run asynchronously at the expense of out-of-order logs
 }
 
 // global state, see `STATE`
@@ -1203,18 +1212,14 @@ func parse_repo(repo GithubRepo) (Project, error) {
 // parses many `GithubRepo` structs in to a list of `Project` structs.
 // `GithubRepo` structs that fail to parse are excluded from the final list.
 func parse_repo_list(repo_list []GithubRepo) []Project {
-	project_list := []Project{}
 	var wg sync.WaitGroup
+	project_chan := make(chan Project, 10)
 
 	for _, repo := range repo_list {
 		repo := repo
-		if STATE.CLI.Async {
-			wg.Add(1)
-		}
-		closure := func() {
-			if STATE.CLI.Async {
-				defer wg.Done()
-			}
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
 			project, err := parse_repo(repo)
 			if err != nil {
 				if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
@@ -1224,16 +1229,21 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 				slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 				return
 			}
-			project_list = append(project_list, project)
-		}
-
-		if STATE.CLI.Async {
-			go closure()
-		} else {
-			closure()
-		}
+			project_chan <- project
+		}()
 	}
-	wg.Wait()
+
+	// close the chan when everything is done
+	go func() {
+		wg.Wait()
+		close(project_chan)
+	}()
+
+	// accumulate the results while waiting for the channel to close.
+	project_list := []Project{}
+	for v := range project_chan {
+		project_list = append(project_list, v)
+	}
 	return project_list
 }
 
@@ -1614,7 +1624,6 @@ func read_cli_args(arg_list []string) CLI {
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
-	flag.BoolVar(&cli.Async, "async", false, "asynchronous operations, not recommended for debugging")
 	flag.Parse()
 
 	for _, input_file := range cli.InputFile {
@@ -1656,6 +1665,9 @@ func init() {
 	if is_testing() {
 		return
 	}
+
+	runtime.GOMAXPROCS(4)
+
 	STATE = init_state()
 	STATE.CLI = read_cli_args(os.Args)
 	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.CLI.LogLevel})))
@@ -1666,38 +1678,22 @@ func main() {
 	input_repo_list := []GithubRepo{}
 
 	if len(STATE.CLI.InputFile) > 0 {
-		var wg sync.WaitGroup
 		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
 		for _, input_file := range STATE.CLI.InputFile {
 			input_file := input_file
-			if STATE.CLI.Async {
-				wg.Add(1)
-			}
+			ext := filepath.Ext(input_file)
+			var repo_list []GithubRepo
 
-			closure := func() {
-				if STATE.CLI.Async {
-					defer wg.Done()
-				}
-				ext := filepath.Ext(input_file)
-				var repo_list []GithubRepo
-
-				switch ext {
-				case ".csv":
-					repo_list, err = read_csv(input_file)
-				case ".json":
-					repo_list, err = read_json(input_file)
-				}
-				die(err != nil, fmt.Sprintf("%v", err))
-				slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
-				input_repo_list = append(input_repo_list, repo_list...)
+			switch ext {
+			case ".csv":
+				repo_list, err = read_csv(input_file)
+			case ".json":
+				repo_list, err = read_json(input_file)
 			}
-			if STATE.CLI.Async {
-				go closure()
-			} else {
-				closure()
-			}
+			die(err != nil, fmt.Sprintf("%v", err))
+			slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
+			input_repo_list = append(input_repo_list, repo_list...)
 		}
-		wg.Wait()
 		slog.Info("found projects", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
 	}
 
