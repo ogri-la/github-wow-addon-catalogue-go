@@ -78,6 +78,9 @@ func Test_is_toc_file(t *testing.T) {
 
 		// apostrophe
 		"Ranoth's utility/Ranoth's utility.toc": true,
+
+		// exclamation mark
+		"!!!GarbageProtector/!!!GarbageProtector-Mainline.toc": true,
 	}
 	for given, expected := range cases {
 		assert.Equal(t, expected, is_toc_file(given), given)

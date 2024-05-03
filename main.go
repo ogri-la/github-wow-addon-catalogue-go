@@ -51,6 +51,16 @@ var WARNED = map[string]bool{}
 
 var API_URL = "https://api.github.com"
 
+// projects that do a release over several Github releases.
+// this leads to their data flip-flopping depending on when a scrape was done.
+// these cases have multiple releases analysed.
+var REPO_MULTI_RELEASE = map[string]bool{
+	"Mortalknight/GW2_UI":    true,
+	"Nevcairiel/GatherMate2": true,
+	"Nevcairiel/Inventorian": true,
+	"NDui/releases":          true,
+}
+
 // case insensitive repository prefixes
 var REPO_BLACKLIST = map[string]bool{
 	"foo/":                      true, // dummy, for unit tests
@@ -313,7 +323,7 @@ func throttled(resp ResponseWrapper) bool {
 
 // inspects HTTP response `resp` and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
-	default_pause := float64(5) // seconds.
+	default_pause := float64(10) // seconds.
 	pause := default_pause
 
 	// inspect cache to see an example of this value
@@ -729,7 +739,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 		return resp, nil
 	}
 
-	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts)
+	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts, "last-resp", resp.StatusCode)
 	return ResponseWrapper{}, errors.New("failed to download url: " + url)
 }
 
@@ -814,7 +824,7 @@ func toc_filename_regexp() *regexp.Regexp {
 		flavor_list = append(flavor_list, flavor_alias)
 	}
 	flavors := strings.Join(flavor_list, "|") // "mainline|wrath|somealias"
-	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w'-_. ]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
+	pattern := fmt.Sprintf(`(?i)^(?P<name>[\w!'-_. ]+?)(?:[-_](?P<flavor>%s))?\.toc$`, flavors)
 	return regexp.MustCompile(pattern)
 }
 
@@ -961,7 +971,7 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 		}
 		for _, key := range project_id_list {
 			val, present := keyvals[key]
-			if present {
+			if present && val != "" {
 				selected_key_vals[key] = val
 			}
 		}
