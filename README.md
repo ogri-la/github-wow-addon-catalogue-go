@@ -10,27 +10,31 @@ A translation of the Python [layday/github-wow-addon-catalogue](https://github.c
 git clone https://github.com/ogri-la/github-wow-addon-catalogue-go
 cd github-wow-addon-catalogue-go
 go build .
+export ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token>
 ```
 
 ## Usage
 
-    ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue > addons.csv
+The catalogue is written to `stdout` and logging to `stderr`:
 
-The catalogue is written to `stdout` and logging to `stderr`.
+    $ ./github-wow-addon-catalogue
 
-To build upon the results of a previous scrape:
+CSV and JSON output formats are supported, with JSON as the default.
 
-    ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --in old.csv --out new.csv --out new.json
+    $ ./github-wow-addon-catalogue --out addons.csv
+
+To build upon the results of a previous run:
+
+    $ ./github-wow-addon-catalogue --in old.csv --out new.csv
 
 To always use cached responses, even if they've expired:
 
-    ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --use-expired-cache
+    $ ./github-wow-addon-catalogue --use-expired-cache
 
 To limit parsing to just addons with names matching a pattern:
 
-    ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --filter '^AdiAddons'
-
 ```bash
+$ ./github-wow-addon-catalogue --filter '^AdiAddons'
 May  4 00:51:01.342 INF searching for addons
 May  4 00:51:02.483 INF found addons num=3
 May  4 00:51:02.483 INF de-duplicating addons num=3
@@ -45,8 +49,6 @@ May  4 00:51:02.484 INF parsing .toc filename=LibPlayerSpells-1.0/LibPlayerSpell
 May  4 00:51:02.485 INF parsing .toc filename=AdiBags/AdiBags.toc
 May  4 00:51:02.485 INF parsing .toc filename=AdiBags_Config/AdiBags_Config.toc
 May  4 00:51:02.485 INF addons parsed num=3 viable=3
-```
-```json
 [
 	{
 		"id": 639034,
