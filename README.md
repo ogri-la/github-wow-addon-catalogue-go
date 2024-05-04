@@ -30,7 +30,7 @@ To limit parsing to just addons with names matching a pattern:
 
     ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token> ./github-wow-addon-catalogue --filter '^AdiAddons'
 
-```json
+```bash
 May  4 00:51:01.342 INF searching for addons
 May  4 00:51:02.483 INF found addons num=3
 May  4 00:51:02.483 INF de-duplicating addons num=3
@@ -45,6 +45,8 @@ May  4 00:51:02.484 INF parsing .toc filename=LibPlayerSpells-1.0/LibPlayerSpell
 May  4 00:51:02.485 INF parsing .toc filename=AdiBags/AdiBags.toc
 May  4 00:51:02.485 INF parsing .toc filename=AdiBags_Config/AdiBags_Config.toc
 May  4 00:51:02.485 INF addons parsed num=3 viable=3
+```
+```json
 [
 	{
 		"id": 639034,
