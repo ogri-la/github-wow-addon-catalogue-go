@@ -40,8 +40,7 @@ import (
 	bufra "github.com/avvmoto/buf-readerat"
 )
 
-// modified at build with `-ldflags  "-X main.APP_VERSION=X.X.X"`
-var APP_VERSION = "unreleased"
+var APP_VERSION = "unreleased" // modified at release with `-ldflags "-X main.APP_VERSION=X.X.X"`
 var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
 
 var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
@@ -49,14 +48,14 @@ var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files sh
 var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
 var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
 
-// prevents issuing the same warning multiple times where going backwards and forwards
+// prevents issuing the same warnings multiple times when going backwards and forwards
 // and upside down through the search results.
 var WARNED = map[string]bool{}
 
 var API_URL = "https://api.github.com"
 
-// projects that do a release over several Github releases.
-// this leads to their data flipflopping depending.
+// projects that do their release over several Github releases.
+// this leads to their data flipflopping about.
 var REPO_MULTI_RELEASE = map[string]bool{
 	"Mortalknight/GW2_UI":    true,
 	"Nevcairiel/GatherMate2": true,
@@ -68,15 +67,6 @@ var REPO_MULTI_RELEASE = map[string]bool{
 var REPO_BLACKLIST = map[string]bool{
 	"foo/":                      true, // dummy, for unit tests
 	"layday/wow-addon-template": true, // template
-
-	// quite large
-	/*
-		"Duugu/SkuAudioData":         true,
-		"Duugu/SkuAudioData_en":      true,
-		"Duugu/SkuAudioData_fast_de": true,
-		"Duugu/SkuBeaconSoundsets":   true,
-		"Duugu/SkuMapper":            true,
-	*/
 
 	// mine
 	"WOWRainbowUI/RainbowUI-Retail": true, // addon bundle, very large, incorrect filestructure
@@ -126,17 +116,17 @@ type CLI struct {
 	SkipSearch          bool // don't search github, just use input files
 	LogLevelLabel       string
 	LogLevel            slog.Level
-	UseExpiredCache     bool           // use cached data, even if it's expired.
+	UseExpiredCache     bool           // use cached data, even if it's expired
 	FilterPattern       string         // a regex to be applied to `project.FullName`
 	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
 }
 
 // global state, see `STATE`
 type State struct {
-	CWD         string
+	CWD         string             // Current Working Directory
 	GithubToken string             // Github credentials, pulled from ENV
 	Client      *http.Client       // shared HTTP client for persistent connections
-	Schema      *jsonschema.Schema // validate release.json files
+	Schema      *jsonschema.Schema // validates release.json files
 	CLI         CLI                // captures args passed in from the command line
 	RunStart    time.Time          // time app started
 }
@@ -163,7 +153,7 @@ var FLAVOR_LIST = []Flavor{
 	MainlineFlavor, VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor,
 }
 
-// mapping of alias=>canonical flavour
+// mapping of alias => canonical flavour
 var FLAVOR_ALIAS_MAP = map[string]Flavor{
 	"classic": VanillaFlavor,
 	"bcc":     TBCFlavor,
@@ -212,12 +202,13 @@ func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
 }
 
 // a Github search result.
-// different types of search return different types of information.
+// different types of search return different types of information,
+// this captures a common subset.
 type GithubRepo struct {
 	ID          int    `json:"id"`
-	Name        string `json:"name"`      // AdiBags
-	FullName    string `json:"full_name"` // AdiAddons/AdiBags
-	URL         string `json:"html_url"`  // https://github/AdiAddons/AdiBags
+	Name        string `json:"name"`      // "AdiBags"
+	FullName    string `json:"full_name"` // "AdiAddons/AdiBags"
+	URL         string `json:"html_url"`  // "https://github/AdiAddons/AdiBags"
 	Description string `json:"description"`
 }
 
@@ -254,21 +245,21 @@ type ReleaseDotJson struct {
 	ReleaseJsonEntryList []ReleaseJsonEntry `json:"releases"`
 }
 
-// a release has many assets
+// a Github release has many assets.
 type GithubReleaseAsset struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
 	ContentType        string `json:"content_type"`
 }
 
-// a repository has many releases
+// a Github repository has many releases.
 type GithubRelease struct {
 	Name            string               `json:"name"` // "2.2.2"
 	AssetList       []GithubReleaseAsset `json:"assets"`
 	PublishedAtDate time.Time            `json:"published_at"`
 }
 
-// what is captured and rendered out
+// result of scraping a repository
 type Project struct {
 	GithubRepo
 	UpdatedDate    time.Time         `json:"updated-date"`
@@ -313,6 +304,7 @@ func project_to_csv_row(p Project) []string {
 	}
 }
 
+// convenience wrapper around a `http.Response`.
 type ResponseWrapper struct {
 	*http.Response
 	Bytes []byte
@@ -321,11 +313,12 @@ type ResponseWrapper struct {
 
 // --- http utils
 
+// returns `true` if given `resp` was throttled.
 func throttled(resp ResponseWrapper) bool {
 	return resp.StatusCode == 403
 }
 
-// inspects HTTP response `resp` and determines how long to wait. then waits.
+// inspects `resp` and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
 	default_pause := float64(10) // seconds.
 	pause := default_pause
@@ -371,21 +364,21 @@ func cache_path(cache_key string) string {
 	return fmt.Sprintf(STATE.CWD+"/output/%s", cache_key)
 }
 
-// creates a key that is unique to the given `http.Request` URL (including query parameters),
-// hashed to an MD5 string and prefixed.
+// creates a key that is unique to the given `req` URL (including query parameters),
+// hashed to an MD5 string and prefixed, suffixed.
 // the result can be safely used as a filename.
-func make_cache_key(r *http.Request) string {
+func make_cache_key(req *http.Request) string {
 	// inconsistent case and url params etc will cause cache misses
-	key := r.URL.String()
+	key := req.URL.String()
 	md5sum := md5.Sum([]byte(key))
 	cache_key := hex.EncodeToString(md5sum[:]) // fb9f36f59023fbb3681a895823ae9ba0
-	if strings.HasPrefix(r.URL.Path, "/search") {
+	if strings.HasPrefix(req.URL.Path, "/search") {
 		return cache_key + "-search" // fb9f36f59023fbb3681a895823ae9ba0-search
 	}
-	if strings.HasSuffix(r.URL.Path, ".zip") {
+	if strings.HasSuffix(req.URL.Path, ".zip") {
 		return cache_key + "-zip"
 	}
-	if strings.HasSuffix(r.URL.Path, "/release.json") {
+	if strings.HasSuffix(req.URL.Path, "/release.json") {
 		return cache_key + "-release.json"
 	}
 	return cache_key
@@ -635,7 +628,8 @@ func github_download(url string) (ResponseWrapper, error) {
 	return download(url, headers)
 }
 
-// returns a map of zipped-filename=>uncompressed-bytes of files within a zipfile at `url` whose filenames match `zipped_file_filter`.
+// returns a map of zipped-filename => uncompressed-bytes of files within a zipfile at `url`
+// whose filenames match `zipped_file_filter`.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
 	slog.Debug("HTTP GET .zip", "url", url)
@@ -705,8 +699,6 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 				return empty_response, fmt.Errorf("failed to read zip file entry: %w", err)
 			}
 
-			// note: so much other great stuff available to us in zipped_file! can we use it?
-
 			file_bytes[zipped_file_entry.Name] = bl
 		}
 	}
@@ -761,7 +753,6 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 // simplified .toc file parsing.
 // keys are lowercased.
 // does not handle duplicate keys, last key wins.
-// stops reading keyvals after the first blank line.
 func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error) {
 	slog.Info("parsing .toc", "filename", filename)
 
@@ -844,7 +835,7 @@ func toc_filename_regexp() *regexp.Regexp {
 var TOC_FILENAME_REGEXP = toc_filename_regexp()
 
 // parses the given `filename`,
-// extracting the filename sans ext and any flavors,
+// extracting the filename sans extension and any flavors,
 // returning a pair of (filename, flavor).
 // matching is case insensitive and flavor, if any, are returned lowercase.
 // when flavor is absent, the second value is empty.
@@ -900,7 +891,7 @@ func is_toc_file(zip_file_entry string) bool {
 			// won't fix
 
 			// edge case: BetterZoneStats-v1.0/BetterZoneStats.toc
-			// addon name has suffix '-v1.0' which doesn't match the .toc is_toc_file
+			// addon name has suffix '-v1.0' which doesn't match a .toc in `is_toc_file`.
 			// improperly structured release, won't fix.
 
 			// edge case: addon name contains flavour: "JadeUI-Classic/JadeUI-Classic.toc"
@@ -908,7 +899,6 @@ func is_toc_file(zip_file_entry string) bool {
 			// rest:   "JadeUI-Classic.toc"
 			// filename: "JadeUI"
 			// flavor: "classic"
-
 			// shortcoming in my code, this hack helps
 			prefix_match, prefix_flavor := guess_game_track(prefix)
 			if prefix_match != "" && prefix_flavor == flavor {
@@ -950,7 +940,7 @@ func interface_value_to_flavor_list(interface_val string) ([]Flavor, error) {
 	return flavor_list, nil
 }
 
-// downloads a file asset from a github release,
+// downloads a file asset from a Github release,
 // extracts any .toc files from within it,
 // parsing their contents,
 // and returning a map of any project-ids to their values.
@@ -999,11 +989,6 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, error) {
 	flavor_list := []Flavor{}
 	for _, asset := range asset_list {
-
-		// future: original implementation only reads bytes if toc is 'flavorless'.
-		// what might also be interesting is preserving *everything* for analysis later,
-		// like finding all "X-*" keys ever used.
-
 		toc_file_map, err := github_zip_download(asset.BrowserDownloadURL, is_toc_file)
 		if err != nil {
 			slog.Error("failed to process remote zip file", "error", err)
@@ -1011,7 +996,7 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 		}
 
 		if len(toc_file_map) == 0 {
-			slog.Warn("no .toc files found in .zip asset while extracting game flavours", "url", asset.BrowserDownloadURL)
+			slog.Warn("no .toc files found in .zip asset while extracting game flavors", "url", asset.BrowserDownloadURL)
 		}
 
 		for toc_filename, toc_contents := range toc_file_map {
@@ -1155,8 +1140,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
-	// todo: how to merge these with the addon data we already know about that was passed in?
-	flavor_list := []Flavor{} // set of "wrath", "classic", etc
+	flavor_list := []Flavor{}
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
@@ -1205,7 +1189,6 @@ func parse_repo(repo GithubRepo) (Project, error) {
 			return empty_response, fmt.Errorf("failed to parse .toc files in assets")
 		}
 
-		// todo: I just plonked this in here while sick, review
 		for _, asset := range zip_file_asset_list {
 			project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
 			if err != nil {
@@ -1336,10 +1319,9 @@ func search_github(endpoint string, search_query string) []string {
 // `search_result` is either a 'code' result or a 'repository' result,
 // the two types have different sets of available fields.
 func search_result_to_struct(search_result string) (GithubRepo, error) {
-
 	empty_response := GithubRepo{}
 
-	// 'code' result, many missing fields
+	// 'code' result, nested value, many missing fields
 	repo_field := gjson.Get(search_result, "repository")
 	var repo GithubRepo
 	var err error
@@ -1362,7 +1344,7 @@ func search_result_to_struct(search_result string) (GithubRepo, error) {
 	return repo, nil
 }
 
-// convert the blobs of json from searching Github into `GithubRepo` structs.
+// convert a page of search results into a list of `GithubRepo` structs.
 func search_results_to_struct_list(search_results_list []string) []GithubRepo {
 	results := []GithubRepo{}
 	for _, search_results := range search_results_list {
@@ -1457,6 +1439,8 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 	for _, repo := range repo_idx {
 		struct_list = append(struct_list, repo)
 	}
+
+	// todo: do we need this sort anymore?
 	slices.SortFunc(struct_list, func(a, b GithubRepo) int {
 		return strings.Compare(a.FullName, b.FullName)
 	})
@@ -1749,7 +1733,7 @@ func main() {
 		github_repo_list = append(github_repo_list, search_results...)
 	}
 
-	if len(github_repo_list) > 0 {
+	if len(github_repo_list) > 1 {
 		slog.Info("de-duplicating addons", "num", len(github_repo_list))
 
 		// de-duplicate repos with later inputs overriding earlier inputs.
@@ -1766,6 +1750,7 @@ func main() {
 
 		slog.Info("unique addons", "num", len(unique_github_repo_list))
 
+		// todo: do we need this sort any more?
 		slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
 			return strings.Compare(a.FullName, b.FullName)
 		})
