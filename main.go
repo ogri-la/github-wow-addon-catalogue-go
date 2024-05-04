@@ -40,6 +40,10 @@ import (
 	bufra "github.com/avvmoto/buf-readerat"
 )
 
+// modified at build with `-ldflags  "-X main.APP_VERSION=X.X.X"`
+var APP_VERSION = "unreleased"
+var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
+
 var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
 var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
 var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
@@ -52,13 +56,12 @@ var WARNED = map[string]bool{}
 var API_URL = "https://api.github.com"
 
 // projects that do a release over several Github releases.
-// this leads to their data flip-flopping depending on when a scrape was done.
-// these cases have multiple releases analysed.
+// this leads to their data flipflopping depending.
 var REPO_MULTI_RELEASE = map[string]bool{
 	"Mortalknight/GW2_UI":    true,
 	"Nevcairiel/GatherMate2": true,
 	"Nevcairiel/Inventorian": true,
-	"NDui/releases":          true,
+	"Witnesscm/NDui_Plus":    true,
 }
 
 // case insensitive repository prefixes
@@ -118,8 +121,9 @@ var REPO_BLACKLIST = map[string]bool{
 }
 
 type CLI struct {
-	InputFile           []string
-	OutputFile          []string
+	InputFileList       []string
+	OutputFileList      []string
+	SkipSearch          bool // don't search github, just use input files
 	LogLevelLabel       string
 	LogLevel            slog.Level
 	UseExpiredCache     bool           // use cached data, even if it's expired.
@@ -329,7 +333,7 @@ func wait(resp ResponseWrapper) {
 	// inspect cache to see an example of this value
 	val := resp.Header.Get("X-Ratelimit-Reset")
 	if val == "" {
-		slog.Error("rate limited but no 'X-Ratelimit-Reset' header present.")
+		slog.Error("rate limited but no 'X-Ratelimit-Reset' header present.", "headers", resp.Header)
 		pause = default_pause
 	} else {
 		int_val, err := strconv.ParseInt(val, 10, 64)
@@ -579,6 +583,10 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	return cached_resp, nil
 }
 
+func user_agent() string {
+	return fmt.Sprintf("github-wow-addon-catalogue-go/%v (%v)", APP_VERSION, APP_LOC)
+}
+
 func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	slog.Debug("HTTP GET", "url", url)
 	empty_response := ResponseWrapper{}
@@ -589,6 +597,9 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.Header.Set("User-Agent", user_agent())
+
 	for header, header_val := range headers {
 		req.Header.Set(header, header_val)
 	}
@@ -635,6 +646,8 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	req.Header.Set("User-Agent", user_agent())
 
 	for header, header_val := range headers {
 		req.Header.Set(header, header_val)
@@ -750,7 +763,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 // does not handle duplicate keys, last key wins.
 // stops reading keyvals after the first blank line.
 func parse_toc_file(filename string, toc_bytes []byte) (map[string]string, error) {
-	slog.Info("parsing .toc file", "filename", filename)
+	slog.Info("parsing .toc", "filename", filename)
 
 	toc_bytes, err := elide_bom(toc_bytes)
 	if err != nil {
@@ -1147,7 +1160,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
-		slog.Info("release.json found", "repo", repo.FullName, "release", latest_github_release.Name)
+		slog.Debug("release.json found", "repo", repo.FullName, "release", latest_github_release.Name)
 
 		// ensure at least one release in 'releases' is available
 		for _, entry := range release_dot_json.ReleaseJsonEntryList {
@@ -1455,16 +1468,15 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 
 // write a list of Projects as a JSON array to the given `output_file`,
 // or to stdout if `output_file` is empty.
+// JSON output is used for diffing and may not contain all the data present in CSV output.
 func write_json(project_list []Project, output_file string) {
-
-	foo := []Project{}
+	modified_project_list := []Project{}
 	for _, p := range project_list {
 		p.LastSeenDate = nil
-		foo = append(foo, p)
+		modified_project_list = append(modified_project_list, p)
 	}
 
-	//bytes, err := json.MarshalIndent(project_list, "", "\t")
-	bytes, err := json.MarshalIndent(foo, "", "\t")
+	bytes, err := json.MarshalIndent(modified_project_list, "", "\t")
 	if err != nil {
 		slog.Error("failed to marshal project list to JSON", "error", err)
 		fatal()
@@ -1483,6 +1495,7 @@ func write_json(project_list []Project, output_file string) {
 }
 
 // read a list of Projects from the given JSON file at `path`.
+// not recommended. JSON output is used for diffing and may not contain all the data present in CSV output.
 func read_json(path string) ([]GithubRepo, error) {
 	var empty_response []GithubRepo
 	fh, err := os.Open(path)
@@ -1517,13 +1530,11 @@ func read_json(path string) ([]GithubRepo, error) {
 
 // --- csv i/o
 
-// write a list of Projects as a CSV to the given `output_file`,
+// write a list of Projects as CSV to the given `output_file`,
 // or to stdout if `output_file` is empty.
 func write_csv(project_list []Project, output_file string) {
-	var output io.Writer
-	if output_file == "" {
-		output = os.Stdout
-	} else {
+	output := os.Stdout
+	if output_file != "" {
 		fh, err := os.Create(output_file)
 		if err != nil {
 			slog.Error("failed to open file for writing CSV", "output-file", output_file, "error", err)
@@ -1542,8 +1553,8 @@ func write_csv(project_list []Project, output_file string) {
 }
 
 // read a list of `GithubRepo` structs from the given CSV file at `path`.
-// note: *not* `Project` structs. Everything read also needs to be scraped from Github.
-// CSV structure follows original script.
+// note: a row is a complete `Project` but we use a `GithubRepo` instead as all inputs *must* be parsed.
+// CSV structure follows original.
 func read_csv(path string) ([]GithubRepo, error) {
 	empty_response := []GithubRepo{}
 	fh, err := os.Open(path)
@@ -1567,6 +1578,9 @@ func read_csv(path string) ([]GithubRepo, error) {
 			repo_list = append(repo_list, repo)
 		}
 	}
+
+	// todo: validate
+
 	return repo_list, nil
 }
 
@@ -1604,13 +1618,6 @@ func init_state() *State {
 		RunStart: time.Now().UTC(),
 	}
 
-	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
-	if !present {
-		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not present")
-		fatal()
-	}
-	state.GithubToken = token
-
 	cwd, err := os.Getwd()
 	if err != nil {
 		slog.Error("couldn't find the current working dir to derive a writable location", "error", err)
@@ -1629,25 +1636,42 @@ func init_state() *State {
 
 func read_cli_args(arg_list []string) CLI {
 	cli := CLI{}
-	flag.StringArrayVar(&cli.InputFile, "in", []string{}, "path to extant addons.csv file. input is merged with results")
-	flag.StringArrayVar(&cli.OutputFile, "out", []string{}, "write results to file and not stdout")
+	flag.StringArrayVar(&cli.InputFileList, "in", []string{}, "path to extant addons.csv file. input is merged with results")
+	flag.StringArrayVar(&cli.OutputFileList, "out", []string{}, "write results to file and not stdout")
+	flag.BoolVar(&cli.SkipSearch, "skip-search", false, "don't search Github")
 	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
+
+	phelp := flag.BoolP("help", "h", false, "print this help and exit")
+	pversion := flag.Bool("version", false, "print program version and exit")
+
 	flag.Parse()
 
-	for _, input_file := range cli.InputFile {
+	if phelp != nil && *phelp {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	if pversion != nil && *pversion {
+		fmt.Println(APP_VERSION)
+		os.Exit(0)
+	}
+
+	for _, input_file := range cli.InputFileList {
 		die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
 		ext := filepath.Ext(input_file)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFile))
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFileList))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
 
-	for _, output_file := range cli.OutputFile {
+	for _, output_file := range cli.OutputFileList {
 		ext := filepath.Ext(output_file)
-		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFile))
+		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFileList))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("output path has unsupported extension: %s", ext))
 	}
+
+	die(cli.SkipSearch && len(cli.InputFileList) == 0, "cannot skip search if no input files provided")
 
 	if cli.FilterPattern != "" {
 		pattern, err := regexp.Compile(cli.FilterPattern)
@@ -1676,20 +1700,30 @@ func init() {
 		return
 	}
 
+	// caps the number of goroutines.
 	runtime.GOMAXPROCS(4)
 
 	STATE = init_state()
 	STATE.CLI = read_cli_args(os.Args)
 	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.CLI.LogLevel})))
+
+	// finally, die if no token present.
+	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
+	if !present {
+		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not set")
+		fatal()
+	}
+	STATE.GithubToken = token
 }
 
 func main() {
 	var err error
-	input_repo_list := []GithubRepo{}
+	github_repo_list := []GithubRepo{}
 
-	if len(STATE.CLI.InputFile) > 0 {
-		slog.Info("reading projects from input", "path", STATE.CLI.InputFile)
-		for _, input_file := range STATE.CLI.InputFile {
+	if len(STATE.CLI.InputFileList) > 0 {
+		slog.Info("reading addons from input file(s)", "path-list", STATE.CLI.InputFileList)
+		input_repo_list := []GithubRepo{}
+		for _, input_file := range STATE.CLI.InputFileList {
 			input_file := input_file
 			ext := filepath.Ext(input_file)
 			var repo_list []GithubRepo
@@ -1701,52 +1735,54 @@ func main() {
 				repo_list, err = read_json(input_file)
 			}
 			die(err != nil, fmt.Sprintf("%v", err))
-			slog.Info("found projects", "num", len(repo_list), "in", input_file, "filtered", STATE.CLI.FilterPattern != "")
+			slog.Info("found addons", "num", len(repo_list), "input-file", input_file, "filtered", STATE.CLI.FilterPattern != "")
 			input_repo_list = append(input_repo_list, repo_list...)
 		}
-		slog.Info("found projects", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFile), "filtered", STATE.CLI.FilterPattern != "")
+		slog.Info("found addons", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFileList), "filtered", STATE.CLI.FilterPattern != "")
+		github_repo_list = append(github_repo_list, input_repo_list...)
 	}
 
-	slog.Info("searching for new repositories")
-	github_repo_list := get_projects(STATE.CLI.FilterPatternRegexp)
-	slog.Info("found repositories", "num", len(github_repo_list))
+	if !STATE.CLI.SkipSearch {
+		slog.Info("searching for addons")
+		search_results := get_projects(STATE.CLI.FilterPatternRegexp)
+		slog.Info("found addons", "num", len(search_results))
+		github_repo_list = append(github_repo_list, search_results...)
+	}
 
-	if len(input_repo_list) > 0 {
-		slog.Info("merging input files with search results")
+	if len(github_repo_list) > 0 {
+		slog.Info("de-duplicating addons", "num", len(github_repo_list))
 
+		// de-duplicate repos with later inputs overriding earlier inputs.
+		// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
 		repo_idx := map[int]GithubRepo{}
-		for _, repo := range input_repo_list {
-			repo_idx[repo.ID] = repo
-		}
-
-		// search results overwrite results from input files
 		for _, repo := range github_repo_list {
 			repo_idx[repo.ID] = repo
 		}
 
-		new_github_repo_list := []GithubRepo{}
+		unique_github_repo_list := []GithubRepo{}
 		for _, repo := range repo_idx {
-			new_github_repo_list = append(new_github_repo_list, repo)
+			unique_github_repo_list = append(unique_github_repo_list, repo)
 		}
-		slices.SortFunc(new_github_repo_list, func(a, b GithubRepo) int {
+
+		slog.Info("unique addons", "num", len(unique_github_repo_list))
+
+		slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
 			return strings.Compare(a.FullName, b.FullName)
 		})
 
-		github_repo_list = new_github_repo_list
+		github_repo_list = unique_github_repo_list
 	}
 
-	slog.Info("parsing repositories into projects")
+	slog.Info("parsing addons")
 	project_list := parse_repo_list(github_repo_list)
-	slog.Info("repositories parsed", "num", len(github_repo_list), "viable", len(project_list))
-
-	slog.Info("projects", "num", len(project_list))
+	slog.Info("addons parsed", "num", len(github_repo_list), "viable", len(project_list))
 
 	slices.SortFunc(project_list, func(a, b Project) int {
 		return strings.Compare(a.FullName, b.FullName)
 	})
 
-	if len(STATE.CLI.OutputFile) > 0 {
-		for _, output_file := range STATE.CLI.OutputFile {
+	if len(STATE.CLI.OutputFileList) > 0 {
+		for _, output_file := range STATE.CLI.OutputFileList {
 			ext := filepath.Ext(output_file)
 			switch ext {
 			case ".csv":

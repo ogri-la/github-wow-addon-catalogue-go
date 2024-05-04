@@ -18,7 +18,7 @@ import (
 // cannot continue, exit immediately without a stacktrace.
 // just use `panic` if you do need a stracktrace.
 func fatal() {
-	fmt.Println("cannot continue")
+	fmt.Printf("cannot continue, ") // "cannot continue, exit status 1"
 	os.Exit(1)
 }
 
