@@ -218,11 +218,12 @@ func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
 // different types of search return different types of information,
 // this captures a common subset.
 type GithubRepo struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`      // "AdiBags"
-	FullName    string `json:"full_name"` // "AdiAddons/AdiBags"
-	URL         string `json:"html_url"`  // "https://github/AdiAddons/AdiBags"
-	Description string `json:"description"`
+	ID           int               `json:"id"`
+	Name         string            `json:"name"`      // "AdiBags"
+	FullName     string            `json:"full_name"` // "AdiAddons/AdiBags"
+	URL          string            `json:"html_url"`  // "https://github/AdiAddons/AdiBags"
+	Description  string            `json:"description"`
+	ProjectIDMap map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 }
 
 // read a csv `row` and return a `Project` struct.
@@ -233,12 +234,26 @@ func repo_from_csv_row(row []string) GithubRepo {
 		fatal()
 	}
 
+	project_id_map := map[string]string{}
+	if row[7] != "" {
+		project_id_map["x-curse-project-id"] = row[7]
+	}
+	if row[8] != "" {
+		project_id_map["x-wago-id"] = row[8]
+	}
+	if row[9] != "" {
+		project_id_map["x-wowi-id"] = row[9]
+	}
+
 	return GithubRepo{
 		ID:          id,
 		Name:        row[1],
 		FullName:    row[2],
 		URL:         row[3],
 		Description: row[4],
+		// 5 last-updated
+		// 6 flavors
+		ProjectIDMap: project_id_map,
 	}
 }
 
@@ -275,11 +290,11 @@ type GithubRelease struct {
 // result of scraping a repository
 type Project struct {
 	GithubRepo
-	UpdatedDate    time.Time         `json:"updated-date"`
-	FlavorList     []Flavor          `json:"flavor-list"`
-	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
-	HasReleaseJSON bool              `json:"has-release-json"`
-	LastSeenDate   *time.Time        `json:"last-seen-date,omitempty"`
+	UpdatedDate time.Time `json:"updated-date"`
+	FlavorList  []Flavor  `json:"flavor-list"`
+
+	HasReleaseJSON bool       `json:"has-release-json"`
+	LastSeenDate   *time.Time `json:"last-seen-date,omitempty"`
 }
 
 func ProjectCSVHeader() []string {
@@ -1237,6 +1252,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
+	repo.ProjectIDMap = project_id_map
 	flavor_list = unique_sorted_flavor_list(flavor_list)
 
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
@@ -1247,7 +1263,6 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   &STATE.RunStart,
-		ProjectIDMap:   project_id_map,
 	}
 	return project, nil
 }
@@ -1789,6 +1804,33 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 	return filtered_input_repo_list, nil
 }
 
+func unique_repo_list(github_repo_list []GithubRepo) []GithubRepo {
+	if len(github_repo_list) == 1 {
+		return github_repo_list
+	}
+
+	// de-duplicate repos with later inputs overriding earlier inputs.
+	// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
+	repo_idx := map[int]GithubRepo{}
+	for _, repo := range github_repo_list {
+		repo_idx[repo.ID] = repo
+	}
+
+	unique_github_repo_list := []GithubRepo{}
+	for _, repo := range repo_idx {
+		unique_github_repo_list = append(unique_github_repo_list, repo)
+	}
+
+	slog.Info("de-duplicated addons", "num", len(github_repo_list), "unique", len(unique_github_repo_list))
+
+	// todo: do we need this sort any more?
+	slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
+		return strings.Compare(a.FullName, b.FullName)
+	})
+
+	return unique_github_repo_list
+}
+
 func scrape() {
 	if STATE.GithubToken == "" {
 		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not set")
@@ -1812,30 +1854,7 @@ func scrape() {
 		github_repo_list = append(github_repo_list, search_results...)
 	}
 
-	if len(github_repo_list) > 1 {
-		slog.Info("de-duplicating addons", "num", len(github_repo_list))
-
-		// de-duplicate repos with later inputs overriding earlier inputs.
-		// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
-		repo_idx := map[int]GithubRepo{}
-		for _, repo := range github_repo_list {
-			repo_idx[repo.ID] = repo
-		}
-
-		unique_github_repo_list := []GithubRepo{}
-		for _, repo := range repo_idx {
-			unique_github_repo_list = append(unique_github_repo_list, repo)
-		}
-
-		slog.Info("unique addons", "num", len(unique_github_repo_list))
-
-		// todo: do we need this sort any more?
-		slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
-			return strings.Compare(a.FullName, b.FullName)
-		})
-
-		github_repo_list = unique_github_repo_list
-	}
+	github_repo_list = unique_repo_list(github_repo_list)
 
 	slog.Info("parsing addons")
 	project_list := parse_repo_list(github_repo_list)
@@ -1908,7 +1927,38 @@ func dump_release_dot_json() {
 // find addons in input list of addons that share sources.
 // a 'source' is a project ID like x-wowi-id or x-curse-project-id.
 func find_duplicates() {
-	fmt.Println("hello world")
+
+	github_repo_list, err := read_input_file_list(STATE.Flags.FindDuplicatesCommand.InputFileList, nil)
+	if err != nil {
+		slog.Error("failed to read input files", "error", err)
+		fatal()
+	}
+	github_repo_list = unique_repo_list(github_repo_list)
+
+	idx := map[string][]GithubRepo{}
+
+	for _, repo := range github_repo_list {
+		for key, val := range repo.ProjectIDMap {
+			idx_key := key + "/" + val // x-wago-id/1234567
+			grp, present := idx[idx_key]
+			if !present {
+				grp = []GithubRepo{}
+			}
+			grp = append(grp, repo)
+			idx[idx_key] = grp
+		}
+	}
+
+	for key, val := range idx {
+		if len(val) > 1 {
+			fmt.Println(key)
+			for i, repo := range val {
+				fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
+			}
+			fmt.Println("---")
+		}
+	}
+
 }
 
 // ---
