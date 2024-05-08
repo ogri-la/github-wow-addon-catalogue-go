@@ -110,7 +110,7 @@ var REPO_BLACKLIST = map[string]bool{
 	"ynazar1/Arh":                              true, // Fork
 }
 
-type CLI struct {
+type ScrapeCommand struct {
 	InputFileList       []string
 	OutputFileList      []string
 	SkipSearch          bool // don't search github, just use input files
@@ -123,12 +123,13 @@ type CLI struct {
 
 // global state, see `STATE`
 type State struct {
-	CWD         string             // Current Working Directory
-	GithubToken string             // Github credentials, pulled from ENV
-	Client      *http.Client       // shared HTTP client for persistent connections
-	Schema      *jsonschema.Schema // validates release.json files
-	CLI         CLI                // captures args passed in from the command line
-	RunStart    time.Time          // time app started
+	CWD           string             // Current Working Directory
+	GithubToken   string             // Github credentials, pulled from ENV
+	Client        *http.Client       // shared HTTP client for persistent connections
+	Schema        *jsonschema.Schema // validates release.json files
+	SubCommand    string             // cli subcommand
+	ScrapeCommand ScrapeCommand      // captures args passed in from the command line
+	RunStart      time.Time          // time app started
 }
 
 var STATE *State
@@ -359,9 +360,32 @@ func trace_context() context.Context {
 
 // --- caching
 
-// returns a path like "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
+// returns path to the cache directory.
+func cache_dir() string {
+	return filepath.Join(STATE.CWD, "output") // "/current/working/dir/output"
+}
+
+// returns a path to the given `cache_key`.
 func cache_path(cache_key string) string {
-	return fmt.Sprintf(STATE.CWD+"/output/%s", cache_key)
+	return filepath.Join(cache_dir(), cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
+}
+
+// returns a list of cache keys found in the cache directory.
+// each key in list can be read with `read_cache_key`.
+func cache_entry_list() []string {
+	empty_response := []string{}
+	dir_entry_list, err := os.ReadDir(cache_dir())
+	if err != nil {
+		slog.Error("failed to list cache directory", "error", err)
+		return empty_response
+	}
+	file_list := []string{}
+	for _, dir_entry := range dir_entry_list {
+		if !dir_entry.IsDir() {
+			file_list = append(file_list, dir_entry.Name())
+		}
+	}
+	return file_list
 }
 
 // creates a key that is unique to the given `req` URL (including query parameters),
@@ -441,6 +465,7 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
 }
 
+// deletes a cached file from the cache directory using the given `cache_key`.
 func remove_cache_entry(cache_key string) error {
 	return os.Remove(cache_path(cache_key))
 }
@@ -450,7 +475,7 @@ func remove_cache_entry(cache_key string) error {
 // assumes `path` exists.
 // returns `true` when an error occurs stat'ing `path`.
 func cache_expired(path string) bool {
-	if STATE.CLI.UseExpiredCache {
+	if STATE.ScrapeCommand.UseExpiredCache {
 		return false
 	}
 
@@ -1500,7 +1525,7 @@ func read_json(path string) ([]GithubRepo, error) {
 
 	filtered_project_list := []GithubRepo{}
 	for _, repo := range filtered_project_list {
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, repo.FullName)
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.ScrapeCommand.FilterPatternRegexp, repo.FullName)
 		if excluded {
 			continue
 		}
@@ -1557,7 +1582,7 @@ func read_csv(path string) ([]GithubRepo, error) {
 	}
 	for _, row := range row_list {
 		repo := repo_from_csv_row(row)
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.CLI.FilterPatternRegexp, repo.FullName)
+		_, excluded := is_excluded(REPO_BLACKLIST, STATE.ScrapeCommand.FilterPatternRegexp, repo.FullName)
 		if !excluded {
 			repo_list = append(repo_list, repo)
 		}
@@ -1597,43 +1622,52 @@ func configure_validator() *jsonschema.Schema {
 	return schema
 }
 
-func init_state() *State {
-	state := &State{
-		RunStart: time.Now().UTC(),
-	}
-
-	cwd, err := os.Getwd()
-	if err != nil {
-		slog.Error("couldn't find the current working dir to derive a writable location", "error", err)
-		fatal()
-	}
-	state.CWD = cwd
-
-	// attach a http client to global state to reuse http connections
-	state.Client = &http.Client{}
-	state.Client.Transport = &FileCachingRequest{}
-
-	state.Schema = configure_validator()
-
-	return state
+func usage() string {
+	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json>"
 }
 
-func read_cli_args(arg_list []string) CLI {
-	cli := CLI{}
-	flag.StringArrayVar(&cli.InputFileList, "in", []string{}, "path to extant addons.csv file. input is merged with results")
-	flag.StringArrayVar(&cli.OutputFileList, "out", []string{}, "write results to file and not stdout")
-	flag.BoolVar(&cli.SkipSearch, "skip-search", false, "don't search Github")
-	flag.StringVar(&cli.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
-	flag.BoolVar(&cli.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
-	flag.StringVar(&cli.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
+func read_cli_args(arg_list []string) (string, ScrapeCommand) {
+	var flagset *flag.FlagSet
+	defaults := flag.NewFlagSet("github-wow-addon-catalogue", flag.ContinueOnError)
+	phelp := defaults.BoolP("help", "h", false, "print this help and exit")
+	pversion := defaults.BoolP("version", "V", false, "print program version and exit")
 
-	phelp := flag.BoolP("help", "h", false, "print this help and exit")
-	pversion := flag.Bool("version", false, "print program version and exit")
+	scrape_cmd := ScrapeCommand{}
+	scrape_flagset := flag.NewFlagSet("scrape", flag.ExitOnError)
+	scrape_flagset.StringArrayVar(&scrape_cmd.InputFileList, "in", []string{}, "path to extant addons.csv file. input is merged with results")
+	scrape_flagset.StringArrayVar(&scrape_cmd.OutputFileList, "out", []string{}, "write results to file and not stdout")
+	scrape_flagset.BoolVar(&scrape_cmd.SkipSearch, "skip-search", false, "don't search Github")
+	scrape_flagset.StringVar(&scrape_cmd.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
+	scrape_flagset.BoolVar(&scrape_cmd.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
+	scrape_flagset.StringVar(&scrape_cmd.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
 
-	flag.Parse()
+	dump_release_dot_json_flagset := flag.NewFlagSet("release.json-dump", flag.ExitOnError)
+
+	// first arg is always the name of the running app.
+	// second arg should be the subcommand but could be -h or -v
+	var subcommand string
+	if len(arg_list) > 1 {
+		subcommand = arg_list[1]
+	}
+
+	switch subcommand {
+	case "scrape":
+		flagset = scrape_flagset
+		flagset.AddFlagSet(defaults)
+
+	case "dump-release-dot-json":
+		flagset = dump_release_dot_json_flagset
+		flagset.AddFlagSet(defaults)
+
+	default:
+		flagset = defaults
+	}
+
+	flagset.Parse(arg_list)
 
 	if phelp != nil && *phelp {
-		flag.Usage()
+		fmt.Println(usage())
+		flagset.PrintDefaults()
 		os.Exit(0)
 	}
 
@@ -1642,28 +1676,34 @@ func read_cli_args(arg_list []string) CLI {
 		os.Exit(0)
 	}
 
-	for _, input_file := range cli.InputFileList {
+	if subcommand == "" {
+		fmt.Println(usage())
+		flagset.PrintDefaults()
+		fatal()
+	}
+
+	for _, input_file := range scrape_cmd.InputFileList {
 		die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
 		ext := filepath.Ext(input_file)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", cli.InputFileList))
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", scrape_cmd.InputFileList))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
 
-	for _, output_file := range cli.OutputFileList {
+	for _, output_file := range scrape_cmd.OutputFileList {
 		ext := filepath.Ext(output_file)
-		die(ext == "", fmt.Sprintf("output path has no extension: %s", cli.OutputFileList))
+		die(ext == "", fmt.Sprintf("output path has no extension: %s", scrape_cmd.OutputFileList))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("output path has unsupported extension: %s", ext))
 	}
 
-	die(cli.SkipSearch && len(cli.InputFileList) == 0, "cannot skip search if no input files provided")
+	die(scrape_cmd.SkipSearch && len(scrape_cmd.InputFileList) == 0, "cannot skip search if no input files provided")
 
-	if cli.FilterPattern != "" {
-		pattern, err := regexp.Compile(cli.FilterPattern)
+	if scrape_cmd.FilterPattern != "" {
+		pattern, err := regexp.Compile(scrape_cmd.FilterPattern)
 		if err != nil {
 			slog.Error(fmt.Sprintf("filter could not be compiled to a regular expression: %v", err.Error()))
 			fatal()
 		}
-		cli.FilterPatternRegexp = pattern
+		scrape_cmd.FilterPatternRegexp = pattern
 	}
 
 	log_level_label_map := map[string]slog.Level{
@@ -1672,42 +1712,26 @@ func read_cli_args(arg_list []string) CLI {
 		"warn":  slog.LevelWarn,
 		"error": slog.LevelError,
 	}
-	log_level, present := log_level_label_map[cli.LogLevelLabel]
-	die(!present, fmt.Sprintf("unknown log level: %s", cli.LogLevelLabel))
-	cli.LogLevel = log_level
+	log_level, present := log_level_label_map[scrape_cmd.LogLevelLabel]
+	die(!present, fmt.Sprintf("unknown log level: %s", scrape_cmd.LogLevelLabel))
+	scrape_cmd.LogLevel = log_level
 
-	return cli
+	return subcommand, scrape_cmd
 }
 
-func init() {
-	if is_testing() {
-		return
-	}
-
-	// caps the number of goroutines.
-	runtime.GOMAXPROCS(4)
-
-	STATE = init_state()
-	STATE.CLI = read_cli_args(os.Args)
-	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.CLI.LogLevel})))
-
-	// finally, die if no token present.
-	token, present := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
-	if !present {
+func scrape() {
+	if STATE.GithubToken == "" {
 		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not set")
 		fatal()
 	}
-	STATE.GithubToken = token
-}
 
-func main() {
 	var err error
 	github_repo_list := []GithubRepo{}
 
-	if len(STATE.CLI.InputFileList) > 0 {
-		slog.Info("reading addons from input file(s)", "path-list", STATE.CLI.InputFileList)
+	if len(STATE.ScrapeCommand.InputFileList) > 0 {
+		slog.Info("reading addons from input file(s)", "path-list", STATE.ScrapeCommand.InputFileList)
 		input_repo_list := []GithubRepo{}
-		for _, input_file := range STATE.CLI.InputFileList {
+		for _, input_file := range STATE.ScrapeCommand.InputFileList {
 			input_file := input_file
 			ext := filepath.Ext(input_file)
 			var repo_list []GithubRepo
@@ -1719,16 +1743,16 @@ func main() {
 				repo_list, err = read_json(input_file)
 			}
 			die(err != nil, fmt.Sprintf("%v", err))
-			slog.Info("found addons", "num", len(repo_list), "input-file", input_file, "filtered", STATE.CLI.FilterPattern != "")
+			slog.Info("found addons", "num", len(repo_list), "input-file", input_file, "filtered", STATE.ScrapeCommand.FilterPattern != "")
 			input_repo_list = append(input_repo_list, repo_list...)
 		}
-		slog.Info("found addons", "num", len(input_repo_list), "num-input-files", len(STATE.CLI.InputFileList), "filtered", STATE.CLI.FilterPattern != "")
+		slog.Info("found addons", "num", len(input_repo_list), "num-input-files", len(STATE.ScrapeCommand.InputFileList), "filtered", STATE.ScrapeCommand.FilterPattern != "")
 		github_repo_list = append(github_repo_list, input_repo_list...)
 	}
 
-	if !STATE.CLI.SkipSearch {
+	if !STATE.ScrapeCommand.SkipSearch {
 		slog.Info("searching for addons")
-		search_results := get_projects(STATE.CLI.FilterPatternRegexp)
+		search_results := get_projects(STATE.ScrapeCommand.FilterPatternRegexp)
 		slog.Info("found addons", "num", len(search_results))
 		github_repo_list = append(github_repo_list, search_results...)
 	}
@@ -1766,8 +1790,8 @@ func main() {
 		return strings.Compare(a.FullName, b.FullName)
 	})
 
-	if len(STATE.CLI.OutputFileList) > 0 {
-		for _, output_file := range STATE.CLI.OutputFileList {
+	if len(STATE.ScrapeCommand.OutputFileList) > 0 {
+		for _, output_file := range STATE.ScrapeCommand.OutputFileList {
 			ext := filepath.Ext(output_file)
 			switch ext {
 			case ".csv":
@@ -1779,5 +1803,96 @@ func main() {
 		}
 	} else {
 		write_json(project_list, "")
+	}
+}
+
+// ---
+
+// prints release.json files to stdout one per line.
+// the output can be fed into the `ogri-la/release.json-validator` project.
+func dump_release_dot_json() {
+	jsonl := []map[string]any{}
+	for _, cache_file := range cache_entry_list() {
+		if strings.HasSuffix(cache_file, "-release.json") {
+			resp, err := read_cache_entry(cache_file)
+			if err != nil {
+				slog.Warn("failed to reach cache file", "cache-file", cache_file, "error", err)
+				continue
+			}
+
+			cache_file_bytes, err := io.ReadAll(resp.Body)
+			if err != nil {
+				slog.Warn("failed to read bytes of cache response", "cache-file", cache_file, "error", err)
+				continue
+			}
+
+			// read json data into a simple struct
+			var gen map[string]any
+			err = json.Unmarshal(cache_file_bytes, &gen)
+			if err != nil {
+				slog.Warn("failed to unmarshal cached release.json bytes", "cache-file", cache_file, "error", err)
+				continue
+			}
+
+			jsonl = append(jsonl, gen)
+		}
+	}
+
+	for _, line := range jsonl {
+		json_bytes, err := json.Marshal(line)
+		if err != nil {
+			slog.Warn("failed to marshal release.json data", "error", err)
+			continue
+		}
+		fmt.Println(string(json_bytes))
+	}
+}
+
+// ---
+
+func init_state() *State {
+	state := &State{
+		RunStart: time.Now().UTC(),
+	}
+
+	cwd, err := os.Getwd()
+	if err != nil {
+		slog.Error("couldn't find the current working dir to derive a writable location", "error", err)
+		fatal()
+	}
+	state.CWD = cwd
+
+	// attach a http client to global state to reuse http connections
+	state.Client = &http.Client{}
+	state.Client.Transport = &FileCachingRequest{}
+
+	state.Schema = configure_validator()
+
+	return state
+}
+
+func init() {
+	if is_testing() {
+		return
+	}
+
+	// caps the number of goroutines.
+	runtime.GOMAXPROCS(4)
+
+	STATE = init_state()
+	STATE.SubCommand, STATE.ScrapeCommand = read_cli_args(os.Args)
+	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.ScrapeCommand.LogLevel})))
+
+	token, _ := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
+	STATE.GithubToken = token
+}
+
+func main() {
+	switch STATE.SubCommand {
+	case "scrape":
+		scrape()
+
+	case "dump-release-dot-json":
+		dump_release_dot_json()
 	}
 }

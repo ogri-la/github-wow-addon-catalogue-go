@@ -4,7 +4,7 @@ Searches for WoW addons hosted on Github.
 
 A translation of the Python [layday/github-wow-addon-catalogue](https://github.com/layday/github-wow-addon-catalogue) to Go.
 
-## Installation:
+## Installation
 
 ```
 git clone https://github.com/ogri-la/github-wow-addon-catalogue-go
