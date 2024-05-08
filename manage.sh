@@ -13,6 +13,8 @@ if test ! "$cmd"; then
     echo "  build.all           build project, ignore cache"
     echo "  build.release       build project for distribution"
     echo "  clean               deletes all generated files"
+    echo "  deps.update         update project dependencies"
+    echo "  test                run project tests"
     exit 1
 fi
 
@@ -82,6 +84,19 @@ elif test "$cmd" = "clean"; then
     )
     rm -fv ${tbd[@]}
     exit 0
+
+elif test "$cmd" = "deps.update"; then
+    # -u 'update modules [...] to use newer minor or patch releases when available'
+    go get -u
+    go mod tidy
+    ./manage.sh build
+    exit 0
+
+elif test "$cmd" = "test"; then
+    go test
+    exit 0
+
+# ...
 
 fi
 
