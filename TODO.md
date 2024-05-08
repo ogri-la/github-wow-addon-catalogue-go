@@ -39,9 +39,6 @@
     - filename=LogTracker_CharacterData_EU-1.0.4-202303061816-bcc.zip
     .zips should bypass regular caching until their snippets have been read and the stored as a json blob
 
-* jsonschema, draft 2019-09 introduces the 'deprecated' annotation keyword
-    - use it to mark valid but discouraged game flavours
-
 * command, report/diff
     - diff between input and output
         - new addons
