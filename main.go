@@ -1595,12 +1595,9 @@ func read_csv(path string) ([]GithubRepo, error) {
 
 // bootstrap
 
-func configure_validator() *jsonschema.Schema {
+func configure_validator(path string) *jsonschema.Schema {
 	label := "release.json"
-
 	compiler := jsonschema.NewCompiler()
-	compiler.Draft = jsonschema.Draft4 // todo: either drop schema version or raise this one
-	path := "resources/release-json-schema.json"
 
 	file_bytes, err := os.ReadFile(path)
 	if err != nil {
@@ -1866,7 +1863,8 @@ func init_state() *State {
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
 
-	state.Schema = configure_validator()
+	schema_path := filepath.Join(cwd, "release-dot-json-schema.json")
+	state.Schema = configure_validator(schema_path)
 
 	return state
 }
