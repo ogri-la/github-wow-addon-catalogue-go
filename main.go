@@ -127,8 +127,8 @@ type State struct {
 	GithubToken   string             // Github credentials, pulled from ENV
 	Client        *http.Client       // shared HTTP client for persistent connections
 	Schema        *jsonschema.Schema // validates release.json files
-	SubCommand    string             // cli subcommand
-	ScrapeCommand ScrapeCommand      // captures args passed in from the command line
+	SubCommand    string             // cli subcommand, e.g. 'scrape'
+	ScrapeCommand ScrapeCommand      // cli args for the 'scrape' command
 	RunStart      time.Time          // time app started
 }
 
@@ -360,7 +360,7 @@ func trace_context() context.Context {
 
 // --- caching
 
-// returns path to the cache directory.
+// returns a path to the cache directory.
 func cache_dir() string {
 	return filepath.Join(STATE.CWD, "output") // "/current/working/dir/output"
 }
@@ -465,7 +465,7 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
 }
 
-// deletes a cached file from the cache directory using the given `cache_key`.
+// deletes a cache entry from the cache directory using the given `cache_key`.
 func remove_cache_entry(cache_key string) error {
 	return os.Remove(cache_path(cache_key))
 }
@@ -1644,7 +1644,7 @@ func read_cli_args(arg_list []string) (string, ScrapeCommand) {
 	dump_release_dot_json_flagset := flag.NewFlagSet("release.json-dump", flag.ExitOnError)
 
 	// first arg is always the name of the running app.
-	// second arg should be the subcommand but could be -h or -v
+	// second arg should be the subcommand but could be -h or -V
 	var subcommand string
 	if len(arg_list) > 1 {
 		subcommand = arg_list[1]
@@ -1857,12 +1857,12 @@ func init_state() *State {
 
 	cwd, err := os.Getwd()
 	if err != nil {
-		slog.Error("couldn't find the current working dir to derive a writable location", "error", err)
+		slog.Error("couldn't find the current working dir to set a writable location", "error", err)
 		fatal()
 	}
 	state.CWD = cwd
 
-	// attach a http client to global state to reuse http connections
+	// attach a HTTP client to global state to reuse HTTP connections
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
 
@@ -1876,8 +1876,7 @@ func init() {
 		return
 	}
 
-	// caps the number of goroutines.
-	runtime.GOMAXPROCS(4)
+	runtime.GOMAXPROCS(4) // cap the number of goroutines
 
 	STATE = init_state()
 	STATE.SubCommand, STATE.ScrapeCommand = read_cli_args(os.Args)
