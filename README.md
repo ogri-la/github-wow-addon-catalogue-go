@@ -17,24 +17,24 @@ export ADDONS_CATALOGUE_GITHUB_TOKEN=<your-token>
 
 The catalogue is written to `stdout` and logging to `stderr`:
 
-    $ ./github-wow-addon-catalogue
+    $ ./github-wow-addon-catalogue scrape
 
 CSV and JSON output formats are supported, with JSON as the default.
 
-    $ ./github-wow-addon-catalogue --out addons.csv
+    $ ./github-wow-addon-catalogue scrape --out addons.csv
 
 To build upon the results of a previous run:
 
-    $ ./github-wow-addon-catalogue --in old.csv --out new.csv
+    $ ./github-wow-addon-catalogue scrape --in old.csv --out new.csv
 
 To always use cached responses, even if they've expired:
 
-    $ ./github-wow-addon-catalogue --use-expired-cache
+    $ ./github-wow-addon-catalogue scrape --use-expired-cache
 
 To limit parsing to just addons with names matching a pattern:
 
 ```bash
-$ ./github-wow-addon-catalogue --filter '^AdiAddons'
+$ ./github-wow-addon-catalogue scrape --filter '^AdiAddons'
 May  4 00:51:01.342 INF searching for addons
 May  4 00:51:02.483 INF found addons num=3
 May  4 00:51:02.483 INF de-duplicating addons num=3
