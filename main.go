@@ -138,12 +138,8 @@ type ScrapeCommand struct {
 }
 
 type Flags struct {
-	SubCommand SubCommand // cli subcommand, e.g. 'scrape'
-
-	// defaults
-	LogLevelLabel string
-	LogLevel      slog.Level
-
+	SubCommand            SubCommand // cli subcommand, e.g. 'scrape'
+	LogLevel              slog.Level
 	ScrapeCommand         ScrapeCommand         // cli args for the 'scrape' command
 	FindDuplicatesCommand FindDuplicatesCommand // cli args for the 'find-duplicates' command
 }
@@ -1658,20 +1654,21 @@ func usage() string {
 }
 
 func read_flags(arg_list []string) Flags {
-
 	app_flags := Flags{}
-
 	var flagset *flag.FlagSet
+
 	defaults := flag.NewFlagSet("github-wow-addon-catalogue", flag.ContinueOnError)
-	phelp := defaults.BoolP("help", "h", false, "print this help and exit")
-	pversion := defaults.BoolP("version", "V", false, "print program version and exit")
-	defaults.StringVar(&app_flags.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
+	help_ptr := defaults.BoolP("help", "h", false, "print this help and exit")
+	version_ptr := defaults.BoolP("version", "V", false, "print program version and exit")
+	log_level_label_ptr := defaults.String("log-level", "info", "verbosity level. one of: debug, info, warn, error")
+
+	input_file_list := []string{}
 
 	//
 
 	scrape_cmd := ScrapeCommand{}
 	scrape_flagset := flag.NewFlagSet("scrape", flag.ExitOnError)
-	scrape_flagset.StringArrayVar(&scrape_cmd.InputFileList, "in", []string{}, "path to extant addons.csv file. input is merged with search results")
+	scrape_flagset.StringArrayVar(&input_file_list, "in", []string{}, "path to extant addons.csv file. input is merged with search results")
 	scrape_flagset.StringArrayVar(&scrape_cmd.OutputFileList, "out", []string{}, "write results to file and not stdout")
 	scrape_flagset.BoolVar(&scrape_cmd.SkipSearch, "skip-search", false, "don't search Github")
 	scrape_flagset.BoolVar(&scrape_cmd.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
@@ -1683,9 +1680,9 @@ func read_flags(arg_list []string) Flags {
 
 	//
 
-	dupes_cmd := FindDuplicatesCommand{}
+	find_dupes_cmd := FindDuplicatesCommand{}
 	dupes_flagset := flag.NewFlagSet("find-duplicates", flag.ExitOnError)
-	dupes_flagset.StringArrayVar(&dupes_cmd.InputFileList, "in", []string{}, "path to extant addons.csv file")
+	dupes_flagset.StringArrayVar(&input_file_list, "in", []string{}, "path to extant addons.csv file")
 
 	//
 
@@ -1715,13 +1712,13 @@ func read_flags(arg_list []string) Flags {
 
 	flagset.Parse(arg_list)
 
-	if phelp != nil && *phelp {
+	if help_ptr != nil && *help_ptr {
 		fmt.Println(usage())
 		flagset.PrintDefaults()
 		os.Exit(0)
 	}
 
-	if pversion != nil && *pversion {
+	if version_ptr != nil && *version_ptr {
 		fmt.Println(APP_VERSION)
 		os.Exit(0)
 	}
@@ -1732,12 +1729,14 @@ func read_flags(arg_list []string) Flags {
 		fatal()
 	}
 
-	for _, input_file := range scrape_cmd.InputFileList {
+	for _, input_file := range input_file_list {
 		die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
 		ext := filepath.Ext(input_file)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", scrape_cmd.InputFileList))
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", input_file_list))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
+	scrape_cmd.InputFileList = input_file_list
+	find_dupes_cmd.InputFileList = input_file_list
 
 	for _, output_file := range scrape_cmd.OutputFileList {
 		ext := filepath.Ext(output_file)
@@ -1762,15 +1761,15 @@ func read_flags(arg_list []string) Flags {
 		"warn":  slog.LevelWarn,
 		"error": slog.LevelError,
 	}
-	log_level, present := log_level_label_map[app_flags.LogLevelLabel]
-	die(!present, fmt.Sprintf("unknown log level: %s", app_flags.LogLevelLabel))
+	log_level, present := log_level_label_map[*log_level_label_ptr]
+	die(!present, fmt.Sprintf("unknown log level: %s", *log_level_label_ptr))
 	app_flags.LogLevel = log_level
 
 	//
 
 	app_flags.SubCommand = subcommand
 	app_flags.ScrapeCommand = scrape_cmd
-	app_flags.FindDuplicatesCommand = dupes_cmd
+	app_flags.FindDuplicatesCommand = find_dupes_cmd
 
 	return app_flags
 }
