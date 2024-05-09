@@ -46,14 +46,6 @@
         - updated addons
             - exclude 'last-updated-date' value
 
-* command 'find_duplicates'
-    - appears to be grouping addons by what strongbox calls 'sources'
-        - i.e., github, wowi, curse, wago, etc
-        - in this case, an addon may have multiple sources even within github ...
-            - which is probably almost always a *b*
-                - capturing fork status is definitely something we should do
-                    - capturing the 'canonical' addon when forks exist should be pushed to moderation
-
 * command 'prune'
     - appears to filter out addons that haven't been seen for several runs
         - our catalogue builder does this for us
@@ -71,12 +63,12 @@
     - more examples necessary
 
 * capture whether an addon is a 'fork' or not
-    - see command 'find duplicates'
 
 * capture repo downloads and topics
     - this data would involve another call to the repository info page
         - it would also provide a path to selectively updating the catalogue
             - for example, when a project isn't found in the github search results 
+            - graphql?
     - topics are normalised and become 'tags'
 
 * shift blacklist/moderation outside of script

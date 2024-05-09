@@ -110,6 +110,20 @@ var REPO_BLACKLIST = map[string]bool{
 	"ynazar1/Arh":                              true, // Fork
 }
 
+type SubCommand = string
+
+const (
+	ScrapeSubCommand         SubCommand = "scrape"
+	FindDuplicatesSubCommand SubCommand = "find-duplicates"
+	DumpReleaseDotJson       SubCommand = "dump-release-dot-json"
+)
+
+var KNOWN_SUBCOMMANDS = []SubCommand{
+	ScrapeSubCommand,
+	FindDuplicatesSubCommand,
+	DumpReleaseDotJson,
+}
+
 type FindDuplicatesCommand struct {
 	InputFileList []string
 }
@@ -124,7 +138,7 @@ type ScrapeCommand struct {
 }
 
 type Flags struct {
-	SubCommand string // cli subcommand, e.g. 'scrape'
+	SubCommand SubCommand // cli subcommand, e.g. 'scrape'
 
 	// defaults
 	LogLevelLabel string
@@ -1643,7 +1657,7 @@ func usage() string {
 	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates>"
 }
 
-func read_cli_args(arg_list []string) Flags {
+func read_flags(arg_list []string) Flags {
 
 	app_flags := Flags{}
 
@@ -1683,15 +1697,15 @@ func read_cli_args(arg_list []string) Flags {
 	}
 
 	switch subcommand {
-	case "scrape":
+	case ScrapeSubCommand:
 		flagset = scrape_flagset
 		flagset.AddFlagSet(defaults)
 
-	case "dump-release-dot-json":
+	case DumpReleaseDotJson:
 		flagset = dump_release_dot_json_flagset
 		flagset.AddFlagSet(defaults)
 
-	case "find-duplicates":
+	case FindDuplicatesSubCommand:
 		flagset = dupes_flagset
 		flagset.AddFlagSet(defaults)
 
@@ -1712,7 +1726,7 @@ func read_cli_args(arg_list []string) Flags {
 		os.Exit(0)
 	}
 
-	if subcommand == "" {
+	if subcommand == "" || !slices.Contains(KNOWN_SUBCOMMANDS, subcommand) {
 		fmt.Println(usage())
 		flagset.PrintDefaults()
 		fatal()
@@ -1790,7 +1804,7 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 	filtered_input_repo_list := []GithubRepo{}
 	if filter_fn != nil {
 		for _, repo := range input_repo_list {
-			if filter_fn(repo) {
+			if !filter_fn(repo) {
 				filtered_input_repo_list = append(filtered_input_repo_list, repo)
 			}
 		}
@@ -1800,7 +1814,7 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 
 	// todo: validate
 
-	slog.Info("found addons", "num", len(input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
+	slog.Info("final addons", "num", len(input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
 	return filtered_input_repo_list, nil
 }
 
@@ -1927,7 +1941,6 @@ func dump_release_dot_json() {
 // find addons in input list of addons that share sources.
 // a 'source' is a project ID like x-wowi-id or x-curse-project-id.
 func find_duplicates() {
-
 	github_repo_list, err := read_input_file_list(STATE.Flags.FindDuplicatesCommand.InputFileList, nil)
 	if err != nil {
 		slog.Error("failed to read input files", "error", err)
@@ -1939,7 +1952,12 @@ func find_duplicates() {
 
 	for _, repo := range github_repo_list {
 		for key, val := range repo.ProjectIDMap {
-			idx_key := key + "/" + val // x-wago-id/1234567
+			if val == "0" {
+				// edge case, several addons seem to just set this to zero. ignore.
+				continue
+			}
+
+			idx_key := key + ": " + val // x-wago-id: 1234567
 			grp, present := idx[idx_key]
 			if !present {
 				grp = []GithubRepo{}
@@ -1949,16 +1967,22 @@ func find_duplicates() {
 		}
 	}
 
-	for key, val := range idx {
-		if len(val) > 1 {
+	for key, repo_list := range idx {
+		// ignore repo bundles that share the same owner
+		owner_idx := map[string]bool{}
+		for _, repo := range repo_list {
+			owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
+			owner_idx[owner] = true
+		}
+
+		if len(repo_list) > 1 && len(owner_idx) > 1 {
 			fmt.Println(key)
-			for i, repo := range val {
+			for i, repo := range repo_list {
 				fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
 			}
 			fmt.Println("---")
 		}
 	}
-
 }
 
 // ---
@@ -1992,7 +2016,7 @@ func init() {
 	runtime.GOMAXPROCS(4) // cap the number of goroutines
 
 	STATE = init_state()
-	STATE.Flags = read_cli_args(os.Args)
+	STATE.Flags = read_flags(os.Args)
 	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.Flags.LogLevel})))
 
 	token, _ := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
@@ -2001,13 +2025,13 @@ func init() {
 
 func main() {
 	switch STATE.Flags.SubCommand {
-	case "scrape":
+	case ScrapeSubCommand:
 		scrape()
 
-	case "dump-release-dot-json":
+	case DumpReleaseDotJson:
 		dump_release_dot_json()
 
-	case "find-duplicates":
+	case FindDuplicatesSubCommand:
 		find_duplicates()
 	}
 }
