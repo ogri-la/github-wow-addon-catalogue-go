@@ -110,26 +110,48 @@ var REPO_BLACKLIST = map[string]bool{
 	"ynazar1/Arh":                              true, // Fork
 }
 
+type SubCommand = string
+
+const (
+	ScrapeSubCommand             SubCommand = "scrape"
+	FindDuplicatesSubCommand     SubCommand = "find-duplicates"
+	DumpReleaseDotJsonSubCommand SubCommand = "dump-release-dot-json"
+)
+
+var KNOWN_SUBCOMMANDS = []SubCommand{
+	ScrapeSubCommand,
+	FindDuplicatesSubCommand,
+	DumpReleaseDotJsonSubCommand,
+}
+
+type FindDuplicatesCommand struct {
+	InputFileList []string
+}
+
 type ScrapeCommand struct {
 	InputFileList       []string
 	OutputFileList      []string
-	SkipSearch          bool // don't search github, just use input files
-	LogLevelLabel       string
-	LogLevel            slog.Level
+	SkipSearch          bool           // don't search github, just use input files
 	UseExpiredCache     bool           // use cached data, even if it's expired
 	FilterPattern       string         // a regex to be applied to `project.FullName`
 	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
 }
 
+type Flags struct {
+	SubCommand            SubCommand // cli subcommand, e.g. 'scrape'
+	LogLevel              slog.Level
+	ScrapeCommand         ScrapeCommand         // cli args for the 'scrape' command
+	FindDuplicatesCommand FindDuplicatesCommand // cli args for the 'find-duplicates' command
+}
+
 // global state, see `STATE`
 type State struct {
-	CWD           string             // Current Working Directory
-	GithubToken   string             // Github credentials, pulled from ENV
-	Client        *http.Client       // shared HTTP client for persistent connections
-	Schema        *jsonschema.Schema // validates release.json files
-	SubCommand    string             // cli subcommand, e.g. 'scrape'
-	ScrapeCommand ScrapeCommand      // cli args for the 'scrape' command
-	RunStart      time.Time          // time app started
+	CWD         string             // Current Working Directory
+	GithubToken string             // Github credentials, pulled from ENV
+	Client      *http.Client       // shared HTTP client for persistent connections
+	Schema      *jsonschema.Schema // validates release.json files
+	Flags       Flags
+	RunStart    time.Time // time app started
 }
 
 var STATE *State
@@ -206,11 +228,12 @@ func unique_sorted_flavor_list(fll ...[]Flavor) []Flavor {
 // different types of search return different types of information,
 // this captures a common subset.
 type GithubRepo struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`      // "AdiBags"
-	FullName    string `json:"full_name"` // "AdiAddons/AdiBags"
-	URL         string `json:"html_url"`  // "https://github/AdiAddons/AdiBags"
-	Description string `json:"description"`
+	ID           int               `json:"id"`
+	Name         string            `json:"name"`      // "AdiBags"
+	FullName     string            `json:"full_name"` // "AdiAddons/AdiBags"
+	URL          string            `json:"html_url"`  // "https://github/AdiAddons/AdiBags"
+	Description  string            `json:"description"`
+	ProjectIDMap map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 }
 
 // read a csv `row` and return a `Project` struct.
@@ -221,12 +244,26 @@ func repo_from_csv_row(row []string) GithubRepo {
 		fatal()
 	}
 
+	project_id_map := map[string]string{}
+	if row[7] != "" {
+		project_id_map["x-curse-project-id"] = row[7]
+	}
+	if row[8] != "" {
+		project_id_map["x-wago-id"] = row[8]
+	}
+	if row[9] != "" {
+		project_id_map["x-wowi-id"] = row[9]
+	}
+
 	return GithubRepo{
 		ID:          id,
 		Name:        row[1],
 		FullName:    row[2],
 		URL:         row[3],
 		Description: row[4],
+		// 5 last-updated
+		// 6 flavors
+		ProjectIDMap: project_id_map,
 	}
 }
 
@@ -263,11 +300,10 @@ type GithubRelease struct {
 // result of scraping a repository
 type Project struct {
 	GithubRepo
-	UpdatedDate    time.Time         `json:"updated-date"`
-	FlavorList     []Flavor          `json:"flavor-list"`
-	ProjectIDMap   map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
-	HasReleaseJSON bool              `json:"has-release-json"`
-	LastSeenDate   *time.Time        `json:"last-seen-date,omitempty"`
+	UpdatedDate    time.Time  `json:"updated-date"`
+	FlavorList     []Flavor   `json:"flavor-list"`
+	HasReleaseJSON bool       `json:"has-release-json"`
+	LastSeenDate   *time.Time `json:"last-seen-date,omitempty"`
 }
 
 func ProjectCSVHeader() []string {
@@ -475,7 +511,7 @@ func remove_cache_entry(cache_key string) error {
 // assumes `path` exists.
 // returns `true` when an error occurs stat'ing `path`.
 func cache_expired(path string) bool {
-	if STATE.ScrapeCommand.UseExpiredCache {
+	if STATE.Flags.ScrapeCommand.UseExpiredCache {
 		return false
 	}
 
@@ -1225,6 +1261,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 	}
 
+	repo.ProjectIDMap = project_id_map
 	flavor_list = unique_sorted_flavor_list(flavor_list)
 
 	slog.Debug("found flavors", "flavor-list", flavor_list, "repo", repo.FullName)
@@ -1235,7 +1272,6 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   &STATE.RunStart,
-		ProjectIDMap:   project_id_map,
 	}
 	return project, nil
 }
@@ -1420,6 +1456,13 @@ func is_excluded(blacklist map[string]bool, filter *regexp.Regexp, repo_fullname
 	return "", false
 }
 
+func is_excluded_fn(blacklist map[string]bool, filter *regexp.Regexp) func(GithubRepo) bool {
+	return func(repo GithubRepo) bool {
+		_, b := is_excluded(blacklist, filter, repo.FullName)
+		return b
+	}
+}
+
 // searches Github for addon repositories,
 // converts results to `GithubRepo` structs,
 // de-duplicates and sorts results,
@@ -1523,18 +1566,7 @@ func read_json(path string) ([]GithubRepo, error) {
 		return empty_response, fmt.Errorf("failed to parse JSON in file: %w", err)
 	}
 
-	filtered_project_list := []GithubRepo{}
-	for _, repo := range filtered_project_list {
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.ScrapeCommand.FilterPatternRegexp, repo.FullName)
-		if excluded {
-			continue
-		}
-		filtered_project_list = append(filtered_project_list, repo)
-	}
-
-	// todo: validate
-
-	return filtered_project_list, nil
+	return project_list, nil
 }
 
 // --- csv i/o
@@ -1581,14 +1613,8 @@ func read_csv(path string) ([]GithubRepo, error) {
 		return empty_response, fmt.Errorf("failed to read contents of input file: %w", err)
 	}
 	for _, row := range row_list {
-		repo := repo_from_csv_row(row)
-		_, excluded := is_excluded(REPO_BLACKLIST, STATE.ScrapeCommand.FilterPatternRegexp, repo.FullName)
-		if !excluded {
-			repo_list = append(repo_list, repo)
-		}
+		repo_list = append(repo_list, repo_from_csv_row(row))
 	}
-
-	// todo: validate
 
 	return repo_list, nil
 }
@@ -1623,25 +1649,41 @@ func configure_validator() *jsonschema.Schema {
 }
 
 func usage() string {
-	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json>"
+	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates>"
 }
 
-func read_cli_args(arg_list []string) (string, ScrapeCommand) {
+func read_flags(arg_list []string) Flags {
+	app_flags := Flags{}
 	var flagset *flag.FlagSet
+
 	defaults := flag.NewFlagSet("github-wow-addon-catalogue", flag.ContinueOnError)
-	phelp := defaults.BoolP("help", "h", false, "print this help and exit")
-	pversion := defaults.BoolP("version", "V", false, "print program version and exit")
+	help_ptr := defaults.BoolP("help", "h", false, "print this help and exit")
+	version_ptr := defaults.BoolP("version", "V", false, "print program version and exit")
+	log_level_label_ptr := defaults.String("log-level", "info", "verbosity level. one of: debug, info, warn, error")
+
+	input_file_list := []string{}
+
+	//
 
 	scrape_cmd := ScrapeCommand{}
 	scrape_flagset := flag.NewFlagSet("scrape", flag.ExitOnError)
-	scrape_flagset.StringArrayVar(&scrape_cmd.InputFileList, "in", []string{}, "path to extant addons.csv file. input is merged with results")
+	scrape_flagset.StringArrayVar(&input_file_list, "in", []string{}, "path to extant addons.csv file. input is merged with search results")
 	scrape_flagset.StringArrayVar(&scrape_cmd.OutputFileList, "out", []string{}, "write results to file and not stdout")
 	scrape_flagset.BoolVar(&scrape_cmd.SkipSearch, "skip-search", false, "don't search Github")
-	scrape_flagset.StringVar(&scrape_cmd.LogLevelLabel, "log-level", "info", "verbosity level. one of: debug, info, warn, error")
 	scrape_flagset.BoolVar(&scrape_cmd.UseExpiredCache, "use-expired-cache", false, "ignore whether a cached file has expired")
 	scrape_flagset.StringVar(&scrape_cmd.FilterPattern, "filter", "", "limit catalogue to addons matching regex")
 
+	//
+
 	dump_release_dot_json_flagset := flag.NewFlagSet("release.json-dump", flag.ExitOnError)
+
+	//
+
+	find_dupes_cmd := FindDuplicatesCommand{}
+	dupes_flagset := flag.NewFlagSet("find-duplicates", flag.ExitOnError)
+	dupes_flagset.StringArrayVar(&input_file_list, "in", []string{}, "path to extant addons.csv file")
+
+	//
 
 	// first arg is always the name of the running app.
 	// second arg should be the subcommand but could be -h or -V
@@ -1651,12 +1693,16 @@ func read_cli_args(arg_list []string) (string, ScrapeCommand) {
 	}
 
 	switch subcommand {
-	case "scrape":
+	case ScrapeSubCommand:
 		flagset = scrape_flagset
 		flagset.AddFlagSet(defaults)
 
-	case "dump-release-dot-json":
+	case DumpReleaseDotJsonSubCommand:
 		flagset = dump_release_dot_json_flagset
+		flagset.AddFlagSet(defaults)
+
+	case FindDuplicatesSubCommand:
+		flagset = dupes_flagset
 		flagset.AddFlagSet(defaults)
 
 	default:
@@ -1665,29 +1711,31 @@ func read_cli_args(arg_list []string) (string, ScrapeCommand) {
 
 	flagset.Parse(arg_list)
 
-	if phelp != nil && *phelp {
+	if help_ptr != nil && *help_ptr {
 		fmt.Println(usage())
 		flagset.PrintDefaults()
 		os.Exit(0)
 	}
 
-	if pversion != nil && *pversion {
+	if version_ptr != nil && *version_ptr {
 		fmt.Println(APP_VERSION)
 		os.Exit(0)
 	}
 
-	if subcommand == "" {
+	if subcommand == "" || !slices.Contains(KNOWN_SUBCOMMANDS, subcommand) {
 		fmt.Println(usage())
 		flagset.PrintDefaults()
 		fatal()
 	}
 
-	for _, input_file := range scrape_cmd.InputFileList {
+	for _, input_file := range input_file_list {
 		die(!path_exists(input_file), fmt.Sprintf("input path does not exist: %s", input_file))
 		ext := filepath.Ext(input_file)
-		die(ext == "", fmt.Sprintf("input path has no extension: %s", scrape_cmd.InputFileList))
+		die(ext == "", fmt.Sprintf("input path has no extension: %s", input_file_list))
 		die(ext != ".csv" && ext != ".json", fmt.Sprintf("input path has unsupported extension: %s", ext))
 	}
+	scrape_cmd.InputFileList = input_file_list
+	find_dupes_cmd.InputFileList = input_file_list
 
 	for _, output_file := range scrape_cmd.OutputFileList {
 		ext := filepath.Ext(output_file)
@@ -1712,11 +1760,87 @@ func read_cli_args(arg_list []string) (string, ScrapeCommand) {
 		"warn":  slog.LevelWarn,
 		"error": slog.LevelError,
 	}
-	log_level, present := log_level_label_map[scrape_cmd.LogLevelLabel]
-	die(!present, fmt.Sprintf("unknown log level: %s", scrape_cmd.LogLevelLabel))
-	scrape_cmd.LogLevel = log_level
+	log_level, present := log_level_label_map[*log_level_label_ptr]
+	die(!present, fmt.Sprintf("unknown log level: %s", *log_level_label_ptr))
+	app_flags.LogLevel = log_level
 
-	return subcommand, scrape_cmd
+	//
+
+	app_flags.SubCommand = subcommand
+	app_flags.ScrapeCommand = scrape_cmd
+	app_flags.FindDuplicatesCommand = find_dupes_cmd
+
+	return app_flags
+}
+
+func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) bool) ([]GithubRepo, error) {
+	empty_response := []GithubRepo{}
+	if len(input_file_list) == 0 {
+		return empty_response, nil
+	}
+
+	slog.Info("reading addons from input file(s)", "path-list", input_file_list)
+	input_repo_list := []GithubRepo{}
+	for _, input_file := range input_file_list {
+		ext := filepath.Ext(input_file)
+		var repo_list []GithubRepo
+		var err error
+
+		switch ext {
+		case ".csv":
+			repo_list, err = read_csv(input_file)
+		case ".json":
+			repo_list, err = read_json(input_file)
+		}
+		if err != nil {
+			return empty_response, err
+		}
+		slog.Info("found addons", "num", len(repo_list), "input-file", input_file, "filtered", STATE.Flags.ScrapeCommand.FilterPattern != "")
+		input_repo_list = append(input_repo_list, repo_list...)
+	}
+
+	filtered_input_repo_list := []GithubRepo{}
+	if filter_fn != nil {
+		for _, repo := range input_repo_list {
+			if !filter_fn(repo) {
+				filtered_input_repo_list = append(filtered_input_repo_list, repo)
+			}
+		}
+	} else {
+		filtered_input_repo_list = input_repo_list
+	}
+
+	// todo: validate
+
+	slog.Info("final addons", "num", len(input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
+	return filtered_input_repo_list, nil
+}
+
+func unique_repo_list(github_repo_list []GithubRepo) []GithubRepo {
+	if len(github_repo_list) == 1 {
+		return github_repo_list
+	}
+
+	// de-duplicate repos with later inputs overriding earlier inputs.
+	// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
+	repo_idx := map[int]GithubRepo{}
+	for _, repo := range github_repo_list {
+		repo_idx[repo.ID] = repo
+	}
+
+	unique_github_repo_list := []GithubRepo{}
+	for _, repo := range repo_idx {
+		unique_github_repo_list = append(unique_github_repo_list, repo)
+	}
+
+	slog.Info("de-duplicated addons", "num", len(github_repo_list), "unique", len(unique_github_repo_list))
+
+	// todo: do we need this sort any more?
+	slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
+		return strings.Compare(a.FullName, b.FullName)
+	})
+
+	return unique_github_repo_list
 }
 
 func scrape() {
@@ -1726,61 +1850,23 @@ func scrape() {
 	}
 
 	var err error
-	github_repo_list := []GithubRepo{}
+	var github_repo_list []GithubRepo
 
-	if len(STATE.ScrapeCommand.InputFileList) > 0 {
-		slog.Info("reading addons from input file(s)", "path-list", STATE.ScrapeCommand.InputFileList)
-		input_repo_list := []GithubRepo{}
-		for _, input_file := range STATE.ScrapeCommand.InputFileList {
-			input_file := input_file
-			ext := filepath.Ext(input_file)
-			var repo_list []GithubRepo
-
-			switch ext {
-			case ".csv":
-				repo_list, err = read_csv(input_file)
-			case ".json":
-				repo_list, err = read_json(input_file)
-			}
-			die(err != nil, fmt.Sprintf("%v", err))
-			slog.Info("found addons", "num", len(repo_list), "input-file", input_file, "filtered", STATE.ScrapeCommand.FilterPattern != "")
-			input_repo_list = append(input_repo_list, repo_list...)
-		}
-		slog.Info("found addons", "num", len(input_repo_list), "num-input-files", len(STATE.ScrapeCommand.InputFileList), "filtered", STATE.ScrapeCommand.FilterPattern != "")
-		github_repo_list = append(github_repo_list, input_repo_list...)
+	filter_fn := is_excluded_fn(REPO_BLACKLIST, STATE.Flags.ScrapeCommand.FilterPatternRegexp)
+	github_repo_list, err = read_input_file_list(STATE.Flags.ScrapeCommand.InputFileList, filter_fn)
+	if err != nil {
+		slog.Error("failed to read input file(s)", "error", err)
+		fatal()
 	}
 
-	if !STATE.ScrapeCommand.SkipSearch {
+	if !STATE.Flags.ScrapeCommand.SkipSearch {
 		slog.Info("searching for addons")
-		search_results := get_projects(STATE.ScrapeCommand.FilterPatternRegexp)
+		search_results := get_projects(STATE.Flags.ScrapeCommand.FilterPatternRegexp)
 		slog.Info("found addons", "num", len(search_results))
 		github_repo_list = append(github_repo_list, search_results...)
 	}
 
-	if len(github_repo_list) > 1 {
-		slog.Info("de-duplicating addons", "num", len(github_repo_list))
-
-		// de-duplicate repos with later inputs overriding earlier inputs.
-		// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
-		repo_idx := map[int]GithubRepo{}
-		for _, repo := range github_repo_list {
-			repo_idx[repo.ID] = repo
-		}
-
-		unique_github_repo_list := []GithubRepo{}
-		for _, repo := range repo_idx {
-			unique_github_repo_list = append(unique_github_repo_list, repo)
-		}
-
-		slog.Info("unique addons", "num", len(unique_github_repo_list))
-
-		// todo: do we need this sort any more?
-		slices.SortFunc(unique_github_repo_list, func(a, b GithubRepo) int {
-			return strings.Compare(a.FullName, b.FullName)
-		})
-
-		github_repo_list = unique_github_repo_list
-	}
+	github_repo_list = unique_repo_list(github_repo_list)
 
 	slog.Info("parsing addons")
 	project_list := parse_repo_list(github_repo_list)
@@ -1790,8 +1876,8 @@ func scrape() {
 		return strings.Compare(a.FullName, b.FullName)
 	})
 
-	if len(STATE.ScrapeCommand.OutputFileList) > 0 {
-		for _, output_file := range STATE.ScrapeCommand.OutputFileList {
+	if len(STATE.Flags.ScrapeCommand.OutputFileList) > 0 {
+		for _, output_file := range STATE.Flags.ScrapeCommand.OutputFileList {
 			ext := filepath.Ext(output_file)
 			switch ext {
 			case ".csv":
@@ -1850,6 +1936,56 @@ func dump_release_dot_json() {
 
 // ---
 
+// find addons in input list of addons that share sources.
+// a 'source' is a project ID like x-wowi-id or x-curse-project-id.
+func find_duplicates() {
+	github_repo_list, err := read_input_file_list(STATE.Flags.FindDuplicatesCommand.InputFileList, nil)
+	if err != nil {
+		slog.Error("failed to read input files", "error", err)
+		fatal()
+	}
+	github_repo_list = unique_repo_list(github_repo_list)
+
+	idx := map[string][]GithubRepo{}
+	for _, repo := range github_repo_list {
+		for key, val := range repo.ProjectIDMap {
+			if val == "0" {
+				// edge case, several addons seem to just set this to zero. ignore.
+				continue
+			}
+
+			idx_key := key + ": " + val // x-wago-id: 1234567
+			grp, present := idx[idx_key]
+			if !present {
+				grp = []GithubRepo{}
+			}
+			grp = append(grp, repo)
+			idx[idx_key] = grp
+		}
+	}
+
+	for key, repo_list := range idx {
+		if len(repo_list) > 1 {
+			// ignore repo bundles that share the same owner
+			owner_idx := map[string]bool{}
+			for _, repo := range repo_list {
+				owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
+				owner_idx[owner] = true
+			}
+
+			if len(owner_idx) > 1 {
+				fmt.Println(key)
+				for i, repo := range repo_list {
+					fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
+				}
+				fmt.Println("---")
+			}
+		}
+	}
+}
+
+// ---
+
 func init_state() *State {
 	state := &State{
 		RunStart: time.Now().UTC(),
@@ -1879,19 +2015,22 @@ func init() {
 	runtime.GOMAXPROCS(4) // cap the number of goroutines
 
 	STATE = init_state()
-	STATE.SubCommand, STATE.ScrapeCommand = read_cli_args(os.Args)
-	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.ScrapeCommand.LogLevel})))
+	STATE.Flags = read_flags(os.Args)
+	slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{Level: STATE.Flags.LogLevel})))
 
 	token, _ := os.LookupEnv("ADDONS_CATALOGUE_GITHUB_TOKEN")
 	STATE.GithubToken = token
 }
 
 func main() {
-	switch STATE.SubCommand {
-	case "scrape":
+	switch STATE.Flags.SubCommand {
+	case ScrapeSubCommand:
 		scrape()
 
-	case "dump-release-dot-json":
+	case DumpReleaseDotJsonSubCommand:
 		dump_release_dot_json()
+
+	case FindDuplicatesSubCommand:
+		find_duplicates()
 	}
 }
