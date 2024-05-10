@@ -113,15 +113,15 @@ var REPO_BLACKLIST = map[string]bool{
 type SubCommand = string
 
 const (
-	ScrapeSubCommand         SubCommand = "scrape"
-	FindDuplicatesSubCommand SubCommand = "find-duplicates"
-	DumpReleaseDotJson       SubCommand = "dump-release-dot-json"
+	ScrapeSubCommand             SubCommand = "scrape"
+	FindDuplicatesSubCommand     SubCommand = "find-duplicates"
+	DumpReleaseDotJsonSubCommand SubCommand = "dump-release-dot-json"
 )
 
 var KNOWN_SUBCOMMANDS = []SubCommand{
 	ScrapeSubCommand,
 	FindDuplicatesSubCommand,
-	DumpReleaseDotJson,
+	DumpReleaseDotJsonSubCommand,
 }
 
 type FindDuplicatesCommand struct {
@@ -300,9 +300,8 @@ type GithubRelease struct {
 // result of scraping a repository
 type Project struct {
 	GithubRepo
-	UpdatedDate time.Time `json:"updated-date"`
-	FlavorList  []Flavor  `json:"flavor-list"`
-
+	UpdatedDate    time.Time  `json:"updated-date"`
+	FlavorList     []Flavor   `json:"flavor-list"`
 	HasReleaseJSON bool       `json:"has-release-json"`
 	LastSeenDate   *time.Time `json:"last-seen-date,omitempty"`
 }
@@ -1698,7 +1697,7 @@ func read_flags(arg_list []string) Flags {
 		flagset = scrape_flagset
 		flagset.AddFlagSet(defaults)
 
-	case DumpReleaseDotJson:
+	case DumpReleaseDotJsonSubCommand:
 		flagset = dump_release_dot_json_flagset
 		flagset.AddFlagSet(defaults)
 
@@ -1948,7 +1947,6 @@ func find_duplicates() {
 	github_repo_list = unique_repo_list(github_repo_list)
 
 	idx := map[string][]GithubRepo{}
-
 	for _, repo := range github_repo_list {
 		for key, val := range repo.ProjectIDMap {
 			if val == "0" {
@@ -1967,19 +1965,21 @@ func find_duplicates() {
 	}
 
 	for key, repo_list := range idx {
-		// ignore repo bundles that share the same owner
-		owner_idx := map[string]bool{}
-		for _, repo := range repo_list {
-			owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
-			owner_idx[owner] = true
-		}
-
-		if len(repo_list) > 1 && len(owner_idx) > 1 {
-			fmt.Println(key)
-			for i, repo := range repo_list {
-				fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
+		if len(repo_list) > 1 {
+			// ignore repo bundles that share the same owner
+			owner_idx := map[string]bool{}
+			for _, repo := range repo_list {
+				owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
+				owner_idx[owner] = true
 			}
-			fmt.Println("---")
+
+			if len(owner_idx) > 1 {
+				fmt.Println(key)
+				for i, repo := range repo_list {
+					fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
+				}
+				fmt.Println("---")
+			}
 		}
 	}
 }
@@ -2027,7 +2027,7 @@ func main() {
 	case ScrapeSubCommand:
 		scrape()
 
-	case DumpReleaseDotJson:
+	case DumpReleaseDotJsonSubCommand:
 		dump_release_dot_json()
 
 	case FindDuplicatesSubCommand:
