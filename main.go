@@ -61,6 +61,9 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"Nevcairiel/GatherMate2": true,
 	"Nevcairiel/Inventorian": true,
 	"Witnesscm/NDui_Plus":    true,
+	"siweia/NDui":            true,
+	"Wutname1/SpartanUI":     true,
+	"xod-wow/LiteBag":        true,
 }
 
 // case insensitive repository prefixes
@@ -963,7 +966,7 @@ func is_toc_file(zip_file_entry string) bool {
 			// shortcoming in my code, this hack helps
 			prefix_match, prefix_flavor := guess_game_track(prefix)
 			if prefix_match != "" && prefix_flavor == flavor {
-				slog.Warn("edge case, addon name contains flavour", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match", filename, "flavor", flavor)
+				slog.Debug("edge case, addon name contains flavour", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match", filename, "flavor", flavor)
 				return true
 			}
 		}
