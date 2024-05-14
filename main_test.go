@@ -55,6 +55,7 @@ func Test_is_toc_file(t *testing.T) {
 		"Foo":                      false, // top level file
 		"Foo/Bar":                  false, // no '.toc'
 		"Foo/Bar.toc":              false, // 'Foo' must match 'Bar'
+		"Foo/Foo/Foo.toc":          false, // nested
 		"Foo/foo.toc":              true,  // 'Foo' matches 'foo' ignoring case.
 		"Foo/fOo.toc":              true,  // 'Foo' matches 'fOo' ignoring case.
 		"Foo/Foo.toc":              true,

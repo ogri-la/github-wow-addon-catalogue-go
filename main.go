@@ -276,6 +276,7 @@ type ReleaseJsonEntryMetadata struct {
 }
 
 type ReleaseJsonEntry struct {
+	Name     string                     `json:"name"`
 	Filename string                     `json:"filename"`
 	NoLib    bool                       `json:"nolib"`
 	Metadata []ReleaseJsonEntryMetadata `json:"metadata"`
@@ -935,8 +936,8 @@ func is_toc_file(zip_file_entry string) bool {
 	if len(bits) != 2 {
 		return false
 	}
-	prefix, rest := bits[0], bits[1] // "Foo/Bar.toc" => "Foo"
-	filename, flavor := parse_toc_filename(rest)
+	prefix, rest := bits[0], bits[1]             // "Bar/Bar.toc" => ["Bar", "Bar.toc"]
+	filename, flavor := parse_toc_filename(rest) // "Bar.toc" => "Bar", "Bar-Wrath.toc" => "Bar", "wrath"
 	slog.Debug("zip file entry", "name", zip_file_entry, "prefix", prefix, "rest", rest, "toc-match", filename, "flavor", flavor)
 	if filename != "" {
 		if prefix == filename {
@@ -1027,24 +1028,66 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 		"x-wowi-id",
 	}
 
-	selected_key_vals := map[string]string{}
+	// so! what happens when an addon bundles another addon and we have multiple .toc files? which one is the correct one?
+	// for example, `tullamods/Dominos` bundles `SFX-WoW/Masque_Dominos`.
+	// we don't know :(
+	// we can split the IDs we find into more and less likely and
+	// we can issue a warning if we're still uncertain and stuck with multiple sets of IDs,
+	// but ultimately we can't know.
+
+	asset_name := regexp.MustCompile(`[\W_-]`).Split(filepath.Base(asset_url), 2)[0] // note: this only captures 'bar' in 'foo-bar.zip'
+	keyval_idx := map[string]map[string]int{}
+	project_id_map := map[string]string{}
+	uncertain_project_id_map := map[string]string{}
+
+	var project_id_map_ptr map[string]string
 	for zipfile_entry, toc_bytes := range toc_file_map {
+		// temporary, remove once cache cleaned up
 		if !is_toc_file(zipfile_entry) {
 			continue
 		}
+
+		filename := filepath.Base(zipfile_entry)
+		if !strings.HasPrefix(filename, asset_name) {
+			project_id_map_ptr = uncertain_project_id_map
+		} else {
+			project_id_map_ptr = project_id_map
+		}
+
 		keyvals, err := parse_toc_file(zipfile_entry, toc_bytes)
 		if err != nil {
 			return empty_response, fmt.Errorf("failed to parse .toc contents: %w", err)
 		}
 		for _, key := range project_id_list {
 			val, present := keyvals[key]
-			if present && val != "" {
-				selected_key_vals[key] = val
+			if present && val != "" && val != "0" {
+				project_id_map_ptr[key] = val
+				_, id_present := keyval_idx[key]
+				if !id_present {
+					keyval_idx[key] = map[string]int{}
+				}
+				keyval_idx[key][val] += 1
 			}
 		}
 	}
 
-	return selected_key_vals, nil
+	if len(project_id_map) > 0 {
+		return project_id_map, nil
+	}
+
+	// issue a warning if we captured ID values from a .toc file that wasn't prefixed with the asset's filename,
+	// and there are multiple distinct values for any one ID.
+	// for example, if there are two wago IDs.
+	if len(uncertain_project_id_map) > 0 && len(toc_file_map) > 1 {
+		for _, pid := range project_id_list {
+			if len(keyval_idx[pid]) > 1 {
+				slog.Warn("project IDs for this project may not be correct", "id-idx", keyval_idx, "prefix", asset_name, "url", asset_url)
+				break
+			}
+		}
+	}
+
+	return uncertain_project_id_map, nil
 }
 
 // extract the flavors from the filenames
@@ -1218,6 +1261,7 @@ func parse_repo(repo GithubRepo) (Project, error) {
 		}
 
 		// find the matching asset
+		// see `2072/Decursive` for a release.json using multiple releases
 		first_release_dot_json_entry := release_dot_json.ReleaseJsonEntryList[0]
 		for _, asset := range latest_github_release.AssetList {
 			if asset.Name == first_release_dot_json_entry.Filename {
