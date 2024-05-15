@@ -66,6 +66,16 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"xod-wow/LiteBag":        true,
 }
 
+var KNOWN_DUPLICATE_LIST = [][]string{
+	// Dominos bundles Masque_Dominos
+	{"tullamods/Dominos", "SFX-WoW/Masque_Dominos"},
+	// RealUI bundles Masque
+	{"RealUI/RealUI", "SFX-WoW/Masque"},
+	// XiconQoo/RETabBinder is a backport of AcidWeb/RETabBinder
+	// - https://github.com/XiconQoo/RETabBinder/issues/1
+	{"XiconQoo/RETabBinder", "AcidWeb/RETabBinder"},
+}
+
 // case insensitive repository prefixes
 var REPO_BLACKLIST = map[string]bool{
 	"foo/":                      true, // dummy, for unit tests
@@ -1998,6 +2008,7 @@ func find_duplicates() {
 		for key, val := range repo.ProjectIDMap {
 			if val == "0" {
 				// edge case, several addons seem to just set this to zero. ignore.
+				// even though this has been fixed higher up, it may still be introduced via outside addons.csv
 				continue
 			}
 
@@ -2012,22 +2023,40 @@ func find_duplicates() {
 	}
 
 	for key, repo_list := range idx {
-		if len(repo_list) > 1 {
-			// ignore repo bundles that share the same owner
-			owner_idx := map[string]bool{}
-			for _, repo := range repo_list {
-				owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
-				owner_idx[owner] = true
-			}
+		if len(repo_list) < 2 {
+			continue
+		}
 
-			if len(owner_idx) > 1 {
-				fmt.Println(key)
-				for i, repo := range repo_list {
-					fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
-				}
-				fmt.Println("---")
+		repo_name_list := []string{}   // ["foo/bar", "bar/baz"]
+		owner_idx := map[string]bool{} // {"foo": ..., "bar": ...}
+		for _, repo := range repo_list {
+			repo_name_list = append(repo_name_list, repo.FullName)
+			owner := strings.Split(repo.FullName, "/")[0] // ["foo/bar", "foo/baz"] => "foo"
+			owner_idx[owner] = true
+		}
+
+		// ignore repo bundles that share the same owner
+		if len(owner_idx) < 2 {
+			continue
+		}
+
+		// ignore repo bundles that are known cases
+		is_known_case := false
+		for _, known_case := range KNOWN_DUPLICATE_LIST {
+			if array_sorted_equal(repo_name_list, known_case) {
+				is_known_case = true
+				break
 			}
 		}
+		if is_known_case {
+			continue
+		}
+
+		fmt.Println(key)
+		for i, repo := range repo_list {
+			fmt.Printf("[%d] %s %v\n", i+1, repo.FullName, repo)
+		}
+		fmt.Println("---")
 	}
 }
 

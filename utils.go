@@ -9,6 +9,8 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"reflect"
+	"sort"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -113,4 +115,30 @@ func elide_bom(b []byte) ([]byte, error) {
 		br.UnreadRune() // Not a BOM -- put the rune back
 	}
 	return io.ReadAll(br)
+}
+
+func keys[K comparable, V any](some_map map[K]V) []K {
+	key_list := []K{}
+	for key, _ := range some_map {
+		key_list = append(key_list, key)
+	}
+	return key_list
+}
+
+// https://stackoverflow.com/questions/36000487/check-for-equality-on-slices-without-order#answer-36001228
+func array_sorted_equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	a_copy := make([]string, len(a))
+	b_copy := make([]string, len(b))
+
+	copy(a_copy, a)
+	copy(b_copy, b)
+
+	sort.Strings(a_copy)
+	sort.Strings(b_copy)
+
+	return reflect.DeepEqual(a_copy, b_copy)
 }

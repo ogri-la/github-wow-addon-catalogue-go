@@ -17,6 +17,10 @@
                     - filename=NeatPlates_BlizzardPlates/NeatPlates_BlizzardPlates-WOTLKC.toc
                     - etc
                 - RealUI/RealUI release=2.3.12.72-beta
+    - parsing ID values
+        - done
+    - parsing game tracks
+        - ...
 
 * addons spreading their releases over several Github releases
     - the parse_repo logic is already quite large
