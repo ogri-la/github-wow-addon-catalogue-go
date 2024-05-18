@@ -78,7 +78,8 @@ func Test_is_toc_file(t *testing.T) {
 		"Loot-A-Rang Matic Reforged/Loot-A-Rang Matic Reforged.toc": true,
 
 		// apostrophe
-		"Ranoth's utility/Ranoth's utility.toc": true,
+		"Ranoth's utility/Ranoth's utility.toc":       true,
+		"RanothsUtility-v1.3.19/Ranoth's utility.toc": false, // version information in folder name.
 
 		// exclamation mark
 		"!!!GarbageProtector/!!!GarbageProtector-Mainline.toc": true,
