@@ -1,0 +1,50 @@
+[
+	{
+		"id": 800635034,
+		"name": "EZTrade",
+		"full_name": "Pinta365/EZTrade",
+		"html_url": "https://github.com/Pinta365/EZTrade",
+		"description": "World of Warcraft Addon to make it easier to trade items you recently looted",
+		"project-id-map": {
+			"x-curse-project-id": "1016387",
+			"x-wago-id": "BKpqarGE"
+		},
+		"updated-date": "2024-05-17T21:17:41Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141559643,
+		"name": "GarrisonCommander",
+		"full_name": "alarofrunetotem/GarrisonCommander",
+		"html_url": "https://github.com/alarofrunetotem/GarrisonCommander",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "86760",
+			"x-wowi-id": "23426"
+		},
+		"updated-date": "2024-05-16T07:14:45Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141570616,
+		"name": "OrderHallCommander",
+		"full_name": "alarofrunetotem/OrderHallCommander",
+		"html_url": "https://github.com/alarofrunetotem/OrderHallCommander",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "103097",
+			"x-wowi-id": "24461"
+		},
+		"updated-date": "2024-05-16T07:12:14Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	}
+]
