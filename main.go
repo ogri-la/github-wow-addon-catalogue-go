@@ -57,15 +57,16 @@ var API_URL = "https://api.github.com"
 // projects that do their release over several Github releases.
 // this leads to their data flipflopping about.
 var REPO_MULTI_RELEASE = map[string]bool{
-	"Mortalknight/GW2_UI":    true,
-	"Nevcairiel/GatherMate2": true,
-	"Nevcairiel/Inventorian": true,
-	"Witnesscm/NDui_Plus":    true,
-	"siweia/NDui":            true,
-	"Wutname1/SpartanUI":     true,
-	"xod-wow/LiteBag":        true,
-	"michaelnpsp/Grid2":      true, // stable releases get the full set, the multiple beta releases get partial assets
-	"nebularg/PitBull4":      true,
+	"Mortalknight/GW2_UI":             true,
+	"Nevcairiel/GatherMate2":          true,
+	"Nevcairiel/Inventorian":          true,
+	"Witnesscm/NDui_Plus":             true,
+	"siweia/NDui":                     true,
+	"Wutname1/SpartanUI":              true,
+	"xod-wow/LiteBag":                 true,
+	"michaelnpsp/Grid2":               true, // stable releases get the full set, the multiple beta releases get partial assets
+	"nebularg/PitBull4":               true,
+	"casualshammy/NameplateCooldowns": true,
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
