@@ -46,5 +46,75 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 743606816,
+		"name": "NotEvenCloseAddon",
+		"full_name": "acornellier/NotEvenCloseAddon",
+		"html_url": "https://github.com/acornellier/NotEvenCloseAddon",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "962057"
+		},
+		"updated-date": "2024-05-07T16:43:25Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 309019002,
+		"name": "LoreItemTooltips",
+		"full_name": "keyboardturner/LoreItemTooltips",
+		"html_url": "https://github.com/keyboardturner/LoreItemTooltips",
+		"description": "Adds tooltips to various items.",
+		"project-id-map": {
+			"x-curse-project-id": "463927",
+			"x-wago-id": "LvNA2R6o",
+			"x-wowi-id": "26475"
+		},
+		"updated-date": "2024-05-07T14:54:57Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 570359348,
+		"name": "TargetSwapSound",
+		"full_name": "keyboardturner/TargetSwapSound",
+		"html_url": "https://github.com/keyboardturner/TargetSwapSound",
+		"description": "Because sometimes some unit frame addons (unintentionally) remove the targetting / deselect sounds.",
+		"project-id-map": {
+			"x-curse-project-id": "687605",
+			"x-wago-id": "XrNk4O6a",
+			"x-wowi-id": "26480"
+		},
+		"updated-date": "2024-05-07T14:42:45Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 237232294,
+		"name": "heck-trade-chat",
+		"full_name": "keyboardturner/heck-trade-chat",
+		"html_url": "https://github.com/keyboardturner/heck-trade-chat",
+		"description": "honestly just heck trade chat",
+		"project-id-map": {
+			"x-curse-project-id": "360603",
+			"x-wago-id": "e56nJ569",
+			"x-wowi-id": "26486"
+		},
+		"updated-date": "2024-05-07T13:44:17Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
