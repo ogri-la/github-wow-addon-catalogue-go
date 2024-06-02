@@ -11,7 +11,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"runtime"
 	"sync"
 
 	"fmt"
@@ -171,6 +170,17 @@ type State struct {
 }
 
 var STATE *State
+
+// limit concurrent HTTP requests
+var HTTPSem = make(chan int, 100)
+
+func take_http_token() {
+	HTTPSem <- 1
+}
+
+func release_http_token() {
+	<-HTTPSem
+}
 
 // type alias for the WoW 'flavor'.
 type Flavor = string
@@ -374,7 +384,7 @@ func throttled(resp ResponseWrapper) bool {
 
 // inspects `resp` and determines how long to wait. then waits.
 func wait(resp ResponseWrapper) {
-	default_pause := float64(10) // seconds.
+	default_pause := float64(60) // seconds.
 	pause := default_pause
 
 	// inspect cache to see an example of this value
@@ -586,6 +596,9 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		return cached_resp, nil
 	}
 	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
+
+	take_http_token()
+	defer release_http_token()
 
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	if err != nil {
@@ -1872,7 +1885,7 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 
 	// todo: validate
 
-	slog.Info("final addons", "num", len(input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
+	slog.Info("final addons", "num", len(filtered_input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
 	return filtered_input_repo_list, nil
 }
 
@@ -2090,8 +2103,6 @@ func init() {
 	if is_testing() {
 		return
 	}
-
-	runtime.GOMAXPROCS(4) // cap the number of goroutines
 
 	STATE = init_state()
 	STATE.Flags = read_flags(os.Args)
