@@ -116,5 +116,24 @@
 			"mainline"
 		],
 		"has-release-json": true
-	}
+	},
+	{
+		"id": 61849693,
+		"name": "GSE-Advanced-Macro-Compiler",
+		"full_name": "TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"html_url": "https://github.com/TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"description": "GSE is an alternative advanced macro editor and engine for World of Warcraft.  It uses Travis for UnitTests, Coveralls to report on test coverage and the Curse packager to build and publish GSE.",
+		"project-id-map": {
+			"x-curse-project-id": "101161",
+			"x-wago-id": "kGr0YY6y",
+			"x-wowi-id": "23921"
+		},
+		"updated-date": "2024-05-07T21:24:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
 ]

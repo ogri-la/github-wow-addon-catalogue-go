@@ -56,16 +56,17 @@ var API_URL = "https://api.github.com"
 // projects that do their release over several Github releases.
 // this leads to their data flipflopping about.
 var REPO_MULTI_RELEASE = map[string]bool{
-	"Mortalknight/GW2_UI":             true,
-	"Nevcairiel/GatherMate2":          true,
-	"Nevcairiel/Inventorian":          true,
-	"Witnesscm/NDui_Plus":             true,
-	"siweia/NDui":                     true,
-	"Wutname1/SpartanUI":              true,
-	"xod-wow/LiteBag":                 true,
-	"michaelnpsp/Grid2":               true, // stable releases get the full set, the multiple beta releases get partial assets
-	"nebularg/PitBull4":               true,
-	"casualshammy/NameplateCooldowns": true,
+	"Mortalknight/GW2_UI":                     true,
+	"Nevcairiel/GatherMate2":                  true,
+	"Nevcairiel/Inventorian":                  true,
+	"Witnesscm/NDui_Plus":                     true,
+	"siweia/NDui":                             true,
+	"Wutname1/SpartanUI":                      true,
+	"xod-wow/LiteBag":                         true,
+	"michaelnpsp/Grid2":                       true, // stable releases get the full set, the multiple beta releases get partial assets
+	"nebularg/PitBull4":                       true,
+	"casualshammy/NameplateCooldowns":         true,
+	"TimothyLuke/GSE-Advanced-Macro-Compiler": true, // alpha release missing assets
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
@@ -172,7 +173,7 @@ type State struct {
 var STATE *State
 
 // limit concurrent HTTP requests
-var HTTPSem = make(chan int, 100)
+var HTTPSem = make(chan int, 50)
 
 func take_http_token() {
 	HTTPSem <- 1
@@ -1408,6 +1409,8 @@ func search_github(endpoint string, search_query string) []string {
 		slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
 		fatal()
 	}
+	slog.Info("searching for repositories", "query", search_query)
+
 	results := []string{} // blobs of json from github api
 	per_page := 100
 	search_query = url.QueryEscape(search_query)
@@ -1885,7 +1888,7 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 
 	// todo: validate
 
-	slog.Info("final addons", "num", len(filtered_input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", filter_fn != nil)
+	slog.Info("final addons", "num", len(filtered_input_repo_list), "num-input-files", len(STATE.Flags.ScrapeCommand.InputFileList), "filtered", STATE.Flags.ScrapeCommand.FilterPattern != "")
 	return filtered_input_repo_list, nil
 }
 
