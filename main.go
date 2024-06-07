@@ -53,20 +53,24 @@ var WARNED = map[string]bool{}
 
 var API_URL = "https://api.github.com"
 
+// we know the latest release is broken, try the previous one instead.
+var REPO_EXCEPTIONS = map[string]bool{
+	"TimothyLuke/GSE-Advanced-Macro-Compiler": true, // 2024-06-07, latest release missing assets
+}
+
 // projects that do their release over several Github releases.
 // this leads to their data flipflopping about.
 var REPO_MULTI_RELEASE = map[string]bool{
-	"Mortalknight/GW2_UI":                     true,
-	"Nevcairiel/GatherMate2":                  true,
-	"Nevcairiel/Inventorian":                  true,
-	"Witnesscm/NDui_Plus":                     true,
-	"siweia/NDui":                             true,
-	"Wutname1/SpartanUI":                      true,
-	"xod-wow/LiteBag":                         true,
-	"michaelnpsp/Grid2":                       true, // stable releases get the full set, the multiple beta releases get partial assets
-	"nebularg/PitBull4":                       true,
-	"casualshammy/NameplateCooldowns":         true,
-	"TimothyLuke/GSE-Advanced-Macro-Compiler": true, // alpha release missing assets
+	"Mortalknight/GW2_UI":             true,
+	"Nevcairiel/GatherMate2":          true,
+	"Nevcairiel/Inventorian":          true,
+	"Witnesscm/NDui_Plus":             true,
+	"siweia/NDui":                     true,
+	"Wutname1/SpartanUI":              true,
+	"xod-wow/LiteBag":                 true,
+	"michaelnpsp/Grid2":               true, // stable releases get the full set, the multiple beta releases get partial assets
+	"nebularg/PitBull4":               true,
+	"casualshammy/NameplateCooldowns": true,
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
@@ -1226,12 +1230,13 @@ var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file 
 // a lot of toc data is just being ignored here :( and those properties are kind of rare
 // if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
 // return a Project struct
-func parse_repo(repo GithubRepo) (Project, error) {
+func parse_repo(repo GithubRepo, page int) (Project, error) {
 	slog.Info("parsing repo", "repo", repo.FullName)
 
 	var empty_response Project
 
-	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?per_page=1", repo.FullName)
+	per_page := 1
+	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?page=%d&per_page=%d", repo.FullName, page, per_page)
 
 	// fetch addon's current release, if any
 	resp, err := github_download_with_retries_and_backoff(releases_url)
@@ -1361,14 +1366,27 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			project, err := parse_repo(repo)
+			release_number := 1 // if '2', then per_page=1 and page=2, etc
+			project, err := parse_repo(repo, release_number)
 			if err != nil {
-				if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
-					slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
+
+				if errors.Is(err, ErrNoReleaseCandidateFound) {
+					_, is_awkward := REPO_EXCEPTIONS[repo.FullName]
+					if is_awkward {
+						release_number = 2
+						project, err = parse_repo(repo, 2)
+					}
+				}
+
+				// we may have tried again. if there is still an error, fail as usual.
+				if err != nil {
+					if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
+						slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
+						return
+					}
+					slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 					return
 				}
-				slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
-				return
 			}
 			project_chan <- project
 		}()
