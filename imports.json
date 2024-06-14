@@ -116,5 +116,20 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 224240745,
+		"name": "Handynotes_Pandaria",
+		"full_name": "syndenbock/Handynotes_Pandaria",
+		"html_url": "https://github.com/syndenbock/Handynotes_Pandaria",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "352950"
+		},
+		"updated-date": "2024-05-29T17:33:26Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
