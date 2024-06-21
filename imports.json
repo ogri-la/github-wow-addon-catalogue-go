@@ -131,5 +131,20 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 812490883,
+		"name": "BetterBags-CraftingLegendaries",
+		"full_name": "AlexHaible/BetterBags-CraftingLegendaries",
+		"html_url": "https://github.com/AlexHaible/BetterBags-CraftingLegendaries",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1033418"
+		},
+		"updated-date": "2024-06-10T22:34:59Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
