@@ -489,7 +489,7 @@
 			"x-curse-project-id": "39179",
 			"x-wowi-id": "26415"
 		},
-		"updated-date": "2024-06-13T04:29:51Z",
+		"updated-date": "2024-06-18T19:20:25Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -661,6 +661,21 @@
 			"mainline",
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 815366051,
+		"name": "BetterBags-Themes",
+		"full_name": "AlexHaible/BetterBags-Themes",
+		"html_url": "https://github.com/AlexHaible/BetterBags-Themes",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1037168"
+		},
+		"updated-date": "2024-06-21T21:01:07Z",
+		"flavor-list": [
+			"mainline"
 		],
 		"has-release-json": true
 	},
@@ -848,7 +863,7 @@
 			"x-curse-project-id": "390790",
 			"x-wago-id": "WL6JpyGv"
 		},
-		"updated-date": "2024-06-04T21:58:45Z",
+		"updated-date": "2024-06-17T23:13:10Z",
 		"flavor-list": [
 			"vanilla",
 			"cata"
@@ -1631,7 +1646,7 @@
 			"x-wago-id": "5NRegwG3",
 			"x-wowi-id": "5086"
 		},
-		"updated-date": "2024-06-14T18:43:12Z",
+		"updated-date": "2024-06-21T10:24:50Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -1688,7 +1703,7 @@
 			"x-wago-id": "kGr0z76y",
 			"x-wowi-id": "21755"
 		},
-		"updated-date": "2024-06-14T18:18:42Z",
+		"updated-date": "2024-06-20T18:35:57Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -1706,7 +1721,7 @@
 			"x-wago-id": "rNkPgm6a",
 			"x-wowi-id": "22095"
 		},
-		"updated-date": "2024-06-11T06:20:22Z",
+		"updated-date": "2024-06-17T17:30:08Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -1799,9 +1814,10 @@
 		"description": "A collection of BigWigs modules from the Mists of Pandaria era.",
 		"project-id-map": {
 			"x-curse-project-id": "86782",
+			"x-wago-id": "rN4VvxKD",
 			"x-wowi-id": "23493"
 		},
-		"updated-date": "2024-05-26T17:56:40Z",
+		"updated-date": "2024-06-19T03:32:53Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -1925,7 +1941,7 @@
 			"x-wago-id": "5bGolnN0",
 			"x-wowi-id": "9577"
 		},
-		"updated-date": "2024-06-12T06:30:08Z",
+		"updated-date": "2024-06-21T10:35:47Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2177,7 +2193,7 @@
 			"x-curse-project-id": "274066",
 			"x-wago-id": "nQN5aoNB"
 		},
-		"updated-date": "2024-05-28T21:57:39Z",
+		"updated-date": "2024-06-19T17:50:14Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2756,7 +2772,7 @@
 			"x-curse-project-id": "942432",
 			"x-wago-id": "aNDmy96o"
 		},
-		"updated-date": "2024-06-06T15:25:55Z",
+		"updated-date": "2024-06-21T18:23:17Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2870,7 +2886,7 @@
 			"x-curse-project-id": "267285",
 			"x-wago-id": "yQKyY5K7"
 		},
-		"updated-date": "2024-06-09T16:01:35Z",
+		"updated-date": "2024-06-16T22:58:07Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2940,7 +2956,7 @@
 			"x-wago-id": "RXKqxj6y",
 			"x-wowi-id": "25779"
 		},
-		"updated-date": "2024-06-07T20:26:40Z",
+		"updated-date": "2024-06-16T04:50:57Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -2956,7 +2972,7 @@
 			"x-curse-project-id": "1016966",
 			"x-wago-id": "E6gLA4K1"
 		},
-		"updated-date": "2024-05-11T18:52:33Z",
+		"updated-date": "2024-06-16T04:49:49Z",
 		"flavor-list": [
 			"mainline",
 			"tbc",
@@ -2976,7 +2992,7 @@
 			"x-wago-id": "RBKpErGE",
 			"x-wowi-id": "21469"
 		},
-		"updated-date": "2024-06-09T21:04:48Z",
+		"updated-date": "2024-06-16T04:50:12Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -3048,7 +3064,7 @@
 			"x-wago-id": "xZKxZENk",
 			"x-wowi-id": "24904"
 		},
-		"updated-date": "2024-06-07T20:23:15Z",
+		"updated-date": "2024-06-16T04:51:22Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -3069,7 +3085,7 @@
 			"x-wago-id": "lQNlbaKe",
 			"x-wowi-id": "24905"
 		},
-		"updated-date": "2024-06-07T20:26:51Z",
+		"updated-date": "2024-06-16T04:50:47Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -3086,7 +3102,7 @@
 			"x-wago-id": "0mNwz4Go",
 			"x-wowi-id": "23199"
 		},
-		"updated-date": "2024-06-07T20:24:31Z",
+		"updated-date": "2024-06-16T04:50:24Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -3156,7 +3172,7 @@
 			"x-curse-project-id": "723031",
 			"x-wago-id": "RqGYOE6g"
 		},
-		"updated-date": "2024-06-07T20:26:30Z",
+		"updated-date": "2024-06-16T04:51:10Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -3263,7 +3279,7 @@
 			"x-wago-id": "LvNAkBKo",
 			"x-wowi-id": "24535"
 		},
-		"updated-date": "2024-06-07T20:27:03Z",
+		"updated-date": "2024-06-16T04:50:36Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -3280,7 +3296,7 @@
 			"x-wago-id": "WqKQg7Nx",
 			"x-wowi-id": "21522"
 		},
-		"updated-date": "2024-06-07T20:25:49Z",
+		"updated-date": "2024-06-16T04:50:01Z",
 		"flavor-list": [
 			"mainline",
 			"wrath",
@@ -4176,7 +4192,7 @@
 			"x-curse-project-id": "906564",
 			"x-wago-id": "4N2mb0GL"
 		},
-		"updated-date": "2024-06-11T12:30:20Z",
+		"updated-date": "2024-06-20T14:00:53Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -5005,7 +5021,7 @@
 		"full_name": "HizurosWoWAddOns/BetaHotfixes",
 		"html_url": "https://github.com/HizurosWoWAddOns/BetaHotfixes",
 		"description": "Temporary fix for some problems with the user interface in the current WoW Beta.",
-		"updated-date": "2024-06-09T07:51:53Z",
+		"updated-date": "2024-06-19T20:43:15Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -5379,7 +5395,7 @@
 			"x-curse-project-id": "342147",
 			"x-wowi-id": "25328"
 		},
-		"updated-date": "2024-06-14T11:48:14Z",
+		"updated-date": "2024-06-18T11:18:37Z",
 		"flavor-list": [
 			"cata"
 		],
@@ -5695,7 +5711,7 @@
 			"x-wago-id": "XrNkX86a",
 			"x-wowi-id": "26384"
 		},
-		"updated-date": "2024-05-08T15:09:22Z",
+		"updated-date": "2024-06-21T17:02:12Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -5777,7 +5793,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "819757"
 		},
-		"updated-date": "2024-06-10T05:46:36Z",
+		"updated-date": "2024-06-21T02:41:32Z",
 		"flavor-list": [
 			"vanilla",
 			"wrath",
@@ -5795,7 +5811,7 @@
 			"x-curse-project-id": "17809",
 			"x-wowi-id": "23875"
 		},
-		"updated-date": "2024-06-08T11:59:09Z",
+		"updated-date": "2024-06-16T16:56:21Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -5941,7 +5957,7 @@
 			"x-wago-id": "0mKOLPGx",
 			"x-wowi-id": "23631"
 		},
-		"updated-date": "2024-06-08T16:09:56Z",
+		"updated-date": "2024-06-21T19:15:07Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -6108,6 +6124,22 @@
 			"x-curse-project-id": "386581"
 		},
 		"updated-date": "2022-03-18T15:00:27Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 798897949,
+		"name": "Remix-Gem-Helper",
+		"full_name": "Larsj02/Remix-Gem-Helper",
+		"html_url": "https://github.com/Larsj02/Remix-Gem-Helper",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1017030",
+			"x-wago-id": "mKOvJW6x"
+		},
+		"updated-date": "2024-06-04T10:58:25Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -6284,6 +6316,23 @@
 			"x-wowi-id": "25933"
 		},
 		"updated-date": "2024-01-17T02:35:26Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 790518293,
+		"name": "TestServerWorldMap",
+		"full_name": "LiangYuxuan/TestServerWorldMap",
+		"html_url": "https://github.com/LiangYuxuan/TestServerWorldMap",
+		"description": "A simple World of Warcraft addon to provide missing world map texture in test server (ptr, xptr, beta) using locale other than enUS and frFR.",
+		"project-id-map": {
+			"x-curse-project-id": "1039290",
+			"x-wago-id": "EGPXAkG1",
+			"x-wowi-id": "26758"
+		},
+		"updated-date": "2024-06-19T01:33:37Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -6546,12 +6595,11 @@
 		"html_url": "https://github.com/Mortalknight/GW2_UI",
 		"description": "g",
 		"project-id-map": {
-			"x-curse-project-id": "94310",
-			"x-wago-id": "Mj6jXpGR"
+			"x-curse-project-id": "94310"
 		},
-		"updated-date": "2024-06-09T15:36:42Z",
+		"updated-date": "2024-06-21T07:20:03Z",
 		"flavor-list": [
-			"mainline"
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -6611,7 +6659,7 @@
 			"x-curse-project-id": "28160",
 			"x-wago-id": "nGvpwe6x"
 		},
-		"updated-date": "2024-06-10T05:56:20Z",
+		"updated-date": "2024-06-20T12:28:31Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -7487,7 +7535,7 @@
 			"x-wago-id": "n6VPMLGd",
 			"x-wowi-id": "26459"
 		},
-		"updated-date": "2024-05-21T19:54:51Z",
+		"updated-date": "2024-06-21T21:28:03Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -7544,7 +7592,7 @@
 			"x-wago-id": "rNkP5z6a",
 			"x-wowi-id": "26545"
 		},
-		"updated-date": "2024-05-26T22:02:04Z",
+		"updated-date": "2024-06-17T20:08:24Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -7562,7 +7610,7 @@
 			"x-curse-project-id": "916354",
 			"x-wago-id": "EGPXd3G1"
 		},
-		"updated-date": "2024-06-13T21:54:42Z",
+		"updated-date": "2024-06-20T19:12:46Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -7941,7 +7989,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "676405"
 		},
-		"updated-date": "2024-05-08T08:39:50Z",
+		"updated-date": "2024-06-16T20:44:15Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8086,7 +8134,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "678792"
 		},
-		"updated-date": "2024-06-08T18:03:16Z",
+		"updated-date": "2024-06-16T20:46:03Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8101,9 +8149,28 @@
 		"project-id-map": {
 			"x-curse-project-id": "678279"
 		},
-		"updated-date": "2024-06-08T18:01:36Z",
+		"updated-date": "2024-06-16T16:55:26Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 812573257,
+		"name": "UnifiedProfileManager",
+		"full_name": "NumyAddon/UnifiedProfileManager",
+		"html_url": "https://github.com/NumyAddon/UnifiedProfileManager",
+		"description": "A simple overview of all addon profiles for addons that use AceDB",
+		"project-id-map": {
+			"x-curse-project-id": "1033706"
+		},
+		"updated-date": "2024-06-12T15:57:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -8116,12 +8183,11 @@
 		"project-id-map": {
 			"x-curse-project-id": "320655"
 		},
-		"updated-date": "2024-05-08T11:36:03Z",
+		"updated-date": "2024-06-16T12:50:34Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
-			"tbc",
-			"wrath"
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -8594,9 +8660,10 @@
 			"x-curse-project-id": "334372",
 			"x-wago-id": "qv634BKb"
 		},
-		"updated-date": "2024-06-13T18:56:35Z",
+		"updated-date": "2024-06-19T19:29:41Z",
 		"flavor-list": [
 			"vanilla",
+			"wrath",
 			"cata"
 		],
 		"has-release-json": true
@@ -8611,7 +8678,7 @@
 			"x-curse-project-id": "279257",
 			"x-wago-id": "b6mb0XKP"
 		},
-		"updated-date": "2024-06-14T08:23:25Z",
+		"updated-date": "2024-06-21T08:22:01Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8844,9 +8911,10 @@
 			"x-curse-project-id": "45903",
 			"x-wago-id": "Xb6Xxw6p"
 		},
-		"updated-date": "2021-07-03T19:38:18Z",
+		"updated-date": "2024-06-21T20:18:26Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -8892,9 +8960,9 @@
 		"html_url": "https://github.com/RealUI/RealUI",
 		"description": "A minimalistic UI for World of Warcraft designed to be functional, yet also efficient and elegant.",
 		"project-id-map": {
-			"x-curse-project-id": "13592",
-			"x-wago-id": "kRNLgpGo",
-			"x-wowi-id": "12097"
+			"x-curse-project-id": "13501",
+			"x-wago-id": "vEGPyeN1",
+			"x-wowi-id": "11190"
 		},
 		"updated-date": "2024-05-26T03:02:18Z",
 		"flavor-list": [
@@ -8941,7 +9009,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "486246"
 		},
-		"updated-date": "2024-06-05T16:11:30Z",
+		"updated-date": "2024-06-19T14:04:46Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -9984,7 +10052,7 @@
 			"x-curse-project-id": "962128",
 			"x-wago-id": "bGoMqq60"
 		},
-		"updated-date": "2024-05-17T00:36:27Z",
+		"updated-date": "2024-06-15T18:19:50Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10000,7 +10068,7 @@
 			"x-curse-project-id": "498475",
 			"x-wago-id": "Xb6X71Np"
 		},
-		"updated-date": "2024-05-13T15:46:18Z",
+		"updated-date": "2024-06-15T18:19:37Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10011,12 +10079,12 @@
 		"name": "TransmogLootHelper",
 		"full_name": "Sluimerstand/TransmogLootHelper",
 		"html_url": "https://github.com/Sluimerstand/TransmogLootHelper",
-		"description": "",
+		"description": "Track new transmog looted by party/raid members, and ask them if you can have it.",
 		"project-id-map": {
 			"x-curse-project-id": "1033752",
 			"x-wago-id": "EGPXOkG1"
 		},
-		"updated-date": "2024-06-11T18:37:35Z",
+		"updated-date": "2024-06-15T20:35:07Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10043,7 +10111,7 @@
 			"x-wago-id": "WL6JPYGv",
 			"x-wowi-id": "25703"
 		},
-		"updated-date": "2024-06-13T00:19:39Z",
+		"updated-date": "2024-06-19T23:07:20Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10519,7 +10587,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "413582"
 		},
-		"updated-date": "2024-06-11T15:21:26Z",
+		"updated-date": "2024-06-15T15:26:46Z",
 		"flavor-list": [
 			"mainline",
 			"wrath",
@@ -10604,9 +10672,28 @@
 			"x-wago-id": "96do4ENO",
 			"x-wowi-id": "26711"
 		},
-		"updated-date": "2024-06-02T16:28:40Z",
+		"updated-date": "2024-06-15T09:20:06Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 61849693,
+		"name": "GSE-Advanced-Macro-Compiler",
+		"full_name": "TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"html_url": "https://github.com/TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"description": "GSE is an alternative advanced macro editor and engine for World of Warcraft.  It uses Travis for UnitTests, Coveralls to report on test coverage and the Curse packager to build and publish GSE.",
+		"project-id-map": {
+			"x-curse-project-id": "101161",
+			"x-wago-id": "kGr0YY6y",
+			"x-wowi-id": "23921"
+		},
+		"updated-date": "2024-06-21T01:57:11Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -10699,7 +10786,7 @@
 			"x-wago-id": "Qb6mg9GP",
 			"x-wowi-id": "24015"
 		},
-		"updated-date": "2024-05-16T14:47:57Z",
+		"updated-date": "2024-06-19T22:27:37Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -10833,7 +10920,7 @@
 			"x-wago-id": "XrNk5lKa",
 			"x-wowi-id": "25770"
 		},
-		"updated-date": "2024-06-12T11:05:20Z",
+		"updated-date": "2024-06-21T06:10:42Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -10971,7 +11058,7 @@
 		"project-id-map": {
 			"x-wago-id": "R4N2k46L"
 		},
-		"updated-date": "2024-06-11T17:46:01Z",
+		"updated-date": "2024-06-17T06:35:46Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -11247,7 +11334,7 @@
 			"x-wago-id": "VBNBxKx5",
 			"x-wowi-id": "24910"
 		},
-		"updated-date": "2024-05-30T21:38:56Z",
+		"updated-date": "2024-06-20T15:49:17Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -11342,10 +11429,11 @@
 		"full_name": "Witnesscm/InboxMailBag",
 		"html_url": "https://github.com/Witnesscm/InboxMailBag",
 		"description": "The Mail addon for World of Warcraft.",
-		"updated-date": "2024-06-08T10:47:17Z",
+		"updated-date": "2024-06-15T10:29:24Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
+			"wrath",
 			"cata"
 		],
 		"has-release-json": true
@@ -11356,9 +11444,10 @@
 		"full_name": "Witnesscm/MerInspect",
 		"html_url": "https://github.com/Witnesscm/MerInspect",
 		"description": "MerInspect for for WoW Classic",
-		"updated-date": "2024-05-25T08:53:10Z",
+		"updated-date": "2024-06-16T18:00:07Z",
 		"flavor-list": [
 			"vanilla",
+			"wrath",
 			"cata"
 		],
 		"has-release-json": true
@@ -11373,9 +11462,9 @@
 			"x-curse-project-id": "389434",
 			"x-wago-id": "0mKOvP6x"
 		},
-		"updated-date": "2024-06-13T09:18:43Z",
+		"updated-date": "2024-06-19T02:03:02Z",
 		"flavor-list": [
-			"vanilla"
+			"mainline"
 		],
 		"has-release-json": true
 	},
@@ -11401,7 +11490,7 @@
 		"full_name": "Witnesscm/TinyInspect",
 		"html_url": "https://github.com/Witnesscm/TinyInspect",
 		"description": "TinyInspect Continued",
-		"updated-date": "2024-06-03T08:57:33Z",
+		"updated-date": "2024-06-19T05:21:13Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -12176,7 +12265,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "996347"
 		},
-		"updated-date": "2024-06-12T10:09:37Z",
+		"updated-date": "2024-06-21T10:42:56Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -13289,6 +13378,16 @@
 		"has-release-json": false
 	},
 	{
+		"id": 808918847,
+		"name": "SetXpBar",
+		"full_name": "brian8544/SetXpBar",
+		"html_url": "https://github.com/brian8544/SetXpBar",
+		"description": "An addon that enables players to control their experience gain rate by right-clicking their XP bar. This feature requires the realm to have the mod-individual-xp module installed.",
+		"updated-date": "2024-06-17T21:34:05Z",
+		"flavor-list": null,
+		"has-release-json": false
+	},
+	{
 		"id": 361540553,
 		"name": "DevTool",
 		"full_name": "brittyazel/DevTool",
@@ -13895,7 +13994,7 @@
 			"x-curse-project-id": "909920",
 			"x-wago-id": "EGPXajG1"
 		},
-		"updated-date": "2024-06-11T04:36:30Z",
+		"updated-date": "2024-06-21T11:47:32Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -13915,7 +14014,7 @@
 			"x-curse-project-id": "386754",
 			"x-wago-id": "25NRrvN3"
 		},
-		"updated-date": "2024-06-10T20:51:01Z",
+		"updated-date": "2024-06-21T12:00:22Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -13955,7 +14054,7 @@
 			"x-curse-project-id": "402235",
 			"x-wago-id": "qv63roNb"
 		},
-		"updated-date": "2024-06-11T04:37:26Z",
+		"updated-date": "2024-06-21T11:52:05Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -13975,7 +14074,7 @@
 			"x-curse-project-id": "409653",
 			"x-wago-id": "kRNLAb6o"
 		},
-		"updated-date": "2024-06-07T20:32:10Z",
+		"updated-date": "2024-06-21T11:53:46Z",
 		"flavor-list": [
 			"vanilla",
 			"tbc",
@@ -13994,7 +14093,7 @@
 			"x-curse-project-id": "812982",
 			"x-wago-id": "VBNBDqKx"
 		},
-		"updated-date": "2024-06-14T11:39:11Z",
+		"updated-date": "2024-06-21T11:49:46Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14034,7 +14133,7 @@
 			"x-curse-project-id": "318461",
 			"x-wago-id": "LvNAy9No"
 		},
-		"updated-date": "2024-06-12T06:27:10Z",
+		"updated-date": "2024-06-21T11:55:25Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14054,7 +14153,7 @@
 			"x-curse-project-id": "852302",
 			"x-wago-id": "QNlqq46e"
 		},
-		"updated-date": "2024-06-11T04:38:14Z",
+		"updated-date": "2024-06-21T11:44:45Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14074,7 +14173,7 @@
 			"x-curse-project-id": "646135",
 			"x-wago-id": "5bGoV1K0"
 		},
-		"updated-date": "2024-06-11T04:36:06Z",
+		"updated-date": "2024-06-21T12:03:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14094,7 +14193,7 @@
 			"x-curse-project-id": "391012",
 			"x-wago-id": "anKW5rNE"
 		},
-		"updated-date": "2024-06-11T04:38:44Z",
+		"updated-date": "2024-06-21T12:23:37Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14114,7 +14213,7 @@
 			"x-curse-project-id": "341275",
 			"x-wago-id": "RXKqO8Ny"
 		},
-		"updated-date": "2024-06-11T04:39:05Z",
+		"updated-date": "2024-06-21T11:42:54Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14134,7 +14233,7 @@
 			"x-curse-project-id": "646134",
 			"x-wago-id": "e56n3pK9"
 		},
-		"updated-date": "2024-06-14T10:37:44Z",
+		"updated-date": "2024-06-21T12:52:58Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14154,7 +14253,7 @@
 			"x-curse-project-id": "472655",
 			"x-wago-id": "PANzVMN4"
 		},
-		"updated-date": "2024-06-11T04:39:48Z",
+		"updated-date": "2024-06-21T11:28:58Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14174,7 +14273,7 @@
 			"x-curse-project-id": "827800",
 			"x-wago-id": "56n9g2N9"
 		},
-		"updated-date": "2024-06-14T13:01:21Z",
+		"updated-date": "2024-06-21T11:33:08Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14214,7 +14313,7 @@
 			"x-curse-project-id": "398385",
 			"x-wago-id": "lQNlmP6e"
 		},
-		"updated-date": "2024-06-13T17:29:06Z",
+		"updated-date": "2024-06-21T11:37:03Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14234,7 +14333,7 @@
 			"x-curse-project-id": "868151",
 			"x-wago-id": "j6jzz16R"
 		},
-		"updated-date": "2024-06-11T04:40:33Z",
+		"updated-date": "2024-06-21T13:02:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14254,7 +14353,7 @@
 			"x-curse-project-id": "603848",
 			"x-wago-id": "Rn6V8LGd"
 		},
-		"updated-date": "2024-06-11T04:40:54Z",
+		"updated-date": "2024-06-21T11:42:28Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -14633,7 +14732,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "554554"
 		},
-		"updated-date": "2024-05-08T05:08:50Z",
+		"updated-date": "2024-06-18T01:56:16Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -15098,7 +15197,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "42578"
 		},
-		"updated-date": "2024-05-08T05:36:05Z",
+		"updated-date": "2024-06-19T10:16:47Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15566,7 +15665,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "39928"
 		},
-		"updated-date": "2024-05-07T20:40:13Z",
+		"updated-date": "2024-06-21T18:57:06Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -15863,7 +15962,7 @@
 		"full_name": "fang2hou/WeakAurasPatched",
 		"html_url": "https://github.com/fang2hou/WeakAurasPatched",
 		"description": "A patched version of WeakAuras",
-		"updated-date": "2024-05-30T21:44:41Z",
+		"updated-date": "2024-06-20T16:07:53Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -16710,7 +16809,7 @@
 			"x-curse-project-id": "324944",
 			"x-wowi-id": "25031"
 		},
-		"updated-date": "2024-05-19T16:56:38Z",
+		"updated-date": "2024-06-16T01:33:08Z",
 		"flavor-list": [
 			"vanilla",
 			"cata"
@@ -17096,7 +17195,7 @@
 			"x-curse-project-id": "715192",
 			"x-wago-id": "baND1J6o"
 		},
-		"updated-date": "2024-06-12T09:24:23Z",
+		"updated-date": "2024-06-17T17:19:42Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -17126,7 +17225,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "809313"
 		},
-		"updated-date": "2024-06-14T05:16:01Z",
+		"updated-date": "2024-06-21T05:16:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -17212,7 +17311,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "357612"
 		},
-		"updated-date": "2024-06-13T10:56:35Z",
+		"updated-date": "2024-06-18T14:47:48Z",
 		"flavor-list": [
 			"cata"
 		],
@@ -17224,7 +17323,7 @@
 		"full_name": "iambz00/upne-mod",
 		"html_url": "https://github.com/iambz00/upne-mod",
 		"description": "wow addon",
-		"updated-date": "2024-05-18T05:57:30Z",
+		"updated-date": "2024-06-21T14:02:20Z",
 		"flavor-list": [
 			"cata"
 		],
@@ -17236,7 +17335,7 @@
 		"full_name": "icaca/WclPlayerScore-Sod",
 		"html_url": "https://github.com/icaca/WclPlayerScore-Sod",
 		"description": "WCL国服/亚服/美服/欧服/韩服数据，Plus版本",
-		"updated-date": "2024-06-14T16:57:01Z",
+		"updated-date": "2024-06-21T16:56:40Z",
 		"flavor-list": [
 			"vanilla"
 		],
@@ -17248,7 +17347,7 @@
 		"full_name": "icaca/WclPlayerScore-Vanilla",
 		"html_url": "https://github.com/icaca/WclPlayerScore-Vanilla",
 		"description": "WCL国服/亚服/美服/欧服/韩服数据，香草版本",
-		"updated-date": "2024-06-14T16:56:29Z",
+		"updated-date": "2024-06-20T16:56:39Z",
 		"flavor-list": [
 			"vanilla"
 		],
@@ -17408,7 +17507,7 @@
 			"x-wago-id": "XKq9QjKy",
 			"x-wowi-id": "26744"
 		},
-		"updated-date": "2024-05-25T19:02:53Z",
+		"updated-date": "2024-06-17T06:21:00Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -17702,7 +17801,7 @@
 			"x-wago-id": "WYK98e6L",
 			"x-wowi-id": "26006"
 		},
-		"updated-date": "2024-06-14T04:40:14Z",
+		"updated-date": "2024-06-17T13:56:45Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -19056,7 +19155,7 @@
 			"x-wago-id": "XKq9EDKy",
 			"x-wowi-id": "26618"
 		},
-		"updated-date": "2024-06-10T13:52:21Z",
+		"updated-date": "2024-06-21T02:09:19Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19479,7 +19578,7 @@
 			"x-wago-id": "XKq99xKy",
 			"x-wowi-id": "26570"
 		},
-		"updated-date": "2024-05-07T22:48:47Z",
+		"updated-date": "2024-06-16T06:19:36Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19634,7 +19733,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "262173"
 		},
-		"updated-date": "2024-05-10T18:35:45Z",
+		"updated-date": "2024-06-18T13:13:39Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -19876,7 +19975,7 @@
 		"full_name": "lure/AutoTurnIn",
 		"html_url": "https://github.com/lure/AutoTurnIn",
 		"description": "Wow addon. ",
-		"updated-date": "2024-05-30T20:05:11Z",
+		"updated-date": "2024-06-19T15:44:18Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -20011,7 +20110,7 @@
 			"x-curse-project-id": "305957",
 			"x-wago-id": "9rN4Er6D"
 		},
-		"updated-date": "2024-05-24T02:42:16Z",
+		"updated-date": "2024-06-18T14:38:53Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -20045,9 +20144,11 @@
 			"x-curse-project-id": "15226",
 			"x-wago-id": "vEGPyeN1"
 		},
-		"updated-date": "2024-05-29T01:07:45Z",
+		"updated-date": "2024-06-20T17:19:08Z",
 		"flavor-list": [
-			"vanilla"
+			"mainline",
+			"vanilla",
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -20061,11 +20162,9 @@
 			"x-curse-project-id": "350500",
 			"x-wago-id": "0mNw9BKo"
 		},
-		"updated-date": "2024-05-28T20:29:55Z",
+		"updated-date": "2024-06-18T14:08:43Z",
 		"flavor-list": [
-			"mainline",
-			"vanilla",
-			"cata"
+			"mainline"
 		],
 		"has-release-json": true
 	},
@@ -20531,7 +20630,7 @@
 			"x-wago-id": "Rn6Vjo6d",
 			"x-wowi-id": "24341"
 		},
-		"updated-date": "2023-11-12T16:02:09Z",
+		"updated-date": "2024-06-16T02:46:07Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -21288,9 +21387,9 @@
 		"project-id-map": {
 			"x-wago-id": "baNDzJKo"
 		},
-		"updated-date": "2024-01-16T06:34:31Z",
+		"updated-date": "2024-06-21T03:35:09Z",
 		"flavor-list": [
-			"wrath"
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -21616,7 +21715,7 @@
 			"x-curse-project-id": "418746",
 			"x-wago-id": "Xb6XmOKp"
 		},
-		"updated-date": "2024-06-09T19:16:05Z",
+		"updated-date": "2024-06-19T22:06:54Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22161,7 +22260,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "937058"
 		},
-		"updated-date": "2024-06-14T05:26:07Z",
+		"updated-date": "2024-06-21T05:26:31Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -22234,7 +22333,7 @@
 			"x-wago-id": "RaN0eM6j",
 			"x-wowi-id": "26235"
 		},
-		"updated-date": "2024-06-14T15:14:25Z",
+		"updated-date": "2024-06-19T22:16:49Z",
 		"flavor-list": [
 			"vanilla",
 			"tbc",
@@ -22309,7 +22408,7 @@
 			"x-wago-id": "5bGoY160",
 			"x-wowi-id": "14339"
 		},
-		"updated-date": "2024-05-29T05:10:29Z",
+		"updated-date": "2024-06-20T09:39:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22425,7 +22524,7 @@
 			"x-wago-id": "9rN4yy6D",
 			"x-wowi-id": "6308"
 		},
-		"updated-date": "2024-04-30T17:54:23Z",
+		"updated-date": "2024-06-16T13:08:57Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22531,7 +22630,7 @@
 			"x-wago-id": "RXKqnDGy",
 			"x-wowi-id": "25439"
 		},
-		"updated-date": "2023-07-12T04:51:59Z",
+		"updated-date": "2024-06-20T10:51:05Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22647,7 +22746,7 @@
 		"has-release-json": true
 	},
 	{
-		"id": 791145015,
+		"id": 809321326,
 		"name": "NaowhUI_DFS4",
 		"full_name": "rootkit1337tv/NaowhUI_DFS4",
 		"html_url": "https://github.com/rootkit1337tv/NaowhUI_DFS4",
@@ -22661,7 +22760,7 @@
 		"has-release-json": true
 	},
 	{
-		"id": 809321326,
+		"id": 791145015,
 		"name": "NaowhUI_DFS4",
 		"full_name": "rootkit1337tv/NaowhUI_DFS4",
 		"html_url": "https://github.com/rootkit1337tv/NaowhUI_DFS4",
@@ -22996,7 +23095,7 @@
 		"full_name": "sfmict/CursorMod",
 		"html_url": "https://github.com/sfmict/CursorMod",
 		"description": "Makes mouse pointer remain on screen while mouselook/steering.",
-		"updated-date": "2024-05-09T16:02:37Z",
+		"updated-date": "2024-06-20T09:41:09Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23008,7 +23107,7 @@
 		"full_name": "sfmict/HidingBar",
 		"html_url": "https://github.com/sfmict/HidingBar",
 		"description": "Adds a custom panel for easy add-on management.",
-		"updated-date": "2024-05-09T15:59:49Z",
+		"updated-date": "2024-06-20T09:42:06Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23020,7 +23119,7 @@
 		"full_name": "sfmict/LibSFDropDown",
 		"html_url": "https://github.com/sfmict/LibSFDropDown",
 		"description": "Library for World of Warcraft",
-		"updated-date": "2024-05-09T16:06:21Z",
+		"updated-date": "2024-06-20T09:05:55Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -23034,7 +23133,7 @@
 		"full_name": "sfmict/LibThingsLoad",
 		"html_url": "https://github.com/sfmict/LibThingsLoad",
 		"description": "Library for load quests, items and spells",
-		"updated-date": "2024-05-09T16:06:11Z",
+		"updated-date": "2024-06-20T09:07:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -23048,7 +23147,7 @@
 		"full_name": "sfmict/MountsJournal",
 		"html_url": "https://github.com/sfmict/MountsJournal",
 		"description": "Addon makes it possible to sort mounts on waterfowl, flying, ground and allows to use in suitable conditions (random mount summoning).",
-		"updated-date": "2024-06-12T17:49:15Z",
+		"updated-date": "2024-06-20T09:43:24Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23088,7 +23187,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "918022"
 		},
-		"updated-date": "2024-06-13T01:12:35Z",
+		"updated-date": "2024-06-20T01:11:28Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23154,7 +23253,7 @@
 			"x-curse-project-id": "24541",
 			"x-wowi-id": "17033"
 		},
-		"updated-date": "2024-05-07T19:27:36Z",
+		"updated-date": "2024-06-16T22:24:57Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -23202,7 +23301,7 @@
 			"x-wago-id": "Xb6X4j6p",
 			"x-wowi-id": "24846"
 		},
-		"updated-date": "2024-06-14T17:41:35Z",
+		"updated-date": "2024-06-20T17:10:18Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23317,7 +23416,7 @@
 			"x-curse-project-id": "2812",
 			"x-wago-id": "WqKQw1Nx"
 		},
-		"updated-date": "2023-01-25T10:20:34Z",
+		"updated-date": "2024-06-21T07:15:05Z",
 		"flavor-list": [
 			"mainline",
 			"wrath"
@@ -23556,7 +23655,7 @@
 			"x-curse-project-id": "282961",
 			"x-wago-id": "J96EDgNg"
 		},
-		"updated-date": "2024-06-10T17:34:08Z",
+		"updated-date": "2024-06-15T14:26:54Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -23622,7 +23721,7 @@
 		"full_name": "t-mart/ItemVersion",
 		"html_url": "https://github.com/t-mart/ItemVersion",
 		"description": "ItemVersion adds information to your tooltip about when an item was added to World of Warcraft.",
-		"updated-date": "2024-06-11T16:28:48Z",
+		"updated-date": "2024-06-18T16:29:06Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla"
@@ -23863,7 +23962,7 @@
 		"full_name": "tfmonk/Accountant",
 		"html_url": "https://github.com/tfmonk/Accountant",
 		"description": "",
-		"updated-date": "2023-11-08T22:18:46Z",
+		"updated-date": "2024-06-15T23:29:05Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23875,7 +23974,7 @@
 		"full_name": "therice/Cleo",
 		"html_url": "https://github.com/therice/Cleo",
 		"description": " Suicide Kings Loot Distribution for World of Warcraft (Cataclysm Classic)",
-		"updated-date": "2024-06-01T22:17:45Z",
+		"updated-date": "2024-06-21T02:08:32Z",
 		"flavor-list": [
 			"cata"
 		],
@@ -23907,7 +24006,7 @@
 			"x-wago-id": "aNevrM62",
 			"x-wowi-id": "26629"
 		},
-		"updated-date": "2024-05-30T04:59:47Z",
+		"updated-date": "2024-06-17T01:40:50Z",
 		"flavor-list": [
 			"vanilla",
 			"wrath",
@@ -24128,7 +24227,7 @@
 			"x-wago-id": "WL6JYRNv",
 			"x-wowi-id": "26455"
 		},
-		"updated-date": "2024-06-09T20:55:13Z",
+		"updated-date": "2024-06-19T17:23:20Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -24142,7 +24241,7 @@
 		"full_name": "tullamods/OmniCC",
 		"html_url": "https://github.com/tullamods/OmniCC",
 		"description": "Cooldown count for everything",
-		"updated-date": "2024-05-11T14:09:10Z",
+		"updated-date": "2024-06-19T17:30:12Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -24170,7 +24269,7 @@
 		"full_name": "tullamods/tullaCTC",
 		"html_url": "https://github.com/tullamods/tullaCTC",
 		"description": "Cooldown Text Colorizer",
-		"updated-date": "2024-05-11T14:31:39Z",
+		"updated-date": "2024-06-19T17:34:14Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -24184,7 +24283,7 @@
 		"full_name": "tullamods/tullaRange",
 		"html_url": "https://github.com/tullamods/tullaRange",
 		"description": "Colors actionbuttons when out of range",
-		"updated-date": "2024-05-11T14:47:53Z",
+		"updated-date": "2024-06-19T17:32:39Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -24426,7 +24525,7 @@
 		"project-id-map": {
 			"x-wago-id": "qv63o6bQ"
 		},
-		"updated-date": "2024-05-17T00:13:06Z",
+		"updated-date": "2024-06-15T09:09:04Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -24711,7 +24810,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "590920"
 		},
-		"updated-date": "2024-06-10T02:38:47Z",
+		"updated-date": "2024-06-15T16:43:08Z",
 		"flavor-list": [
 			"vanilla",
 			"wrath",
@@ -24797,7 +24896,7 @@
 			"x-curse-project-id": "50424",
 			"x-wowi-id": "26330"
 		},
-		"updated-date": "2024-05-20T05:43:20Z",
+		"updated-date": "2024-06-21T13:55:28Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -24830,7 +24929,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "868592"
 		},
-		"updated-date": "2024-05-10T04:21:17Z",
+		"updated-date": "2024-06-18T04:39:08Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -24846,7 +24945,7 @@
 			"x-curse-project-id": "30359",
 			"x-wowi-id": "26329"
 		},
-		"updated-date": "2024-06-13T07:07:38Z",
+		"updated-date": "2024-06-15T14:04:36Z",
 		"flavor-list": [
 			"mainline"
 		],
