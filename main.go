@@ -395,13 +395,11 @@ func wait(resp ResponseWrapper) {
 	// inspect cache to see an example of this value
 	val := resp.Header.Get("X-RateLimit-Reset")
 	if val == "" {
-		slog.Error("rate limited but no 'X-RateLimit-Reset' header present.", "headers", resp.Header)
-		pause = default_pause
+		slog.Debug("rate limited but no 'X-RateLimit-Reset' header present.", "headers", resp.Header)
 	} else {
 		int_val, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			slog.Error("failed to convert value of 'X-RateLimit-Reset' header to an integer", "val", val)
-			pause = default_pause
 		} else {
 			pause = math.Ceil(time.Until(time.Unix(int_val, 0)).Seconds())
 			if pause > 120 {
