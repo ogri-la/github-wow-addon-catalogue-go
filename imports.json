@@ -146,5 +146,51 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 815366051,
+		"name": "BetterBags-Themes",
+		"full_name": "AlexHaible/BetterBags-Themes",
+		"html_url": "https://github.com/AlexHaible/BetterBags-Themes",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1037168"
+		},
+		"updated-date": "2024-06-21T21:01:07Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 798897949,
+		"name": "Remix-Gem-Helper",
+		"full_name": "Larsj02/Remix-Gem-Helper",
+		"html_url": "https://github.com/Larsj02/Remix-Gem-Helper",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1017030",
+			"x-wago-id": "mKOvJW6x"
+		},
+		"updated-date": "2024-06-04T10:58:25Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 679428903,
+		"name": "CommandPalette",
+		"full_name": "MichaelPriebe/CommandPalette",
+		"html_url": "https://github.com/MichaelPriebe/CommandPalette",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "903532"
+		},
+		"updated-date": "2023-11-15T23:40:12Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
