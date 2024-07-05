@@ -67,10 +67,11 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"Witnesscm/NDui_Plus":             true,
 	"siweia/NDui":                     true,
 	"Wutname1/SpartanUI":              true,
-	"xod-wow/LiteBag":                 true,
+	"xod-wow/LiteBag":                 true, // beta releases missing classic
 	"michaelnpsp/Grid2":               true, // stable releases get the full set, the multiple beta releases get partial assets
 	"nebularg/PitBull4":               true,
 	"casualshammy/NameplateCooldowns": true,
+	"Slothpala/RaidFrameSettings":     true, // betas missing release
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
