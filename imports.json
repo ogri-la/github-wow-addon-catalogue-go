@@ -192,5 +192,117 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 786792006,
+		"name": "BetterBags_BetterSort",
+		"full_name": "Krealle/BetterBags_BetterSort",
+		"html_url": "https://github.com/Krealle/BetterBags_BetterSort",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1003934",
+			"x-wago-id": "qGZRwqGd",
+			"x-wowi-id": "26720"
+		},
+		"updated-date": "2024-06-05T07:25:58Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 801764898,
+		"name": "BetterBags_RemixGems",
+		"full_name": "Krealle/BetterBags_RemixGems",
+		"html_url": "https://github.com/Krealle/BetterBags_RemixGems",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1019715",
+			"x-wago-id": "qKQxJ76x"
+		},
+		"updated-date": "2024-06-05T18:40:20Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 144905770,
+		"name": "ChampionCommander",
+		"full_name": "alarofrunetotem/ChampionCommander",
+		"html_url": "https://github.com/alarofrunetotem/ChampionCommander",
+		"description": "Mission manager for BFA",
+		"project-id-map": {
+			"x-curse-project-id": "300882",
+			"x-wowi-id": "24802"
+		},
+		"updated-date": "2024-05-16T07:14:37Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 767556472,
+		"name": "AAATransformer",
+		"full_name": "ff14-advanced-market-search/AAATransformer",
+		"html_url": "https://github.com/ff14-advanced-market-search/AAATransformer",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "983232",
+			"x-wago-id": "4N2mvZGL"
+		},
+		"updated-date": "2024-06-24T09:22:16Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 577052469,
+		"name": "SaddlebagExchangeWoW",
+		"full_name": "ff14-advanced-market-search/SaddlebagExchangeWoW",
+		"html_url": "https://github.com/ff14-advanced-market-search/SaddlebagExchangeWoW",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "738707",
+			"x-wago-id": "kGr0Vr6y"
+		},
+		"updated-date": "2024-06-27T12:35:55Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 233372249,
+		"name": "HandyNotes_ScarabCoffers",
+		"full_name": "keyboardturner/HandyNotes_ScarabCoffers",
+		"html_url": "https://github.com/keyboardturner/HandyNotes_ScarabCoffers",
+		"description": "AQ20 / 40 Scarab Coffer Locations using the HandyNotes addon.",
+		"project-id-map": {
+			"x-curse-project-id": "358246",
+			"x-wago-id": "rkGrMlKy",
+			"x-wowi-id": "26487"
+		},
+		"updated-date": "2024-05-07T13:37:10Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 42025419,
+		"name": "aux-addon",
+		"full_name": "shirsig/aux-addon",
+		"html_url": "https://github.com/shirsig/aux-addon",
+		"description": "Auction House addOn for Classic (1.13) IMPORTANT: The folder name must be \"aux-addon\" IMPORTANT: The Vanilla (1.12) version moved here https://github.com/shirsig/aux-addon-vanilla",
+		"updated-date": "2024-05-03T05:11:28Z",
+		"flavor-list": [
+			"wrath"
+		],
+		"has-release-json": true
 	}
 ]

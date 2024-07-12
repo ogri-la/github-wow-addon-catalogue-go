@@ -72,6 +72,8 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"nebularg/PitBull4":               true,
 	"casualshammy/NameplateCooldowns": true,
 	"Slothpala/RaidFrameSettings":     true, // betas missing release
+	"MarcLF/AuctionBuddy":             true,
+	"Syiana/SUI":                      true, // looks like releases have been disabled, but still available at /releases, weird.
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
