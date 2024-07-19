@@ -304,5 +304,22 @@
 			"wrath"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 153964615,
+		"name": "MaxDps-Rogue",
+		"full_name": "kaminaris/MaxDps-Rogue",
+		"html_url": "https://github.com/kaminaris/MaxDps-Rogue",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "256432",
+			"x-wago-id": "2jK8bqNy",
+			"x-wowi-id": "24649"
+		},
+		"updated-date": "2024-07-10T02:40:17Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
