@@ -321,5 +321,21 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 828511880,
+		"name": "GroupFinderRIO",
+		"full_name": "Jods-GH/GroupFinderRIO",
+		"html_url": "https://github.com/Jods-GH/GroupFinderRIO",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1066197",
+			"x-wago-id": "56n9wjN9"
+		},
+		"updated-date": "2024-07-25T12:02:29Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]

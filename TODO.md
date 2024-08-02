@@ -1,9 +1,43 @@
 # todo 
 
-* bug, noticed a hang while parsing repos asynchronously
-    - possibly a goroutine not exiting cleanly, failing to decrement waitgroup?
-    - ctrl-c and re-running 'fixed' it.
-        - but this sucks. fix it.
+* bug, addon dropped it's x-curse-project-id between 2024-07-?? and 2024-08-02
+    - it appears to have always had a release.json
+    - it's x-curse attrib in .toc hasn't changed in 7mo
+    - does the presence of a release.json prevents the downloading and parsing of .toc files?
+        - if so, how did it gain it and then lose it?
+
+    before:
+	{
+		"id": 742660235,
+		"name": "IncognitoResurrected",
+		"full_name": "Starlynk1/IncognitoResurrected",
+		"html_url": "https://github.com/Starlynk1/IncognitoResurrected",
+		"description": "Incognito adds your specified name in front of your chat messages. Incongito Resurrrected can be enabled for guild (and officer), party and raid chat messages.",
+		"project-id-map": {
+			"x-curse-project-id": "961634"
+		},
+		"updated-date": "2024-06-03T14:59:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla"
+		],
+		"has-release-json": true
+	},
+	
+	after:
+	{
+		"id": 742660235,
+		"name": "IncognitoResurrected",
+		"full_name": "Starlynk1/IncognitoResurrected",
+		"html_url": "https://github.com/Starlynk1/IncognitoResurrected",
+		"description": "Incognito adds your specified name in front of your chat messages. Incongito Resurrrected can be enabled for guild (and officer), party and raid chat messages.",
+		"updated-date": "2024-08-01T16:09:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla"
+		],
+		"has-release-json": true
+	},
 
 * parsing .toc files
     - right now *any* .toc file is being parsed.
