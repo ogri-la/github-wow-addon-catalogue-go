@@ -337,5 +337,63 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 792790754,
+		"name": "sharedmedia-battlebrisket-vo",
+		"full_name": "BattleBrisket/sharedmedia-battlebrisket-vo",
+		"html_url": "https://github.com/BattleBrisket/sharedmedia-battlebrisket-vo",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1009923",
+			"x-wago-id": "96doJENO"
+		},
+		"updated-date": "2024-08-08T20:54:16Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 792790754,
+		"name": "sharedmedia-battlebrisket-vo",
+		"full_name": "BattleBrisket/sharedmedia-battlebrisket-vo",
+		"html_url": "https://github.com/BattleBrisket/sharedmedia-battlebrisket-vo",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1009923",
+			"x-wago-id": "96doJENO"
+		},
+		"updated-date": "2024-08-08T20:54:16Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 647303191,
+		"name": "InstanceSpellCollector",
+		"full_name": "enderneko/InstanceSpellCollector",
+		"html_url": "https://github.com/enderneko/InstanceSpellCollector",
+		"description": "Collect debuffs and enemy casts!",
+		"project-id-map": {
+			"x-curse-project-id": "867852"
+		},
+		"updated-date": "2024-07-21T05:35:58Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
 	}
+
 ]
