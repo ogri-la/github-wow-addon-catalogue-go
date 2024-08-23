@@ -394,6 +394,17 @@
 			"cata"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 672117080,
+		"name": "LibDevConsole",
+		"full_name": "Ghostopheles/LibDevConsole",
+		"html_url": "https://github.com/Ghostopheles/LibDevConsole",
+		"description": "An addon library for adding custom commands to the built-in Developer Console.",
+		"updated-date": "2024-01-06T00:28:34Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
-
 ]
