@@ -1571,6 +1571,7 @@ func get_projects(filter *regexp.Regexp) []GithubRepo {
 		// with fewer results and notable absences.
 		{"code", "path:.github/workflows bigwigsmods packager"},
 		{"code", "path:.github/workflows CF_API_KEY"},
+		{"code", "user:curseforge-mirror"}, // github.com/curseforge-mirror
 		{"code", "path:.github/workflows WOWI_API_TOKEN"},
 		{"repositories", "topic:wow-addon"},
 		{"repositories", "topic:world-of-warcraft-addon"},

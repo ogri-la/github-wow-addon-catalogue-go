@@ -17,7 +17,7 @@
 		"full_name": "0xbs/premade-groups-filter",
 		"html_url": "https://github.com/0xbs/premade-groups-filter",
 		"description": "A World of Warcraft addon for powerful filtering of premade group listings.",
-		"updated-date": "2024-08-22T20:44:37Z",
+		"updated-date": "2024-08-23T19:51:49Z",
 		"flavor-list": [
 			"mainline",
 			"wrath",
@@ -906,7 +906,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "1033418"
 		},
-		"updated-date": "2024-07-17T01:29:14Z",
+		"updated-date": "2024-08-24T15:06:46Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -1426,7 +1426,7 @@
 			"x-curse-project-id": "960816",
 			"x-wago-id": "rNkPwl6a"
 		},
-		"updated-date": "2024-08-23T07:09:25Z",
+		"updated-date": "2024-08-24T19:01:28Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -1913,7 +1913,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "861865"
 		},
-		"updated-date": "2024-08-21T12:46:30Z",
+		"updated-date": "2024-08-25T07:34:05Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -1977,7 +1977,7 @@
 			"x-wago-id": "5NRegwG3",
 			"x-wowi-id": "5086"
 		},
-		"updated-date": "2024-08-22T19:40:15Z",
+		"updated-date": "2024-08-24T13:54:03Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2288,7 +2288,7 @@
 			"x-wago-id": "5bGolnN0",
 			"x-wowi-id": "9577"
 		},
-		"updated-date": "2024-08-23T04:38:18Z",
+		"updated-date": "2024-08-24T13:36:55Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2328,7 +2328,7 @@
 			"x-curse-project-id": "15655",
 			"x-wowi-id": "14635"
 		},
-		"updated-date": "2024-08-15T21:30:59Z",
+		"updated-date": "2024-08-23T13:41:19Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -2540,7 +2540,7 @@
 			"x-curse-project-id": "274066",
 			"x-wago-id": "nQN5aoNB"
 		},
-		"updated-date": "2024-08-16T14:24:28Z",
+		"updated-date": "2024-08-25T12:40:08Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2913,7 +2913,7 @@
 		"full_name": "Chalsean/XFaction",
 		"html_url": "https://github.com/Chalsean/XFaction",
 		"description": "Enable cross faction roster visibility and communication between guilds of a confederate",
-		"updated-date": "2024-08-23T04:55:43Z",
+		"updated-date": "2024-08-23T22:32:47Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -2976,7 +2976,7 @@
 			"x-curse-project-id": "85995",
 			"x-wowi-id": "23213"
 		},
-		"updated-date": "2024-07-28T07:37:01Z",
+		"updated-date": "2024-08-25T09:40:39Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -3427,7 +3427,7 @@
 			"x-wago-id": "xZKxZENk",
 			"x-wowi-id": "24904"
 		},
-		"updated-date": "2024-08-20T08:27:52Z",
+		"updated-date": "2024-08-25T08:00:55Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -3743,7 +3743,7 @@
 			"x-wago-id": "BNBeQxGx",
 			"x-wowi-id": "26656"
 		},
-		"updated-date": "2024-08-03T07:37:03Z",
+		"updated-date": "2024-08-24T23:22:07Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -3850,6 +3850,21 @@
 			"x-curse-project-id": "880023"
 		},
 		"updated-date": "2023-10-11T00:03:44Z",
+		"flavor-list": [
+			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 531275307,
+		"name": "SkuCustomBeaconsEssential",
+		"full_name": "Duugu/SkuCustomBeaconsEssential",
+		"html_url": "https://github.com/Duugu/SkuCustomBeaconsEssential",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "880026"
+		},
+		"updated-date": "2023-10-11T00:04:31Z",
 		"flavor-list": [
 			"wrath"
 		],
@@ -4161,7 +4176,7 @@
 			"x-curse-project-id": "95571",
 			"x-wago-id": "Rn6VpLGd"
 		},
-		"updated-date": "2024-07-25T00:44:37Z",
+		"updated-date": "2024-08-24T15:40:20Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -4219,8 +4234,10 @@
 		"full_name": "Estasleyendoesto/HideUI",
 		"html_url": "https://github.com/Estasleyendoesto/HideUI",
 		"description": "HideUI is an addon that adjusts the opacity of any frame in the game, including those from other addons. It features adaptive opacity based on events like AFK, mounting, combat, or entering instances. HideUI enhances the edit mode by adding opacity control and integrates seamlessly with the game's native UI.",
-		"updated-date": "2024-08-22T11:20:55Z",
-		"flavor-list": null,
+		"updated-date": "2024-08-23T10:51:45Z",
+		"flavor-list": [
+			"mainline"
+		],
 		"has-release-json": false
 	},
 	{
@@ -4265,7 +4282,7 @@
 		"full_name": "Expensify/App",
 		"html_url": "https://github.com/Expensify/App",
 		"description": "Welcome to New Expensify: a complete re-imagination of financial collaboration, centered around chat. Help us build the next generation of Expensify by sharing feedback and contributing to the code.",
-		"updated-date": "2024-08-22T16:51:18Z",
+		"updated-date": "2024-08-23T14:13:19Z",
 		"flavor-list": null,
 		"has-release-json": false
 	},
@@ -4625,6 +4642,22 @@
 		"has-release-json": true
 	},
 	{
+		"id": 803651135,
+		"name": "Rustbolt",
+		"full_name": "Ghostopheles/Rustbolt",
+		"html_url": "https://github.com/Ghostopheles/Rustbolt",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1055837",
+			"x-wago-id": "j6jzwm6R"
+		},
+		"updated-date": "2024-08-19T06:16:06Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 799016480,
 		"name": "Tabardy",
 		"full_name": "Ghostopheles/Tabardy",
@@ -4761,7 +4794,7 @@
 			"x-curse-project-id": "298648",
 			"x-wago-id": "R4N2PZKL"
 		},
-		"updated-date": "2024-08-21T12:50:57Z",
+		"updated-date": "2024-08-25T13:27:38Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -5342,7 +5375,7 @@
 			"x-wago-id": "WYK9WXNL",
 			"x-wowi-id": "24608"
 		},
-		"updated-date": "2024-08-23T08:32:24Z",
+		"updated-date": "2024-08-25T03:00:32Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -6121,7 +6154,7 @@
 		"name": "GroupFinderRIO",
 		"full_name": "Jods-GH/GroupFinderRIO",
 		"html_url": "https://github.com/Jods-GH/GroupFinderRIO",
-		"description": "",
+		"description": "Gh source for the GroupFinderRio WoW Addon",
 		"project-id-map": {
 			"x-curse-project-id": "1066197",
 			"x-wago-id": "56n9wjN9"
@@ -6245,7 +6278,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "819757"
 		},
-		"updated-date": "2024-08-19T01:57:32Z",
+		"updated-date": "2024-08-24T13:33:54Z",
 		"flavor-list": [
 			"vanilla",
 			"wrath",
@@ -6263,7 +6296,7 @@
 			"x-curse-project-id": "17809",
 			"x-wowi-id": "23875"
 		},
-		"updated-date": "2024-07-30T19:21:48Z",
+		"updated-date": "2024-08-25T13:05:23Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -6655,7 +6688,7 @@
 		"full_name": "LenweSaralonde/Musician",
 		"html_url": "https://github.com/LenweSaralonde/Musician",
 		"description": "Add-on for World of Warcraft to perform music in game.",
-		"updated-date": "2024-08-15T23:18:27Z",
+		"updated-date": "2024-08-24T14:46:56Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -6891,7 +6924,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "1087335"
 		},
-		"updated-date": "2024-08-22T10:47:30Z",
+		"updated-date": "2024-08-25T13:37:24Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -6936,22 +6969,6 @@
 		"updated-date": "2021-07-20T01:15:00Z",
 		"flavor-list": [
 			"tbc"
-		],
-		"has-release-json": true
-	},
-	{
-		"id": 564471914,
-		"name": "Critline",
-		"full_name": "Lombra/Critline",
-		"html_url": "https://github.com/Lombra/Critline",
-		"description": "",
-		"project-id-map": {
-			"x-curse-project-id": "983",
-			"x-wowi-id": "12476"
-		},
-		"updated-date": "2024-07-29T12:10:11Z",
-		"flavor-list": [
-			"mainline"
 		],
 		"has-release-json": true
 	},
@@ -7157,7 +7174,7 @@
 			"x-wago-id": "VBNBZVNx",
 			"x-wowi-id": "24117"
 		},
-		"updated-date": "2024-08-20T12:10:56Z",
+		"updated-date": "2024-08-25T09:58:36Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -7206,7 +7223,7 @@
 			"x-curse-project-id": "94310",
 			"x-wago-id": "Mj6jXpGR"
 		},
-		"updated-date": "2024-08-22T15:35:05Z",
+		"updated-date": "2024-08-23T11:12:36Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -7308,7 +7325,7 @@
 		"full_name": "MyGamesDevelopmentAcc/MyBags",
 		"html_url": "https://github.com/MyGamesDevelopmentAcc/MyBags",
 		"description": "",
-		"updated-date": "2024-08-10T13:52:34Z",
+		"updated-date": "2024-08-24T21:09:39Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -7320,7 +7337,7 @@
 		"full_name": "MyGamesDevelopmentAcc/MyDragonTargetFrames",
 		"html_url": "https://github.com/MyGamesDevelopmentAcc/MyDragonTargetFrames",
 		"description": "",
-		"updated-date": "2024-07-30T13:20:14Z",
+		"updated-date": "2024-08-24T20:49:57Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -7957,7 +7974,7 @@
 			"x-curse-project-id": "1080003",
 			"x-wago-id": "RNL9wp6o"
 		},
-		"updated-date": "2024-08-14T06:03:56Z",
+		"updated-date": "2024-08-25T01:41:29Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8008,7 +8025,7 @@
 			"x-curse-project-id": "26120",
 			"x-wowi-id": "21293"
 		},
-		"updated-date": "2024-08-22T17:52:40Z",
+		"updated-date": "2024-08-24T05:32:55Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8073,7 +8090,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "85646"
 		},
-		"updated-date": "2024-08-10T08:35:49Z",
+		"updated-date": "2024-08-25T04:48:09Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8267,7 +8284,7 @@
 			"x-curse-project-id": "916354",
 			"x-wago-id": "EGPXd3G1"
 		},
-		"updated-date": "2024-08-20T12:18:22Z",
+		"updated-date": "2024-08-23T19:17:59Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8771,7 +8788,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "678792"
 		},
-		"updated-date": "2024-08-21T12:53:15Z",
+		"updated-date": "2024-08-25T08:24:05Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -9315,7 +9332,7 @@
 			"x-curse-project-id": "279257",
 			"x-wago-id": "b6mb0XKP"
 		},
-		"updated-date": "2024-08-23T07:53:35Z",
+		"updated-date": "2024-08-25T08:31:04Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -9597,9 +9614,9 @@
 		"html_url": "https://github.com/RealUI/RealUI",
 		"description": "A minimalistic UI for World of Warcraft designed to be functional, yet also efficient and elegant.",
 		"project-id-map": {
-			"x-curse-project-id": "13501",
-			"x-wago-id": "v63oVn6b",
-			"x-wowi-id": "11190"
+			"x-curse-project-id": "13592",
+			"x-wago-id": "kRNLgpGo",
+			"x-wowi-id": "12097"
 		},
 		"updated-date": "2024-06-24T20:07:19Z",
 		"flavor-list": [
@@ -9664,7 +9681,7 @@
 			"x-curse-project-id": "486246",
 			"x-wago-id": "ZKbebq61"
 		},
-		"updated-date": "2024-08-18T17:59:41Z",
+		"updated-date": "2024-08-23T13:58:33Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -10121,7 +10138,7 @@
 			"x-curse-project-id": "401253",
 			"x-wago-id": "0mKOzk6x"
 		},
-		"updated-date": "2024-08-23T01:09:50Z",
+		"updated-date": "2024-08-25T04:59:08Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10662,7 +10679,7 @@
 			"x-curse-project-id": "398177",
 			"x-wago-id": "Qb6m146P"
 		},
-		"updated-date": "2024-08-23T09:10:54Z",
+		"updated-date": "2024-08-23T10:20:10Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -10921,7 +10938,7 @@
 		"project-id-map": {
 			"x-wago-id": "n6VPA8Gd"
 		},
-		"updated-date": "2024-08-20T22:35:39Z",
+		"updated-date": "2024-08-24T20:43:34Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -10997,9 +11014,9 @@
 			"x-curse-project-id": "283939",
 			"x-wago-id": "R4N29xGL"
 		},
-		"updated-date": "2024-08-23T09:20:23Z",
+		"updated-date": "2024-08-25T13:15:49Z",
 		"flavor-list": [
-			"mainline"
+			"cata"
 		],
 		"has-release-json": true
 	},
@@ -11012,7 +11029,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "850505"
 		},
-		"updated-date": "2024-08-14T06:55:57Z",
+		"updated-date": "2024-08-24T09:37:53Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -11267,7 +11284,7 @@
 			"x-curse-project-id": "100547",
 			"x-wago-id": "kRNLep6o"
 		},
-		"updated-date": "2024-08-23T06:59:04Z",
+		"updated-date": "2024-08-23T10:22:30Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -11296,7 +11313,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "413582"
 		},
-		"updated-date": "2024-08-21T09:48:29Z",
+		"updated-date": "2024-08-23T15:35:36Z",
 		"flavor-list": [
 			"mainline",
 			"cata"
@@ -11397,7 +11414,7 @@
 			"x-wago-id": "kGr0YY6y",
 			"x-wowi-id": "23921"
 		},
-		"updated-date": "2024-08-21T11:23:48Z",
+		"updated-date": "2024-08-24T23:29:27Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -11625,7 +11642,7 @@
 			"x-wago-id": "XrNk5lKa",
 			"x-wowi-id": "25770"
 		},
-		"updated-date": "2024-08-21T20:01:52Z",
+		"updated-date": "2024-08-24T00:07:24Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -12245,7 +12262,7 @@
 			"x-curse-project-id": "389434",
 			"x-wago-id": "0mKOvP6x"
 		},
-		"updated-date": "2024-08-19T16:57:46Z",
+		"updated-date": "2024-08-24T08:40:10Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -12273,7 +12290,7 @@
 		"full_name": "Witnesscm/TinyInspect",
 		"html_url": "https://github.com/Witnesscm/TinyInspect",
 		"description": "TinyInspect Continued",
-		"updated-date": "2024-08-15T13:30:56Z",
+		"updated-date": "2024-08-25T02:01:16Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -12331,7 +12348,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "30801"
 		},
-		"updated-date": "2024-08-20T22:36:58Z",
+		"updated-date": "2024-08-23T20:10:48Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -12414,7 +12431,7 @@
 			"x-wago-id": "vEGPqeN1",
 			"x-wowi-id": "18206"
 		},
-		"updated-date": "2024-08-22T22:05:19Z",
+		"updated-date": "2024-08-23T18:56:37Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -14082,7 +14099,7 @@
 			"x-wago-id": "Mj6jqMNR",
 			"x-wowi-id": "25287"
 		},
-		"updated-date": "2024-07-17T13:36:29Z",
+		"updated-date": "2024-08-24T14:38:42Z",
 		"flavor-list": [
 			"vanilla",
 			"cata"
@@ -14100,7 +14117,7 @@
 			"x-wago-id": "Q6aEkP6W",
 			"x-wowi-id": "26658"
 		},
-		"updated-date": "2024-08-23T09:45:19Z",
+		"updated-date": "2024-08-23T10:53:57Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -14241,6 +14258,18 @@
 			"x-wago-id": "ZKxqOyGk"
 		},
 		"updated-date": "2024-08-14T08:42:30Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 317051702,
+		"name": "PetBattleLogKeeper",
+		"full_name": "bloerwald/PetBattleLogKeeper",
+		"html_url": "https://github.com/bloerwald/PetBattleLogKeeper",
+		"description": "fork of PetBattleLogKeeper with fixes",
+		"updated-date": "2024-08-14T18:09:44Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -14471,7 +14500,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "706628"
 		},
-		"updated-date": "2024-08-22T05:02:55Z",
+		"updated-date": "2024-08-23T16:24:26Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -14900,6 +14929,1657 @@
 		"has-release-json": true
 	},
 	{
+		"id": 526422459,
+		"name": "TinyInspect",
+		"full_name": "curseforge-mirror/TinyInspect",
+		"html_url": "https://github.com/curseforge-mirror/TinyInspect",
+		"description": "Mirror of 55510696's TinyInspect.",
+		"updated-date": "2024-08-25T12:02:46Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 572476074,
+		"name": "adibags_by_expansion",
+		"full_name": "curseforge-mirror/adibags_by_expansion",
+		"html_url": "https://github.com/curseforge-mirror/adibags_by_expansion",
+		"description": "Mirror of PrivateSniper's AdiBags - By Expansion.",
+		"updated-date": "2024-08-25T12:03:33Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 846946270,
+		"name": "angry-keystones",
+		"full_name": "curseforge-mirror/angry-keystones",
+		"html_url": "https://github.com/curseforge-mirror/angry-keystones",
+		"description": "Mirror of Ermads's Angry Keystones.",
+		"updated-date": "2024-08-25T12:07:20Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532653138,
+		"name": "atlas",
+		"full_name": "curseforge-mirror/atlas",
+		"html_url": "https://github.com/curseforge-mirror/atlas",
+		"description": "Mirror of arithmandar's Atlas.",
+		"updated-date": "2024-08-25T12:08:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534885387,
+		"name": "atlas-battlegrounds",
+		"full_name": "curseforge-mirror/atlas-battlegrounds",
+		"html_url": "https://github.com/curseforge-mirror/atlas-battlegrounds",
+		"description": "Mirror of arithmandar's Atlas Battlegrounds.",
+		"updated-date": "2024-08-25T12:01:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534883475,
+		"name": "atlas-burningcrusade",
+		"full_name": "curseforge-mirror/atlas-burningcrusade",
+		"html_url": "https://github.com/curseforge-mirror/atlas-burningcrusade",
+		"description": "Mirror of arithmandar's Atlas Burning Crusade.",
+		"updated-date": "2024-08-25T12:02:44Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534883407,
+		"name": "atlas-classicwow",
+		"full_name": "curseforge-mirror/atlas-classicwow",
+		"html_url": "https://github.com/curseforge-mirror/atlas-classicwow",
+		"description": "Mirror of arithmandar's Atlas Classic WoW.",
+		"updated-date": "2024-08-25T12:04:42Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534883172,
+		"name": "atlas-quest-fan-update",
+		"full_name": "curseforge-mirror/atlas-quest-fan-update",
+		"html_url": "https://github.com/curseforge-mirror/atlas-quest-fan-update",
+		"description": "Mirror of thanbini's AtlasQuest - Fan Update.",
+		"updated-date": "2024-08-25T12:01:18Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534883762,
+		"name": "atlas-wrathofthelichking",
+		"full_name": "curseforge-mirror/atlas-wrathofthelichking",
+		"html_url": "https://github.com/curseforge-mirror/atlas-wrathofthelichking",
+		"description": "Mirror of arithmandar's Atlas Wrath of the Lich King.",
+		"updated-date": "2024-08-25T12:08:51Z",
+		"flavor-list": [
+			"mainline",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 539407629,
+		"name": "auctionator",
+		"full_name": "curseforge-mirror/auctionator",
+		"html_url": "https://github.com/curseforge-mirror/auctionator",
+		"description": "Mirror of plusmouse's Auctionator.",
+		"updated-date": "2024-08-25T12:04:48Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522746414,
+		"name": "auctioneer",
+		"full_name": "curseforge-mirror/auctioneer",
+		"html_url": "https://github.com/curseforge-mirror/auctioneer",
+		"description": "Mirror of MentalPower's Auctioneer.",
+		"updated-date": "2024-08-25T12:02:43Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522785193,
+		"name": "azeroth-auto-pilot",
+		"full_name": "curseforge-mirror/azeroth-auto-pilot",
+		"html_url": "https://github.com/curseforge-mirror/azeroth-auto-pilot",
+		"description": "Mirror of zyrrael's Azeroth Auto Pilot.",
+		"project-id-map": {
+			"x-wowi-id": "25775"
+		},
+		"updated-date": "2024-08-25T12:02:38Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832143516,
+		"name": "baganator",
+		"full_name": "curseforge-mirror/baganator",
+		"html_url": "https://github.com/curseforge-mirror/baganator",
+		"description": "Mirror of plusmouse's Baganator.",
+		"updated-date": "2024-08-25T12:00:56Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 554521863,
+		"name": "battlegroundenemies",
+		"full_name": "curseforge-mirror/battlegroundenemies",
+		"html_url": "https://github.com/curseforge-mirror/battlegroundenemies",
+		"description": "Mirror of Bullseiify's BattleGroundEnemies.",
+		"project-id-map": {
+			"x-curse-project-id": "274066",
+			"x-wago-id": "nQN5aoNB"
+		},
+		"updated-date": "2024-08-25T12:08:47Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 576825984,
+		"name": "better-fishing",
+		"full_name": "curseforge-mirror/better-fishing",
+		"html_url": "https://github.com/curseforge-mirror/better-fishing",
+		"description": "Mirror of Yuyuli's Better Fishing.",
+		"updated-date": "2024-08-25T12:03:24Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 611205672,
+		"name": "bettercharacterpanel",
+		"full_name": "curseforge-mirror/bettercharacterpanel",
+		"html_url": "https://github.com/curseforge-mirror/bettercharacterpanel",
+		"description": "Mirror of Grimonja's BetterCharacterPanel.",
+		"updated-date": "2024-08-25T12:02:38Z",
+		"flavor-list": [
+			"mainline",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 537698265,
+		"name": "big-wigs",
+		"full_name": "curseforge-mirror/big-wigs",
+		"html_url": "https://github.com/curseforge-mirror/big-wigs",
+		"description": "Mirror of funkehdude's BigWigs Bossmods.",
+		"project-id-map": {
+			"x-curse-project-id": "2382",
+			"x-wago-id": "5NRegwG3",
+			"x-wowi-id": "5086"
+		},
+		"updated-date": "2024-08-25T12:04:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522748237,
+		"name": "bug-grabber",
+		"full_name": "curseforge-mirror/bug-grabber",
+		"html_url": "https://github.com/curseforge-mirror/bug-grabber",
+		"description": "Mirror of funkehdude's BugGrabber.",
+		"updated-date": "2024-08-25T12:08:57Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522750688,
+		"name": "buyemall",
+		"full_name": "curseforge-mirror/buyemall",
+		"html_url": "https://github.com/curseforge-mirror/buyemall",
+		"description": "Mirror of Jordy141's BuyEmAll Shadowlands.",
+		"updated-date": "2024-08-25T12:05:23Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532674603,
+		"name": "buyemall-classic",
+		"full_name": "curseforge-mirror/buyemall-classic",
+		"html_url": "https://github.com/curseforge-mirror/buyemall-classic",
+		"description": "Mirror of Jordy141's BuyEmAll Classic.",
+		"updated-date": "2024-08-25T12:05:34Z",
+		"flavor-list": [
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 560221392,
+		"name": "clicklinks",
+		"full_name": "curseforge-mirror/clicklinks",
+		"html_url": "https://github.com/curseforge-mirror/clicklinks",
+		"description": "Mirror of tannerng's Click Links.",
+		"updated-date": "2024-08-25T12:01:22Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832147108,
+		"name": "craft-info-anywhere",
+		"full_name": "curseforge-mirror/craft-info-anywhere",
+		"html_url": "https://github.com/curseforge-mirror/craft-info-anywhere",
+		"description": "Mirror of plusmouse's Craft Info Anywhere.",
+		"updated-date": "2024-08-25T12:03:46Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 582920499,
+		"name": "craftsim",
+		"full_name": "curseforge-mirror/craftsim",
+		"html_url": "https://github.com/curseforge-mirror/craftsim",
+		"description": "Mirror of genjuwow's CraftSim.",
+		"project-id-map": {
+			"x-curse-project-id": "705015",
+			"x-wago-id": "0mNwaPKo",
+			"x-wowi-id": "26519"
+		},
+		"updated-date": "2024-08-25T12:06:17Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832145831,
+		"name": "cursortrail",
+		"full_name": "curseforge-mirror/cursortrail",
+		"html_url": "https://github.com/curseforge-mirror/cursortrail",
+		"description": "Mirror of UppyDan's CursorTrail.",
+		"updated-date": "2024-08-25T12:04:24Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832141475,
+		"name": "dejaclassicstats",
+		"full_name": "curseforge-mirror/dejaclassicstats",
+		"html_url": "https://github.com/curseforge-mirror/dejaclassicstats",
+		"description": "Mirror of Dejablue's DejaClassicStats.",
+		"project-id-map": {
+			"x-curse-project-id": "334987",
+			"x-wowi-id": "25118"
+		},
+		"updated-date": "2024-08-25T12:02:22Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 846946623,
+		"name": "demodal",
+		"full_name": "curseforge-mirror/demodal",
+		"html_url": "https://github.com/curseforge-mirror/demodal",
+		"description": "Mirror of nezroy's DeModal.",
+		"project-id-map": {
+			"x-curse-project-id": "631280"
+		},
+		"updated-date": "2024-08-25T12:09:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522719652,
+		"name": "details",
+		"full_name": "curseforge-mirror/details",
+		"html_url": "https://github.com/curseforge-mirror/details",
+		"description": "Mirror of Terciob's Details! Damage Meter.",
+		"project-id-map": {
+			"x-curse-project-id": "61284",
+			"x-wago-id": "WL6Jk2Kv"
+		},
+		"updated-date": "2024-08-25T12:04:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522763776,
+		"name": "details-advanced-death-logs-plug",
+		"full_name": "curseforge-mirror/details-advanced-death-logs-plug",
+		"html_url": "https://github.com/curseforge-mirror/details-advanced-death-logs-plug",
+		"description": "Mirror of Terciob's Details! Damage Meter: Advanced Death Logs (plugin).",
+		"project-id-map": {
+			"x-curse-project-id": "75162",
+			"x-wago-id": "WYK9QaKL"
+		},
+		"updated-date": "2024-08-25T12:08:09Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522766326,
+		"name": "details-target-caller-plugin",
+		"full_name": "curseforge-mirror/details-target-caller-plugin",
+		"html_url": "https://github.com/curseforge-mirror/details-target-caller-plugin",
+		"description": "Mirror of Terciob's Details! Damage Meter: Target Caller (plugin).",
+		"project-id-map": {
+			"x-curse-project-id": "95101",
+			"x-wago-id": "0mKOpYGx"
+		},
+		"updated-date": "2024-08-25T12:00:46Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 565652928,
+		"name": "dialogkey-df",
+		"full_name": "curseforge-mirror/dialogkey-df",
+		"html_url": "https://github.com/curseforge-mirror/dialogkey-df",
+		"description": "Mirror of ItsNoich's DialogKey DF.",
+		"updated-date": "2024-08-25T12:00:53Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523202148,
+		"name": "disableautoaddspells",
+		"full_name": "curseforge-mirror/disableautoaddspells",
+		"html_url": "https://github.com/curseforge-mirror/disableautoaddspells",
+		"description": "Mirror of semlar's DisableAutoAddSpells.",
+		"updated-date": "2024-08-25T12:01:26Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522762898,
+		"name": "drustvar-com-pvp-ratings",
+		"full_name": "curseforge-mirror/drustvar-com-pvp-ratings",
+		"html_url": "https://github.com/curseforge-mirror/drustvar-com-pvp-ratings",
+		"description": "Mirror of leeka's Drustvar.com PVP Ratings.",
+		"project-id-map": {
+			"x-curse-project-id": "399216"
+		},
+		"updated-date": "2024-08-25T12:06:44Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523199394,
+		"name": "ealign-updated",
+		"full_name": "curseforge-mirror/ealign-updated",
+		"html_url": "https://github.com/curseforge-mirror/ealign-updated",
+		"description": "Mirror of Lohkin's eAlign Updated.",
+		"updated-date": "2024-08-25T12:04:21Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 559288912,
+		"name": "easy-frames",
+		"full_name": "curseforge-mirror/easy-frames",
+		"html_url": "https://github.com/curseforge-mirror/easy-frames",
+		"description": "Mirror of usoltsev's Easy Frames.",
+		"updated-date": "2024-08-25T12:06:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523200923,
+		"name": "eens-chat-window-backup",
+		"full_name": "curseforge-mirror/eens-chat-window-backup",
+		"html_url": "https://github.com/curseforge-mirror/eens-chat-window-backup",
+		"description": "Mirror of antisocialian's Een's Chat Window Backup.",
+		"updated-date": "2024-08-25T12:08:20Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 524783246,
+		"name": "elitismhelper",
+		"full_name": "curseforge-mirror/elitismhelper",
+		"html_url": "https://github.com/curseforge-mirror/elitismhelper",
+		"description": "Mirror of amkoio's ElitismHelper.",
+		"updated-date": "2024-08-25T12:08:06Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832298938,
+		"name": "elvui-shadow-light",
+		"full_name": "curseforge-mirror/elvui-shadow-light",
+		"html_url": "https://github.com/curseforge-mirror/elvui-shadow-light",
+		"description": "Mirror of Repooc's Shadow \u0026 Light (ElvUI Plugin).",
+		"project-id-map": {
+			"x-curse-project-id": "39618",
+			"x-wago-id": "7x61q261"
+		},
+		"updated-date": "2024-08-25T12:08:36Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522762503,
+		"name": "elwigo",
+		"full_name": "curseforge-mirror/elwigo",
+		"html_url": "https://github.com/curseforge-mirror/elwigo",
+		"description": "Mirror of Oillamp's ElWigo.",
+		"updated-date": "2024-08-25T12:03:19Z",
+		"flavor-list": [
+			"mainline",
+			"tbc"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 609764301,
+		"name": "ema",
+		"full_name": "curseforge-mirror/ema",
+		"html_url": "https://github.com/curseforge-mirror/ema",
+		"description": "Mirror of Blossom_Ebony's EMA.",
+		"updated-date": "2024-08-25T12:02:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532675321,
+		"name": "enhanced-flight-map",
+		"full_name": "curseforge-mirror/enhanced-flight-map",
+		"html_url": "https://github.com/curseforge-mirror/enhanced-flight-map",
+		"description": "Mirror of thengel12's Enhanced Flight Map.",
+		"project-id-map": {
+			"x-curse-project-id": "489980"
+		},
+		"updated-date": "2024-08-25T12:08:19Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 545187348,
+		"name": "extended-transmog-sets",
+		"full_name": "curseforge-mirror/extended-transmog-sets",
+		"html_url": "https://github.com/curseforge-mirror/extended-transmog-sets",
+		"description": "Mirror of Mattsta's Extended Transmog Sets.",
+		"updated-date": "2024-08-25T12:08:16Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832148413,
+		"name": "fishingbuddy",
+		"full_name": "curseforge-mirror/fishingbuddy",
+		"html_url": "https://github.com/curseforge-mirror/fishingbuddy",
+		"description": "Mirror of Sutorix's Fishing Buddy.",
+		"project-id-map": {
+			"x-curse-project-id": "15093",
+			"x-wowi-id": "4239"
+		},
+		"updated-date": "2024-08-25T12:08:51Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 753258522,
+		"name": "framecolor-hud-action-bar-color",
+		"full_name": "curseforge-mirror/framecolor-hud-action-bar-color",
+		"html_url": "https://github.com/curseforge-mirror/framecolor-hud-action-bar-color",
+		"description": "Mirror of slothpala's FrameColor - Dark \u0026 Custom Color UI.",
+		"project-id-map": {
+			"x-curse-project-id": "693720"
+		},
+		"updated-date": "2024-08-25T12:08:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 567004518,
+		"name": "friend-groups-continued",
+		"full_name": "curseforge-mirror/friend-groups-continued",
+		"html_url": "https://github.com/curseforge-mirror/friend-groups-continued",
+		"description": "Mirror of Thainii's FriendGroups.",
+		"project-id-map": {
+			"x-curse-project-id": "103161",
+			"x-wowi-id": "25105"
+		},
+		"updated-date": "2024-08-25T12:01:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522761179,
+		"name": "gladiatorlossa2",
+		"full_name": "curseforge-mirror/gladiatorlossa2",
+		"html_url": "https://github.com/curseforge-mirror/gladiatorlossa2",
+		"description": "Mirror of xGrit's GladiatorlosSA2.",
+		"updated-date": "2024-08-25T12:04:48Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 804710410,
+		"name": "globalplayed",
+		"full_name": "curseforge-mirror/globalplayed",
+		"html_url": "https://github.com/curseforge-mirror/globalplayed",
+		"description": "Mirror of RedSkiesReaperr's GlobalPlayed.",
+		"project-id-map": {
+			"x-curse-project-id": "377190"
+		},
+		"updated-date": "2024-08-25T12:04:21Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522761044,
+		"name": "gtfo",
+		"full_name": "curseforge-mirror/gtfo",
+		"html_url": "https://github.com/curseforge-mirror/gtfo",
+		"description": "Mirror of Zensunim's GTFO.",
+		"project-id-map": {
+			"x-curse-project-id": "20697",
+			"x-wago-id": "PANz0MK4",
+			"x-wowi-id": "17996"
+		},
+		"updated-date": "2024-08-25T12:03:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 545185675,
+		"name": "handynotes-worldmapbutton",
+		"full_name": "curseforge-mirror/handynotes-worldmapbutton",
+		"html_url": "https://github.com/curseforge-mirror/handynotes-worldmapbutton",
+		"description": "Mirror of fuba82's HandyNotes: WorldMapButton.",
+		"project-id-map": {
+			"x-curse-project-id": "298530",
+			"x-wago-id": "q96dVqGO"
+		},
+		"updated-date": "2024-08-25T12:05:25Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 753259059,
+		"name": "healthbarcolor",
+		"full_name": "curseforge-mirror/healthbarcolor",
+		"html_url": "https://github.com/curseforge-mirror/healthbarcolor",
+		"description": "Mirror of slothpala's HealthBarColor - Health Bar Color.",
+		"project-id-map": {
+			"x-curse-project-id": "682398"
+		},
+		"updated-date": "2024-08-25T12:07:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 552328809,
+		"name": "hekili",
+		"full_name": "curseforge-mirror/hekili",
+		"html_url": "https://github.com/curseforge-mirror/hekili",
+		"description": "Mirror of Hekili's Hekili Priority Helper.",
+		"project-id-map": {
+			"x-curse-project-id": "69254",
+			"x-wago-id": "WYK9WXNL",
+			"x-wowi-id": "24608"
+		},
+		"updated-date": "2024-08-25T12:00:41Z",
+		"flavor-list": [
+			"mainline",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523202948,
+		"name": "hide-objectives",
+		"full_name": "curseforge-mirror/hide-objectives",
+		"html_url": "https://github.com/curseforge-mirror/hide-objectives",
+		"description": "Mirror of nathewinterthorn's Hide Objectives.",
+		"updated-date": "2024-08-25T12:08:48Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532675950,
+		"name": "hidingbar",
+		"full_name": "curseforge-mirror/hidingbar",
+		"html_url": "https://github.com/curseforge-mirror/hidingbar",
+		"description": "Mirror of sfmict's HidingBar.",
+		"updated-date": "2024-08-25T12:06:48Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 714227328,
+		"name": "improved-stable-frame",
+		"full_name": "curseforge-mirror/improved-stable-frame",
+		"html_url": "https://github.com/curseforge-mirror/improved-stable-frame",
+		"description": "Mirror of Cybeloras's Improved Stable Frame.",
+		"updated-date": "2024-08-25T12:08:48Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522767170,
+		"name": "inputlagfix",
+		"full_name": "curseforge-mirror/inputlagfix",
+		"html_url": "https://github.com/curseforge-mirror/inputlagfix",
+		"description": "Mirror of ghanvert001's InputLagFix.",
+		"updated-date": "2024-08-25T12:06:07Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522768744,
+		"name": "inspectfix",
+		"full_name": "curseforge-mirror/inspectfix",
+		"html_url": "https://github.com/curseforge-mirror/inspectfix",
+		"description": "Mirror of _ForgeUser405586's InspectFix.",
+		"project-id-map": {
+			"x-curse-project-id": "inspectfix"
+		},
+		"updated-date": "2024-08-25T12:01:24Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 572475755,
+		"name": "itemlock",
+		"full_name": "curseforge-mirror/itemlock",
+		"html_url": "https://github.com/curseforge-mirror/itemlock",
+		"description": "Mirror of uhneb's ItemLock.",
+		"updated-date": "2024-08-25T12:06:50Z",
+		"flavor-list": [
+			"mainline",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 571707224,
+		"name": "journalator",
+		"full_name": "curseforge-mirror/journalator",
+		"html_url": "https://github.com/curseforge-mirror/journalator",
+		"description": "Mirror of plusmouse's Journalator.",
+		"updated-date": "2024-08-25T12:02:47Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522769505,
+		"name": "justintime",
+		"full_name": "curseforge-mirror/justintime",
+		"html_url": "https://github.com/curseforge-mirror/justintime",
+		"description": "Mirror of syndenbock's JustInTime.",
+		"project-id-map": {
+			"x-curse-project-id": "297308"
+		},
+		"updated-date": "2024-08-25T12:00:45Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522784509,
+		"name": "kaliels-tracker-classic",
+		"full_name": "curseforge-mirror/kaliels-tracker-classic",
+		"html_url": "https://github.com/curseforge-mirror/kaliels-tracker-classic",
+		"description": "Mirror of Kaliel's Tracker (BCC | Classic) ... Quest Tracker | supported Questie and ElvUI / Tukui.",
+		"updated-date": "2024-08-25T12:00:34Z",
+		"flavor-list": [
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522784160,
+		"name": "kaliels-tracker-retail",
+		"full_name": "curseforge-mirror/kaliels-tracker-retail",
+		"html_url": "https://github.com/curseforge-mirror/kaliels-tracker-retail",
+		"description": "Mirror of Kaliel's Kaliel's Tracker (Shadowlands) ... Quests / World Quests / Achievements.",
+		"updated-date": "2024-08-25T12:08:05Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523201321,
+		"name": "katy-stampwhistle",
+		"full_name": "curseforge-mirror/katy-stampwhistle",
+		"html_url": "https://github.com/curseforge-mirror/katy-stampwhistle",
+		"description": "Mirror of Yuyuli's Katy Stampwhistle.",
+		"updated-date": "2024-08-25T12:07:44Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 573255060,
+		"name": "killshot",
+		"full_name": "curseforge-mirror/killshot",
+		"html_url": "https://github.com/curseforge-mirror/killshot",
+		"description": "Mirror of zwarmapapa's Killshot.",
+		"updated-date": "2024-08-25T12:03:37Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523208291,
+		"name": "lfgmute",
+		"full_name": "curseforge-mirror/lfgmute",
+		"html_url": "https://github.com/curseforge-mirror/lfgmute",
+		"description": "Mirror of Hemario's LFGMute.",
+		"updated-date": "2024-08-25T12:02:00Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 553313683,
+		"name": "loon-best-in-slot",
+		"full_name": "curseforge-mirror/loon-best-in-slot",
+		"html_url": "https://github.com/curseforge-mirror/loon-best-in-slot",
+		"description": "Mirror of loonnn_'s Loon Best In Slot.",
+		"updated-date": "2024-08-25T12:07:29Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832142794,
+		"name": "mapnotes",
+		"full_name": "curseforge-mirror/mapnotes",
+		"html_url": "https://github.com/curseforge-mirror/mapnotes",
+		"description": "Mirror of BadBoyBarny's HandyNotes: MapNotes.",
+		"project-id-map": {
+			"x-curse-project-id": "1007601"
+		},
+		"updated-date": "2024-08-25T12:01:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 527043577,
+		"name": "masque-sonata",
+		"full_name": "curseforge-mirror/masque-sonata",
+		"html_url": "https://github.com/curseforge-mirror/masque-sonata",
+		"description": "Mirror of Sonaza's Masque: Sonata.",
+		"updated-date": "2024-08-25T12:09:03Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 846946010,
+		"name": "maze-helper-mists-of-tirna-scithe",
+		"full_name": "curseforge-mirror/maze-helper-mists-of-tirna-scithe",
+		"html_url": "https://github.com/curseforge-mirror/maze-helper-mists-of-tirna-scithe",
+		"description": "Mirror of Voopie's Maze Helper (Mists of Tirna Scithe).",
+		"updated-date": "2024-08-25T12:03:49Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522772027,
+		"name": "method-raid-tools",
+		"full_name": "curseforge-mirror/method-raid-tools",
+		"html_url": "https://github.com/curseforge-mirror/method-raid-tools",
+		"description": "Mirror of ykiigor's Method Raid Tools.",
+		"updated-date": "2024-08-25T12:02:47Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 609762856,
+		"name": "minimap-alert",
+		"full_name": "curseforge-mirror/minimap-alert",
+		"html_url": "https://github.com/curseforge-mirror/minimap-alert",
+		"description": "Mirror of Loelalol's Minimap Alert.",
+		"updated-date": "2024-08-25T12:08:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 565654845,
+		"name": "mouseoveractionbars-mouseover-action-bars",
+		"full_name": "curseforge-mirror/mouseoveractionbars-mouseover-action-bars",
+		"html_url": "https://github.com/curseforge-mirror/mouseoveractionbars-mouseover-action-bars",
+		"description": "Mirror of slothpala's MouseoverActionBars - Mouseover Action Bars.",
+		"project-id-map": {
+			"x-curse-project-id": "686646"
+		},
+		"updated-date": "2024-08-25T12:01:18Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522742890,
+		"name": "move-anything",
+		"full_name": "curseforge-mirror/move-anything",
+		"html_url": "https://github.com/curseforge-mirror/move-anything",
+		"description": "Mirror of Resike's MoveAnything.",
+		"updated-date": "2024-08-25T12:02:15Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 609763834,
+		"name": "myslot",
+		"full_name": "curseforge-mirror/myslot",
+		"html_url": "https://github.com/curseforge-mirror/myslot",
+		"description": "Mirror of oishii1992's Myslot.",
+		"project-id-map": {
+			"x-curse-project-id": "48863",
+			"x-wago-id": "BKpq0BGE"
+		},
+		"updated-date": "2024-08-25T12:02:09Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522772631,
+		"name": "mythic-dungeon-tools",
+		"full_name": "curseforge-mirror/mythic-dungeon-tools",
+		"html_url": "https://github.com/curseforge-mirror/mythic-dungeon-tools",
+		"description": "Mirror of Nnoggie's Mythic Dungeon Tools.",
+		"project-id-map": {
+			"x-curse-project-id": "288981",
+			"x-wago-id": "rN4VrAKD"
+		},
+		"updated-date": "2024-08-25T12:04:53Z",
+		"flavor-list": [
+			"mainline",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 576860663,
+		"name": "mythic-plus-loot",
+		"full_name": "curseforge-mirror/mythic-plus-loot",
+		"html_url": "https://github.com/curseforge-mirror/mythic-plus-loot",
+		"description": "Mirror of BlanketSalt's Mythic Plus Loot.",
+		"updated-date": "2024-08-25T12:00:35Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 574173973,
+		"name": "notaint2",
+		"full_name": "curseforge-mirror/notaint2",
+		"html_url": "https://github.com/curseforge-mirror/notaint2",
+		"description": "Mirror of warbabyy's !!NoTaint2.",
+		"updated-date": "2024-08-25T12:02:05Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523165687,
+		"name": "notepad",
+		"full_name": "curseforge-mirror/notepad",
+		"html_url": "https://github.com/curseforge-mirror/notepad",
+		"description": "Mirror of DarkAtair's Notepad.",
+		"updated-date": "2024-08-25T12:07:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532680082,
+		"name": "nova-instance-tracker",
+		"full_name": "curseforge-mirror/nova-instance-tracker",
+		"html_url": "https://github.com/curseforge-mirror/nova-instance-tracker",
+		"description": "Mirror of Venomisto's Nova Instance Tracker.",
+		"updated-date": "2024-08-25T12:02:03Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 726702918,
+		"name": "nova-world-buffs",
+		"full_name": "curseforge-mirror/nova-world-buffs",
+		"html_url": "https://github.com/curseforge-mirror/nova-world-buffs",
+		"description": "Mirror of Venomisto's Nova World Buffs.",
+		"updated-date": "2024-08-25T12:00:54Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522775107,
+		"name": "o-item-level",
+		"full_name": "curseforge-mirror/o-item-level",
+		"html_url": "https://github.com/curseforge-mirror/o-item-level",
+		"description": "Mirror of olzenkhaw0192's O Item Level (OiLvL).",
+		"updated-date": "2024-08-25T12:02:43Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522743959,
+		"name": "omnicd",
+		"full_name": "curseforge-mirror/omnicd",
+		"html_url": "https://github.com/curseforge-mirror/omnicd",
+		"description": "Mirror of Treebonker's OmniCD.",
+		"updated-date": "2024-08-25T12:05:38Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522778181,
+		"name": "oribos-exchange",
+		"full_name": "curseforge-mirror/oribos-exchange",
+		"html_url": "https://github.com/curseforge-mirror/oribos-exchange",
+		"description": "Mirror of erorus_curseforge's Oribos Exchange.",
+		"updated-date": "2024-08-25T12:04:54Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 523201653,
+		"name": "personal-loot-helper",
+		"full_name": "curseforge-mirror/personal-loot-helper",
+		"html_url": "https://github.com/curseforge-mirror/personal-loot-helper",
+		"description": "Mirror of cardinalm1's Personal Loot Helper (PLH).",
+		"updated-date": "2024-08-25T12:08:17Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 719339177,
+		"name": "plumber",
+		"full_name": "curseforge-mirror/plumber",
+		"html_url": "https://github.com/curseforge-mirror/plumber",
+		"description": "Mirror of Peterodox's Plumber.",
+		"updated-date": "2024-08-25T12:02:03Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522745410,
+		"name": "postal",
+		"full_name": "curseforge-mirror/postal",
+		"html_url": "https://github.com/curseforge-mirror/postal",
+		"description": "Mirror of Xinhuan's Postal.",
+		"updated-date": "2024-08-25T12:04:55Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 619333614,
+		"name": "premade-group-finder",
+		"full_name": "curseforge-mirror/premade-group-finder",
+		"html_url": "https://github.com/curseforge-mirror/premade-group-finder",
+		"description": "Mirror of Antr's Premade Group Finder.",
+		"project-id-map": {
+			"x-curse-project-id": "91733",
+			"x-wago-id": "EGPXQ3G1"
+		},
+		"updated-date": "2024-08-25T12:07:00Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 532679450,
+		"name": "proultragraphics",
+		"full_name": "curseforge-mirror/proultragraphics",
+		"html_url": "https://github.com/curseforge-mirror/proultragraphics",
+		"description": "Mirror of DarkAvatar7's ProUltraGraphics.",
+		"updated-date": "2024-08-25T12:01:29Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 586156757,
+		"name": "quest_completist",
+		"full_name": "curseforge-mirror/quest_completist",
+		"html_url": "https://github.com/curseforge-mirror/quest_completist",
+		"description": "Mirror of Thalid83's Quest Completist.",
+		"updated-date": "2024-08-25T12:06:28Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832160705,
+		"name": "rarescanner",
+		"full_name": "curseforge-mirror/rarescanner",
+		"html_url": "https://github.com/curseforge-mirror/rarescanner",
+		"description": "Mirror of maqjav's RareScanner.",
+		"updated-date": "2024-08-25T12:07:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522779339,
+		"name": "rclootcouncil",
+		"full_name": "curseforge-mirror/rclootcouncil",
+		"html_url": "https://github.com/curseforge-mirror/rclootcouncil",
+		"description": "Mirror of evil_morfar's RCLootCouncil.",
+		"project-id-map": {
+			"x-curse-project-id": "39928",
+			"x-wago-id": "4N2m8ZGL"
+		},
+		"updated-date": "2024-08-25T12:04:55Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 843815140,
+		"name": "rclootscreen",
+		"full_name": "curseforge-mirror/rclootscreen",
+		"html_url": "https://github.com/curseforge-mirror/rclootscreen",
+		"description": "Mirror of ChunkErrorLP's RCLootScreen - A lootscreen for RCLootCouncil.",
+		"updated-date": "2024-08-25T12:00:57Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522781618,
+		"name": "reenhancedstacksplit",
+		"full_name": "curseforge-mirror/reenhancedstacksplit",
+		"html_url": "https://github.com/curseforge-mirror/reenhancedstacksplit",
+		"description": "Mirror of rShadowhand's ReEnhancedStackSplit [9.0].",
+		"updated-date": "2024-08-25T12:00:36Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 609762182,
+		"name": "sarena-updated-retail-tbc",
+		"full_name": "curseforge-mirror/sarena-updated-retail-tbc",
+		"html_url": "https://github.com/curseforge-mirror/sarena-updated-retail-tbc",
+		"description": "Mirror of yaggertv's sArena Updated (Retail \u0026 TBC).",
+		"updated-date": "2024-08-25T12:02:09Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 846945431,
+		"name": "scrap",
+		"full_name": "curseforge-mirror/scrap",
+		"html_url": "https://github.com/curseforge-mirror/scrap",
+		"description": "Mirror of jaliborc's Scrap (Junk Seller).",
+		"updated-date": "2024-08-25T12:05:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832144675,
+		"name": "sharedmedia",
+		"full_name": "curseforge-mirror/sharedmedia",
+		"html_url": "https://github.com/curseforge-mirror/sharedmedia",
+		"description": "Mirror of Elkano's SharedMedia.",
+		"updated-date": "2024-08-25T12:04:29Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832166307,
+		"name": "sharedmedia_causese",
+		"full_name": "curseforge-mirror/sharedmedia_causese",
+		"html_url": "https://github.com/curseforge-mirror/sharedmedia_causese",
+		"description": "Mirror of causese's SharedMedia_Causese.",
+		"updated-date": "2024-08-25T12:07:05Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 723835112,
+		"name": "sharedmedia_dnnsgt",
+		"full_name": "curseforge-mirror/sharedmedia_dnnsgt",
+		"html_url": "https://github.com/curseforge-mirror/sharedmedia_dnnsgt",
+		"description": "Mirror of dnnsGT's SharedMedia_dnnsGT.",
+		"updated-date": "2024-08-25T12:06:53Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 843805880,
+		"name": "smaller-game-menu",
+		"full_name": "curseforge-mirror/smaller-game-menu",
+		"html_url": "https://github.com/curseforge-mirror/smaller-game-menu",
+		"description": "Mirror of luckfore's Smaller Game Menu.",
+		"updated-date": "2024-08-25T12:02:24Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 570409121,
+		"name": "sorted",
+		"full_name": "curseforge-mirror/sorted",
+		"html_url": "https://github.com/curseforge-mirror/sorted",
+		"description": "Mirror of daft_vader_'s Sorted. (Dragonflight ready).",
+		"updated-date": "2024-08-25T12:06:53Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832143953,
+		"name": "syndicator",
+		"full_name": "curseforge-mirror/syndicator",
+		"html_url": "https://github.com/curseforge-mirror/syndicator",
+		"description": "Mirror of plusmouse's Syndicator.",
+		"updated-date": "2024-08-25T12:07:54Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 554521540,
+		"name": "tacotip-gearscore-talents",
+		"full_name": "curseforge-mirror/tacotip-gearscore-talents",
+		"html_url": "https://github.com/curseforge-mirror/tacotip-gearscore-talents",
+		"description": "Mirror of kebabstorm's TacoTip ( GearScore \u0026 Talents \u0026 Item Level ) [ Classic / TBC / WOTLK ].",
+		"updated-date": "2024-08-25T12:02:03Z",
+		"flavor-list": [
+			"vanilla"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 583228317,
+		"name": "talent-loadout-ex",
+		"full_name": "curseforge-mirror/talent-loadout-ex",
+		"html_url": "https://github.com/curseforge-mirror/talent-loadout-ex",
+		"description": "Mirror of Morizo1923's Talent Loadout Ex.",
+		"project-id-map": {
+			"x-curse-project-id": "730873",
+			"x-wago-id": "Qb6mxnNP"
+		},
+		"updated-date": "2024-08-25T12:00:45Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 584611823,
+		"name": "testflight",
+		"full_name": "curseforge-mirror/testflight",
+		"html_url": "https://github.com/curseforge-mirror/testflight",
+		"description": "Mirror of Shrugal's TestFlight.",
+		"updated-date": "2024-08-25T12:03:23Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 846947069,
+		"name": "tomcats",
+		"full_name": "curseforge-mirror/tomcats",
+		"html_url": "https://github.com/curseforge-mirror/tomcats",
+		"description": "Mirror of TomCat's TomCat's Tours ( now includes Radiant Echoes, Mists of Pandaria MoP remix collections tracker and XP helper ).",
+		"updated-date": "2024-08-25T12:06:17Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 749006497,
+		"name": "true-stat-values",
+		"full_name": "curseforge-mirror/true-stat-values",
+		"html_url": "https://github.com/curseforge-mirror/true-stat-values",
+		"description": "Mirror of notarealwzrd's True Stat Values.",
+		"updated-date": "2024-08-25T12:05:10Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 749155897,
+		"name": "trufigcd",
+		"full_name": "curseforge-mirror/trufigcd",
+		"html_url": "https://github.com/curseforge-mirror/trufigcd",
+		"description": "Mirror of Trufi's TrufiGCD.",
+		"project-id-map": {
+			"x-curse-project-id": "46527",
+			"x-wago-id": "BNBenxGx",
+			"x-wowi-id": "21820"
+		},
+		"updated-date": "2024-08-25T12:07:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 571706734,
+		"name": "twitch-emotes-v2",
+		"full_name": "curseforge-mirror/twitch-emotes-v2",
+		"html_url": "https://github.com/curseforge-mirror/twitch-emotes-v2",
+		"description": "Mirror of ren9790's Twitch Emotes v2.",
+		"updated-date": "2024-08-25T12:03:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832145251,
+		"name": "unitscan",
+		"full_name": "curseforge-mirror/unitscan",
+		"html_url": "https://github.com/curseforge-mirror/unitscan",
+		"description": "Mirror of simon_hirsig's unitscan.",
+		"updated-date": "2024-08-25T12:07:45Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 586686723,
+		"name": "warlogs",
+		"full_name": "curseforge-mirror/warlogs",
+		"html_url": "https://github.com/curseforge-mirror/warlogs",
+		"description": "Mirror of Marsgames's WarLogs.",
+		"updated-date": "2024-08-25T12:08:10Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 526415775,
+		"name": "weizpvp",
+		"full_name": "curseforge-mirror/weizpvp",
+		"html_url": "https://github.com/curseforge-mirror/weizpvp",
+		"description": "Mirror of weizPVP's weizPVP.",
+		"project-id-map": {
+			"x-curse-project-id": "300711",
+			"x-wowi-id": "24779"
+		},
+		"updated-date": "2024-08-25T12:08:12Z",
+		"flavor-list": [
+			"mainline",
+			"tbc"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 534878525,
+		"name": "whats-training",
+		"full_name": "curseforge-mirror/whats-training",
+		"html_url": "https://github.com/curseforge-mirror/whats-training",
+		"description": "Mirror of Fusionpit's What's Training?.",
+		"project-id-map": {
+			"x-curse-project-id": "324944",
+			"x-wowi-id": "25031"
+		},
+		"updated-date": "2024-08-25T12:01:25Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522780221,
+		"name": "world-quest-tracker",
+		"full_name": "curseforge-mirror/world-quest-tracker",
+		"html_url": "https://github.com/curseforge-mirror/world-quest-tracker",
+		"description": "Mirror of Terciob's World Quest Tracker.",
+		"project-id-map": {
+			"x-curse-project-id": "100610",
+			"x-wago-id": "lQNlrEKe"
+		},
+		"updated-date": "2024-08-25T12:01:14Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 832165785,
+		"name": "world-quests-list",
+		"full_name": "curseforge-mirror/world-quests-list",
+		"html_url": "https://github.com/curseforge-mirror/world-quests-list",
+		"description": "Mirror of ykiigor's World Quests List.",
+		"updated-date": "2024-08-25T12:08:02Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
+		"id": 522781244,
+		"name": "xloot",
+		"full_name": "curseforge-mirror/xloot",
+		"html_url": "https://github.com/curseforge-mirror/xloot",
+		"description": "Mirror of Xuerian's XLoot.",
+		"updated-date": "2024-08-25T12:01:23Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false
+	},
+	{
 		"id": 304928496,
 		"name": "EasyDestroy",
 		"full_name": "cwagrant/EasyDestroy",
@@ -15036,7 +16716,7 @@
 			"x-curse-project-id": "812982",
 			"x-wago-id": "VBNBDqKx"
 		},
-		"updated-date": "2024-08-23T09:27:36Z",
+		"updated-date": "2024-08-24T12:43:54Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15076,7 +16756,7 @@
 			"x-curse-project-id": "318461",
 			"x-wago-id": "LvNAy9No"
 		},
-		"updated-date": "2024-08-14T06:11:25Z",
+		"updated-date": "2024-08-23T10:46:29Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15116,7 +16796,7 @@
 			"x-curse-project-id": "646135",
 			"x-wago-id": "5bGoV1K0"
 		},
-		"updated-date": "2024-08-23T10:06:46Z",
+		"updated-date": "2024-08-23T20:48:40Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15176,7 +16856,7 @@
 			"x-curse-project-id": "646134",
 			"x-wago-id": "e56n3pK9"
 		},
-		"updated-date": "2024-08-23T10:03:59Z",
+		"updated-date": "2024-08-24T08:42:25Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15216,7 +16896,7 @@
 			"x-curse-project-id": "827800",
 			"x-wago-id": "56n9g2N9"
 		},
-		"updated-date": "2024-08-14T06:16:32Z",
+		"updated-date": "2024-08-23T18:08:56Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15256,7 +16936,7 @@
 			"x-curse-project-id": "398385",
 			"x-wago-id": "lQNlmP6e"
 		},
-		"updated-date": "2024-08-14T06:17:14Z",
+		"updated-date": "2024-08-23T13:43:52Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -15534,7 +17214,7 @@
 			"x-wago-id": "0mNwaPKo",
 			"x-wowi-id": "26519"
 		},
-		"updated-date": "2024-08-22T15:04:49Z",
+		"updated-date": "2024-08-24T21:30:59Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -15939,7 +17619,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "83874"
 		},
-		"updated-date": "2024-08-13T16:23:01Z",
+		"updated-date": "2024-08-23T20:00:49Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -16260,7 +17940,7 @@
 			"x-wago-id": "vEGPgWK1",
 			"x-wowi-id": "26465"
 		},
-		"updated-date": "2024-08-23T02:54:25Z",
+		"updated-date": "2024-08-25T12:07:16Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -16298,7 +17978,7 @@
 			"x-wago-id": "xZKxLEKk",
 			"x-wowi-id": "26320"
 		},
-		"updated-date": "2024-08-22T19:27:17Z",
+		"updated-date": "2024-08-24T21:09:28Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -16495,7 +18175,7 @@
 			"x-wago-id": "qv63LLKb",
 			"x-wowi-id": "26244"
 		},
-		"updated-date": "2024-08-07T07:32:24Z",
+		"updated-date": "2024-08-23T14:07:23Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -16528,7 +18208,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "286395"
 		},
-		"updated-date": "2024-05-09T05:21:13Z",
+		"updated-date": "2024-08-24T05:29:19Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -16592,7 +18272,7 @@
 			"x-curse-project-id": "695549",
 			"x-wago-id": "5bGoWnG0"
 		},
-		"updated-date": "2024-08-20T06:36:17Z",
+		"updated-date": "2024-08-23T22:00:13Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -16915,6 +18595,22 @@
 			"x-wowi-id": "26290"
 		},
 		"updated-date": "2024-07-28T03:38:47Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 596861413,
+		"name": "WindChatFilter",
+		"full_name": "fang2hou/WindChatFilter",
+		"html_url": "https://github.com/fang2hou/WindChatFilter",
+		"description": "A plugin aimed to filter some chat messages in game.",
+		"project-id-map": {
+			"x-curse-project-id": "821312",
+			"x-wago-id": "kaNe5jN2"
+		},
+		"updated-date": "2024-08-18T05:29:50Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18158,7 +19854,7 @@
 		"full_name": "herotc/hero-lib",
 		"html_url": "https://github.com/herotc/hero-lib",
 		"description": "WoW Addon - Core Library used by HeroRotation and AethysTools, can also be used by others 3rd-Party Addons.",
-		"updated-date": "2024-08-19T16:33:54Z",
+		"updated-date": "2024-08-25T06:02:08Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18170,7 +19866,7 @@
 		"full_name": "herotc/hero-rotation",
 		"html_url": "https://github.com/herotc/hero-rotation",
 		"description": "WoW Addon - Attempt to provide the useful and precise information to execute the best possible DPS rotation in every situation.",
-		"updated-date": "2024-08-23T06:01:47Z",
+		"updated-date": "2024-08-25T08:21:39Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18186,7 +19882,7 @@
 			"x-curse-project-id": "715192",
 			"x-wago-id": "baND1J6o"
 		},
-		"updated-date": "2024-08-23T01:01:50Z",
+		"updated-date": "2024-08-25T00:12:26Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18202,7 +19898,7 @@
 			"x-curse-project-id": "1057668",
 			"x-wago-id": "QN5mWXNB"
 		},
-		"updated-date": "2024-08-21T00:18:48Z",
+		"updated-date": "2024-08-24T19:25:26Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18232,7 +19928,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "809313"
 		},
-		"updated-date": "2024-08-23T05:16:02Z",
+		"updated-date": "2024-08-25T05:16:01Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -18330,7 +20026,7 @@
 		"full_name": "iambz00/upne-mod",
 		"html_url": "https://github.com/iambz00/upne-mod",
 		"description": "wow addon",
-		"updated-date": "2024-07-23T08:41:54Z",
+		"updated-date": "2024-08-24T15:09:07Z",
 		"flavor-list": [
 			"cata"
 		],
@@ -18475,7 +20171,7 @@
 			"x-wago-id": "QNlqea6e",
 			"x-wowi-id": "26743"
 		},
-		"updated-date": "2024-08-20T04:39:21Z",
+		"updated-date": "2024-08-25T10:51:14Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -18515,7 +20211,7 @@
 			"x-wago-id": "XKq9QjKy",
 			"x-wowi-id": "26744"
 		},
-		"updated-date": "2024-08-13T22:57:15Z",
+		"updated-date": "2024-08-25T11:48:21Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -18887,7 +20583,7 @@
 		"full_name": "jrdmellow/waylite",
 		"html_url": "https://github.com/jrdmellow/waylite",
 		"description": "WayLite is a simple addon that creates map pins from /way commands commonly shared by the WoW community.",
-		"updated-date": "2024-07-26T00:17:16Z",
+		"updated-date": "2024-08-23T18:59:07Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18935,7 +20631,7 @@
 			"x-wago-id": "VBNBWM6x",
 			"x-wowi-id": "24637"
 		},
-		"updated-date": "2024-08-21T02:22:01Z",
+		"updated-date": "2024-08-24T20:47:33Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18952,7 +20648,7 @@
 			"x-wago-id": "QNlqwY6e",
 			"x-wowi-id": "24638"
 		},
-		"updated-date": "2024-08-21T15:58:12Z",
+		"updated-date": "2024-08-24T18:33:23Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -18969,7 +20665,7 @@
 			"x-wago-id": "RNL97Y6o",
 			"x-wowi-id": "24644"
 		},
-		"updated-date": "2024-08-17T23:41:59Z",
+		"updated-date": "2024-08-25T03:36:41Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19003,7 +20699,7 @@
 			"x-wago-id": "vNAe5ONo",
 			"x-wowi-id": "24647"
 		},
-		"updated-date": "2024-08-18T00:16:52Z",
+		"updated-date": "2024-08-24T16:31:48Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19020,7 +20716,7 @@
 			"x-wago-id": "5NReYJG3",
 			"x-wowi-id": "24646"
 		},
-		"updated-date": "2024-08-17T23:49:16Z",
+		"updated-date": "2024-08-24T16:39:10Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19037,7 +20733,7 @@
 			"x-wago-id": "qGZRbvGd",
 			"x-wowi-id": "24648"
 		},
-		"updated-date": "2024-08-17T23:50:15Z",
+		"updated-date": "2024-08-24T16:43:29Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19054,7 +20750,7 @@
 			"x-wago-id": "2jK8bqNy",
 			"x-wowi-id": "24649"
 		},
-		"updated-date": "2024-08-22T00:54:05Z",
+		"updated-date": "2024-08-24T20:34:10Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19071,7 +20767,7 @@
 			"x-wago-id": "aNevwk62",
 			"x-wowi-id": "24640"
 		},
-		"updated-date": "2024-08-22T19:46:44Z",
+		"updated-date": "2024-08-24T20:21:16Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19088,7 +20784,7 @@
 			"x-wago-id": "ZQ6anYKW",
 			"x-wowi-id": "24645"
 		},
-		"updated-date": "2024-08-17T23:52:50Z",
+		"updated-date": "2024-08-24T21:36:35Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19372,6 +21068,21 @@
 		"has-release-json": true
 	},
 	{
+		"id": 46107804,
+		"name": "wow-handynotes-directions",
+		"full_name": "kemayo/wow-handynotes-directions",
+		"html_url": "https://github.com/kemayo/wow-handynotes-directions",
+		"description": "World of Warcraft addon to remember directions you're given (requires HandyNotes)",
+		"project-id-map": {
+			"x-curse-project-id": "14155"
+		},
+		"updated-date": "2024-08-24T17:12:57Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 564117101,
 		"name": "wow-handynotes-dragonflight",
 		"full_name": "kemayo/wow-handynotes-dragonflight",
@@ -19521,7 +21232,7 @@
 			"x-curse-project-id": "934069",
 			"x-wago-id": "56n9w0N9"
 		},
-		"updated-date": "2024-08-23T03:07:58Z",
+		"updated-date": "2024-08-25T13:15:21Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -19679,7 +21390,7 @@
 			"x-wago-id": "LvNALQGo",
 			"x-wowi-id": "6606"
 		},
-		"updated-date": "2024-08-21T02:34:38Z",
+		"updated-date": "2024-08-24T23:21:24Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -20790,7 +22501,7 @@
 			"x-wago-id": "XKq99xKy",
 			"x-wowi-id": "26570"
 		},
-		"updated-date": "2024-08-06T05:01:11Z",
+		"updated-date": "2024-08-24T09:05:28Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -21935,7 +23646,7 @@
 			"x-curse-project-id": "965814",
 			"x-wago-id": "nGvpV56x"
 		},
-		"updated-date": "2024-08-22T08:50:05Z",
+		"updated-date": "2024-08-24T19:23:18Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -21995,7 +23706,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "970278"
 		},
-		"updated-date": "2024-07-25T07:33:56Z",
+		"updated-date": "2024-08-24T09:33:23Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -22271,7 +23982,7 @@
 			"x-wago-id": "JZKblkN1",
 			"x-wowi-id": "22913"
 		},
-		"updated-date": "2023-02-04T08:02:54Z",
+		"updated-date": "2024-08-24T07:40:41Z",
 		"flavor-list": [
 			"mainline",
 			"wrath"
@@ -22463,7 +24174,7 @@
 		"full_name": "ogri-la/tukui",
 		"html_url": "https://github.com/ogri-la/tukui",
 		"description": "",
-		"updated-date": "2024-08-22T02:30:18Z",
+		"updated-date": "2024-08-23T18:30:18Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22493,7 +24204,7 @@
 			"x-curse-project-id": "312940",
 			"x-wago-id": "yQKybBG7"
 		},
-		"updated-date": "2024-08-18T19:31:45Z",
+		"updated-date": "2024-08-25T06:50:18Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -22991,7 +24702,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "1046194"
 		},
-		"updated-date": "2024-08-23T00:01:17Z",
+		"updated-date": "2024-08-25T00:01:21Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23385,7 +25096,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "937058"
 		},
-		"updated-date": "2024-08-23T05:26:37Z",
+		"updated-date": "2024-08-25T05:27:04Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23417,21 +25128,6 @@
 			"tbc"
 		],
 		"has-release-json": false
-	},
-	{
-		"id": 715832208,
-		"name": "RackensTracker",
-		"full_name": "r4cken/RackensTracker",
-		"html_url": "https://github.com/r4cken/RackensTracker",
-		"description": "A Cataclysm Classic AddOn that allows you to track and display all your current raid and dungeon lockouts across all your characters.",
-		"project-id-map": {
-			"x-curse-project-id": "1088819"
-		},
-		"updated-date": "2024-08-23T04:05:53Z",
-		"flavor-list": [
-			"cata"
-		],
-		"has-release-json": true
 	},
 	{
 		"id": 384180225,
@@ -23914,20 +25610,6 @@
 		"has-release-json": false
 	},
 	{
-		"id": 845954956,
-		"name": "NaowhUI",
-		"full_name": "rootkit1337tv/NaowhUI",
-		"html_url": "https://github.com/rootkit1337tv/NaowhUI",
-		"description": "",
-		"updated-date": "2024-08-22T18:11:53Z",
-		"flavor-list": [
-			"mainline",
-			"vanilla",
-			"cata"
-		],
-		"has-release-json": true
-	},
-	{
 		"id": 539035457,
 		"name": "KeyBindProfiles",
 		"full_name": "rscheele/KeyBindProfiles",
@@ -24345,7 +26027,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "918022"
 		},
-		"updated-date": "2024-08-22T01:18:30Z",
+		"updated-date": "2024-08-25T01:23:35Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -24430,7 +26112,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "776149"
 		},
-		"updated-date": "2024-08-17T17:20:52Z",
+		"updated-date": "2024-08-24T16:55:42Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -24447,7 +26129,7 @@
 			"x-wago-id": "Xb6X4j6p",
 			"x-wowi-id": "24846"
 		},
-		"updated-date": "2024-08-19T14:09:02Z",
+		"updated-date": "2024-08-23T19:57:11Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -24924,7 +26606,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "695703"
 		},
-		"updated-date": "2024-08-23T07:31:27Z",
+		"updated-date": "2024-08-24T00:37:31Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -25124,7 +26806,7 @@
 		"full_name": "tfmonk/Accountant",
 		"html_url": "https://github.com/tfmonk/Accountant",
 		"description": "",
-		"updated-date": "2024-08-22T17:31:35Z",
+		"updated-date": "2024-08-23T23:00:08Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -25429,7 +27111,7 @@
 		"full_name": "tullamods/tullaCTC",
 		"html_url": "https://github.com/tullamods/tullaCTC",
 		"description": "Cooldown Text Colorizer",
-		"updated-date": "2024-06-19T17:34:14Z",
+		"updated-date": "2024-08-24T20:20:57Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25443,7 +27125,7 @@
 		"full_name": "tullamods/tullaRange",
 		"html_url": "https://github.com/tullamods/tullaRange",
 		"description": "Colors actionbuttons when out of range",
-		"updated-date": "2024-08-14T22:04:45Z",
+		"updated-date": "2024-08-24T20:11:51Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25460,7 +27142,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "818023"
 		},
-		"updated-date": "2024-08-22T13:49:09Z",
+		"updated-date": "2024-08-25T10:39:34Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -25795,7 +27477,7 @@
 			"x-wago-id": "pkNMbR6z",
 			"x-wowi-id": "26034"
 		},
-		"updated-date": "2024-08-10T08:49:38Z",
+		"updated-date": "2024-08-24T09:36:56Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla"
@@ -25813,7 +27495,7 @@
 			"x-wago-id": "WL6JJj6v",
 			"x-wowi-id": "26030"
 		},
-		"updated-date": "2024-07-27T09:42:30Z",
+		"updated-date": "2024-08-24T09:39:19Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25953,7 +27635,7 @@
 			"x-wago-id": "lQNlD9Ne",
 			"x-wowi-id": "25687"
 		},
-		"updated-date": "2024-08-22T00:09:11Z",
+		"updated-date": "2024-08-25T02:58:26Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -25970,22 +27652,6 @@
 			"mainline",
 			"vanilla",
 			"cata"
-		],
-		"has-release-json": true
-	},
-	{
-		"id": 596861413,
-		"name": "WindChatFilter",
-		"full_name": "wind-addons/WindChatFilter",
-		"html_url": "https://github.com/wind-addons/WindChatFilter",
-		"description": "✋ A plugin aimed to filter some chat messages in game.",
-		"project-id-map": {
-			"x-curse-project-id": "821312",
-			"x-wago-id": "kaNe5jN2"
-		},
-		"updated-date": "2024-08-18T05:29:50Z",
-		"flavor-list": [
-			"mainline"
 		],
 		"has-release-json": true
 	},
@@ -26379,7 +28045,7 @@
 			"x-curse-project-id": "1010211",
 			"x-wago-id": "rNkPdw6a"
 		},
-		"updated-date": "2024-05-07T20:48:07Z",
+		"updated-date": "2024-08-24T08:51:29Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -26438,6 +28104,20 @@
 		"html_url": "https://github.com/zhirsch/Moldy",
 		"description": "",
 		"updated-date": "2024-08-04T22:30:19Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 739861580,
+		"name": "MoldyMedia",
+		"full_name": "zhirsch/MoldyMedia",
+		"html_url": "https://github.com/zhirsch/MoldyMedia",
+		"description": "",
+		"updated-date": "2024-08-23T19:41:03Z",
 		"flavor-list": [
 			"vanilla",
 			"wrath",
