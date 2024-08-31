@@ -62,6 +62,20 @@
 
 # todo (no particular order)
 
+* ./debug.sh should not use cached data
+    - I can skip search data and force the use of cached data but I can't force a cache miss
+
+* post-process list and flag
+    - addons that are missing
+    - addons that have gained a description
+    - addons that have been updated after a long hiatus
+    - addons that have lost project IDs
+    - addons that have changed project IDs
+    - addons that have lost game tracks
+    - new addons
+    - addons that have been renamed (same ID, different name)
+    - gained a release.json
+
 * last-seen-date is using mixed formatting
     "last-seen-date": "2024-03-31T09:21:41Z"
     "last-seen-date": "2024-04-27T13:27:51.763369906Z"

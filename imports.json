@@ -406,5 +406,31 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 317051702,
+		"name": "PetBattleLogKeeper",
+		"full_name": "bloerwald/PetBattleLogKeeper",
+		"html_url": "https://github.com/bloerwald/PetBattleLogKeeper",
+		"description": "fork of PetBattleLogKeeper with fixes",
+		"updated-date": "2024-08-14T18:09:44Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 739861580,
+		"name": "MoldyMedia",
+		"full_name": "zhirsch/MoldyMedia",
+		"html_url": "https://github.com/zhirsch/MoldyMedia",
+		"description": "",
+		"updated-date": "2024-08-23T19:41:03Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
 	}
 ]
