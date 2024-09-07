@@ -432,5 +432,71 @@
 			"cata"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 564471914,
+		"name": "Critline",
+		"full_name": "Lombra/Critline",
+		"html_url": "https://github.com/Lombra/Critline",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "983",
+			"x-wowi-id": "12476"
+		},
+		"updated-date": "2024-07-29T12:10:11Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 736273339,
+		"name": "ConsolePort-zhTW",
+		"full_name": "WOWRainbowUI/ConsolePort-zhTW",
+		"html_url": "https://github.com/WOWRainbowUI/ConsolePort-zhTW",
+		"description": "用搖桿玩魔獸的插件，中文版。",
+		"project-id-map": {
+			"x-curse-project-id": "91376",
+			"x-wago-id": "LvNAYjNo",
+			"x-wowi-id": "23536"
+		},
+		"updated-date": "2024-08-16T14:00:38Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 842963317,
+		"name": "LootAppraiserReloaded",
+		"full_name": "berickus/LootAppraiserReloaded",
+		"html_url": "https://github.com/berickus/LootAppraiserReloaded",
+		"description": "An addon which keeps track of looted items and relative AH value.",
+		"project-id-map": {
+			"x-curse-project-id": "1084464"
+		},
+		"updated-date": "2024-08-15T13:49:57Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 844272169,
+		"name": "CoordinationCloakUtility",
+		"full_name": "donniedice/CoordinationCloakUtility",
+		"html_url": "https://github.com/donniedice/CoordinationCloakUtility",
+		"description": "Coordination Cloak Utility automates the use of the Cloak of Coordination and Wrap of Unity. It equips the cloak for teleportation and automatically re-equips your original cloak afterward. Use the /equipcoord command for quick access.",
+		"project-id-map": {
+			"x-curse-project-id": "1086635"
+		},
+		"updated-date": "2024-08-24T20:21:50Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]

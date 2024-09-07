@@ -61,19 +61,25 @@ var REPO_EXCEPTIONS = map[string]bool{
 // projects that do their release over several Github releases.
 // this leads to their data flipflopping about.
 var REPO_MULTI_RELEASE = map[string]bool{
-	"Mortalknight/GW2_UI":             true,
-	"Nevcairiel/GatherMate2":          true,
-	"Nevcairiel/Inventorian":          true,
-	"Witnesscm/NDui_Plus":             true,
-	"siweia/NDui":                     true,
-	"Wutname1/SpartanUI":              true,
-	"xod-wow/LiteBag":                 true, // beta releases missing classic
-	"michaelnpsp/Grid2":               true, // stable releases get the full set, the multiple beta releases get partial assets
-	"nebularg/PitBull4":               true,
-	"casualshammy/NameplateCooldowns": true,
-	"Slothpala/RaidFrameSettings":     true, // betas missing release
-	"MarcLF/AuctionBuddy":             true,
-	"Syiana/SUI":                      true, // looks like releases have been disabled, but still available at /releases, weird.
+	"Mortalknight/GW2_UI":                  true,
+	"Nevcairiel/GatherMate2":               true,
+	"Nevcairiel/Inventorian":               true,
+	"Witnesscm/NDui_Plus":                  true,
+	"siweia/NDui":                          true,
+	"Wutname1/SpartanUI":                   true,
+	"xod-wow/LiteBag":                      true, // beta releases missing classic
+	"michaelnpsp/Grid2":                    true, // stable releases get the full set, the multiple beta releases get partial assets
+	"nebularg/PitBull4":                    true,
+	"casualshammy/NameplateCooldowns":      true,
+	"Slothpala/RaidFrameSettings":          true, // betas missing release
+	"MarcLF/AuctionBuddy":                  true,
+	"Syiana/SUI":                           true, // looks like releases have been disabled, but still available at /releases, weird.
+	"MotherGinger/RecklessAbandon-Classic": true,
+
+	// these guys are breaking up their releases across multiple github releases,
+	// but they're actually doing something good! they're keeping their their last major version updated.
+	// I'd like to accommodate this somehow. group releases by major version, nolib, game track?
+	"1onar/KeyUI": false,
 }
 
 var KNOWN_DUPLICATE_LIST = [][]string{
@@ -94,6 +100,7 @@ var REPO_BLACKLIST = map[string]bool{
 	// mine
 	"WOWRainbowUI/RainbowUI-Retail": true, // addon bundle, very large, incorrect filestructure
 	"WOWRainbowUI/RainbowUI-Era":    true, // addon bundle, very large, incorrect filestructure
+	"Expensify/App":                 true, // not an addon, not sure how it made it into list but I noticed it when it disappeared from list
 
 	// layday's blacklist
 	//"ogri-la/elvui":                            true, // Mirror
