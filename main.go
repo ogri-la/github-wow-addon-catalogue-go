@@ -75,6 +75,8 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"MarcLF/AuctionBuddy":                  true,
 	"Syiana/SUI":                           true, // looks like releases have been disabled, but still available at /releases, weird.
 	"MotherGinger/RecklessAbandon-Classic": true,
+	"sfmict/CursorMod":                     true,
+	"sfmict/HidingBar":                     true,
 
 	// these guys are breaking up their releases across multiple github releases,
 	// but they're actually doing something good! they're keeping their their last major version updated.

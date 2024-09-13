@@ -498,5 +498,36 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 852890356,
+		"name": "HandyNotes_RumorMap",
+		"full_name": "NumyAddon/HandyNotes_RumorMap",
+		"html_url": "https://github.com/NumyAddon/HandyNotes_RumorMap",
+		"description": "Handynotes plugin for Azj-Kahet rumors",
+		"project-id-map": {
+			"x-curse-project-id": "1097435",
+			"x-wago-id": "YK9EeXKL"
+		},
+		"updated-date": "2024-09-05T16:13:10Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+    },
+	{
+		"id": 835189872,
+		"name": "Macronomicon",
+		"full_name": "furtrade/Macronomicon",
+		"html_url": "https://github.com/furtrade/Macronomicon",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1073494"
+		},
+		"updated-date": "2024-08-01T08:16:07Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
