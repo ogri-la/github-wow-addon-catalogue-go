@@ -529,5 +529,108 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 830648294,
+		"name": "BtWQuestsTheWarWithin",
+		"full_name": "Breeni/BtWQuestsTheWarWithin",
+		"html_url": "https://github.com/Breeni/BtWQuestsTheWarWithin",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1010391",
+			"x-wago-id": "bGoMAr60",
+			"x-wowi-id": "26776"
+		},
+		"updated-date": "2024-09-04T18:25:29Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 635463720,
+		"name": "MyLibrary_GUI",
+		"full_name": "MyGamesDevelopmentAcc/MyLibrary_GUI",
+		"html_url": "https://github.com/MyGamesDevelopmentAcc/MyLibrary_GUI",
+		"description": "",
+		"updated-date": "2024-08-10T13:56:35Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 610484844,
+		"name": "MyReagentsBonusSkillCalculator",
+		"full_name": "MyGamesDevelopmentAcc/MyReagentsBonusSkillCalculator",
+		"html_url": "https://github.com/MyGamesDevelopmentAcc/MyReagentsBonusSkillCalculator",
+		"description": "",
+		"updated-date": "2023-09-10T11:16:53Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 835653007,
+		"name": "JuggleRaid",
+		"full_name": "TimothyLuke/JuggleRaid",
+		"html_url": "https://github.com/TimothyLuke/JuggleRaid",
+		"description": "Sorts Shuffles Slices and Dices your Raid 7000 different ways.  It even makes french fries",
+		"updated-date": "2024-08-19T08:49:11Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 192247238,
+		"name": "QuestFrameFixer",
+		"full_name": "fusionpit/QuestFrameFixer",
+		"html_url": "https://github.com/fusionpit/QuestFrameFixer",
+		"description": "An addon for World of Warcraft Classic to fix dots being displayed at quest givers instead of ? and !",
+		"project-id-map": {
+			"x-curse-project-id": "324527",
+			"x-wowi-id": "25022"
+		},
+		"updated-date": "2024-09-07T21:09:57Z",
+		"flavor-list": [
+			"vanilla"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 839298362,
+		"name": "CopyMountName",
+		"full_name": "m33shoq/CopyMountName",
+		"html_url": "https://github.com/m33shoq/CopyMountName",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1079291",
+			"x-wago-id": "nKW1EoNE",
+			"x-wowi-id": "26794"
+		},
+		"updated-date": "2024-08-17T02:42:04Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 695673183,
+		"name": "RG_Aliases",
+		"full_name": "m33shoq/RG_Aliases",
+		"html_url": "https://github.com/m33shoq/RG_Aliases",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1085869",
+			"x-wago-id": "aN0Y1v6j",
+			"x-wowi-id": "26802"
+		},
+		"updated-date": "2024-08-18T18:54:23Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]

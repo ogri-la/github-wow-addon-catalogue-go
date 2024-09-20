@@ -1,5 +1,8 @@
 # todo 
 
+* imports.json, these entries will need to be revisited periodically
+    - they may disappear
+
 * bug, addon dropped it's x-curse-project-id between 2024-07-?? and 2024-08-02
     - it appears to have always had a release.json
     - it's x-curse attrib in .toc hasn't changed in 7mo
