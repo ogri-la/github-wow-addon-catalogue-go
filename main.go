@@ -77,6 +77,7 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"MotherGinger/RecklessAbandon-Classic": true,
 	"sfmict/CursorMod":                     true,
 	"sfmict/HidingBar":                     true,
+	"valkyrnstudios/RankSentinel":          true, // sometimes cata, sometimes not
 
 	// these guys are breaking up their releases across multiple github releases,
 	// but they're actually doing something good! they're keeping their their last major version updated.

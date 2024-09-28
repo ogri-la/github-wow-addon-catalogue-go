@@ -632,5 +632,207 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 836456437,
+		"name": "PetLeash",
+		"full_name": "Dreamlogic22/PetLeash",
+		"html_url": "https://github.com/Dreamlogic22/PetLeash",
+		"description": "Walks the dog.",
+		"updated-date": "2024-09-06T16:32:00Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 531274105,
+		"name": "SkuCustomBeaconsAdditional",
+		"full_name": "Duugu/SkuCustomBeaconsAdditional",
+		"html_url": "https://github.com/Duugu/SkuCustomBeaconsAdditional",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "880027"
+		},
+		"updated-date": "2023-10-11T00:04:07Z",
+		"flavor-list": [
+			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 840744058,
+		"name": "LibFleeingButton-1.0",
+		"full_name": "Ghostopheles/LibFleeingButton-1.0",
+		"html_url": "https://github.com/Ghostopheles/LibFleeingButton-1.0",
+		"description": "",
+		"updated-date": "2024-08-10T17:32:39Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+
+	{
+		"id": 848514586,
+		"name": "better-spellbook",
+		"full_name": "Loadren/better-spellbook",
+		"html_url": "https://github.com/Loadren/better-spellbook",
+		"description": "Provide a clean, updated to today's graphics spellbook experience, but smaller!",
+		"project-id-map": {
+			"x-curse-project-id": "1092079"
+		},
+		"updated-date": "2024-09-10T00:00:24Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 836227900,
+		"name": "spell-inspect-mode",
+		"full_name": "Loadren/spell-inspect-mode",
+		"html_url": "https://github.com/Loadren/spell-inspect-mode",
+		"description": "Bring the BG3 Inspect Mode to WoW!",
+		"project-id-map": {
+			"x-curse-project-id": "1074689"
+		},
+		"updated-date": "2024-08-16T17:10:36Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 850614546,
+		"name": "RepHub",
+		"full_name": "LorenzoRogai/RepHub",
+		"html_url": "https://github.com/LorenzoRogai/RepHub",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1094884",
+			"x-wago-id": "E6gL2OK1",
+			"x-wowi-id": "26841"
+		},
+		"updated-date": "2024-09-04T22:19:59Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 850059789,
+		"name": "LanguageDisplay",
+		"full_name": "Marechoux/LanguageDisplay",
+		"html_url": "https://github.com/Marechoux/LanguageDisplay",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "305315"
+		},
+		"updated-date": "2024-09-06T16:36:51Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141623917,
+		"name": "AlarArtRemover",
+		"full_name": "alarofrunetotem/AlarArtRemover",
+		"html_url": "https://github.com/alarofrunetotem/AlarArtRemover",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "13390",
+			"x-wowi-id": "23091"
+		},
+		"updated-date": "2024-08-03T23:27:45Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 847352596,
+		"name": "SmexyMatsCont",
+		"full_name": "jaestevan/SmexyMatsCont",
+		"html_url": "https://github.com/jaestevan/SmexyMatsCont",
+		"description": "",
+		"project-id-map": {
+			"x-wago-id": "L6JD0jGv"
+		},
+		"updated-date": "2024-09-03T22:30:41Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141499509,
+		"name": "MaxDps",
+		"full_name": "kaminaris/MaxDps",
+		"html_url": "https://github.com/kaminaris/MaxDps",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "91970",
+			"x-wago-id": "VBNBWM6x",
+			"x-wowi-id": "24637"
+		},
+		"updated-date": "2024-09-17T19:06:41Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 142795478,
+		"name": "MaxDps-Warrior",
+		"full_name": "kaminaris/MaxDps-Warrior",
+		"html_url": "https://github.com/kaminaris/MaxDps-Warrior",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "92062",
+			"x-wago-id": "ZQ6anYKW",
+			"x-wowi-id": "24645"
+		},
+		"updated-date": "2024-09-17T19:03:35Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 804657224,
+		"name": "Wago-Creator-UI",
+		"full_name": "methodgg/Wago-Creator-UI",
+		"html_url": "https://github.com/methodgg/Wago-Creator-UI",
+		"description": "",
+		"project-id-map": {
+			"x-wago-id": "O67jdaN3"
+		},
+		"updated-date": "2024-09-06T08:05:35Z",
+		"flavor-list": [
+			"mainline",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 860308927,
+		"name": "mArena",
+		"full_name": "muleyo/mArena",
+		"html_url": "https://github.com/muleyo/mArena",
+		"description": "Modern Arena Frames with high customizability.",
+		"project-id-map": {
+			"x-curse-project-id": "1105801",
+			"x-wago-id": "XKq9pwKy"
+		},
+		"updated-date": "2024-09-20T08:59:39Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
+
 ]
