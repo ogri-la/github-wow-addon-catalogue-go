@@ -833,6 +833,105 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 795233179,
+		"name": "AdvancedMythicTracker",
+		"full_name": "Aeon234/AdvancedMythicTracker",
+		"html_url": "https://github.com/Aeon234/AdvancedMythicTracker",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1037826"
+		},
+		"updated-date": "2024-09-27T22:32:02Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 841064634,
+		"name": "GetInfoLink",
+		"full_name": "Char11e/GetInfoLink",
+		"html_url": "https://github.com/Char11e/GetInfoLink",
+		"description": "Used to query various information in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "861768"
+		},
+		"updated-date": "2024-08-18T14:57:54Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 856247013,
+		"name": "DBM-Dragonflight",
+		"full_name": "DeadlyBossMods/DBM-Dragonflight",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-Dragonflight",
+		"description": "Dragon mods and stuff",
+		"project-id-map": {
+			"x-curse-project-id": "1101373",
+			"x-wago-id": "j6jzXW6R"
+		},
+		"updated-date": "2024-09-12T10:01:08Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 106970880,
+		"name": "WoWGatheringNodes",
+		"full_name": "SLOKnightfall/WoWGatheringNodes",
+		"html_url": "https://github.com/SLOKnightfall/WoWGatheringNodes",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "279801",
+			"x-wago-id": "j6jzv46R"
+		},
+		"updated-date": "2024-09-05T00:22:15Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141627344,
+		"name": "Jeeves",
+		"full_name": "alarofrunetotem/Jeeves",
+		"html_url": "https://github.com/alarofrunetotem/Jeeves",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "86172"
+		},
+		"updated-date": "2024-08-16T17:04:50Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 857550286,
+		"name": "DisableBlizzardCastBar",
+		"full_name": "will0w7/DisableBlizzardCastBar",
+		"html_url": "https://github.com/will0w7/DisableBlizzardCastBar",
+		"description": "Just that, disables blizzard default cast bar",
+		"project-id-map": {
+			"x-curse-project-id": "1102964",
+			"x-wago-id": "qKQxQ16x"
+		},
+		"updated-date": "2024-09-15T15:08:53Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
 	}
-
 ]
