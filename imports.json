@@ -933,5 +933,108 @@
 			"cata"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 845862369,
+		"name": "BetterBags_WarWithin_Crafting",
+		"full_name": "AvyAddons/BetterBags_WarWithin_Crafting",
+		"html_url": "https://github.com/AvyAddons/BetterBags_WarWithin_Crafting",
+		"description": "Filters for TWW Crafting categories in AdiBags.",
+		"project-id-map": {
+			"x-curse-project-id": "1088531",
+			"x-wago-id": "bGoMPo60"
+		},
+		"updated-date": "2024-09-30T15:26:03Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 835280630,
+		"name": "CustomNames_Chat",
+		"full_name": "Jods-GH/CustomNames_Chat",
+		"html_url": "https://github.com/Jods-GH/CustomNames_Chat",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1073608",
+			"x-wago-id": "Q6aEJg6W"
+		},
+		"updated-date": "2024-08-14T08:35:52Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 699894495,
+		"name": "RepSearch",
+		"full_name": "NintendoLink07/RepSearch",
+		"html_url": "https://github.com/NintendoLink07/RepSearch",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1114373",
+			"x-wago-id": "O67j5YN3"
+		},
+		"updated-date": "2024-10-04T19:39:48Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 851467517,
+		"name": "wow-vocal-cooldowns",
+		"full_name": "pyranja/wow-vocal-cooldowns",
+		"html_url": "https://github.com/pyranja/wow-vocal-cooldowns",
+		"description": "World of Warcraft Addon to announce spell cooldowns.",
+		"project-id-map": {
+			"x-curse-project-id": "1114445"
+		},
+		"updated-date": "2024-10-03T19:15:56Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 314784268,
+		"name": "MoneyLooter",
+		"full_name": "will0w7/MoneyLooter",
+		"html_url": "https://github.com/will0w7/MoneyLooter",
+		"description": "MoneyLooter - Loot and Gold Farm Tracker Addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "1098459",
+			"x-wago-id": "qKQxDo6x"
+		},
+		"updated-date": "2024-09-27T22:43:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 314784268,
+		"name": "MoneyLooter",
+		"full_name": "will0w7/MoneyLooter",
+		"html_url": "https://github.com/will0w7/MoneyLooter",
+		"description": "MoneyLooter - Loot and Gold Farm Tracker Addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "1098459",
+			"x-wago-id": "qKQxDo6x"
+		},
+		"updated-date": "2024-09-27T22:43:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata"
+		],
+		"has-release-json": true
 	}
 ]
