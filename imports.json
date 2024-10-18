@@ -1036,5 +1036,117 @@
 			"cata"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 849426202,
+		"name": "item-rarity-prefix",
+		"full_name": "Loadren/item-rarity-prefix",
+		"html_url": "https://github.com/Loadren/item-rarity-prefix",
+		"description": "Adds item rarity information in plain text format",
+		"project-id-map": {
+			"x-curse-project-id": "1093075"
+		},
+		"updated-date": "2024-08-29T15:26:30Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 770094142,
+		"name": "UnlearnedRecipes",
+		"full_name": "TLDRMissions/UnlearnedRecipes",
+		"html_url": "https://github.com/TLDRMissions/UnlearnedRecipes",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "985591"
+		},
+		"updated-date": "2024-08-11T05:14:28Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141626920,
+		"name": "ItemLevelDisplay",
+		"full_name": "alarofrunetotem/ItemLevelDisplay",
+		"html_url": "https://github.com/alarofrunetotem/ItemLevelDisplay",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "30899",
+			"x-wowi-id": "21014"
+		},
+		"updated-date": "2024-08-17T18:57:59Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 142221850,
+		"name": "MaxDps-Druid",
+		"full_name": "kaminaris/MaxDps-Druid",
+		"html_url": "https://github.com/kaminaris/MaxDps-Druid",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "103301",
+			"x-wago-id": "ANz0YDK4",
+			"x-wowi-id": "24641"
+		},
+		"updated-date": "2024-10-03T07:36:17Z",
+		"flavor-list": [
+			"mainline",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 840840890,
+		"name": "DarkModeSpellBook",
+		"full_name": "keyboardturner/DarkModeSpellBook",
+		"html_url": "https://github.com/keyboardturner/DarkModeSpellBook",
+		"description": "Allows changing the colors of the spellbook frame background images and text.",
+		"project-id-map": {
+			"x-curse-project-id": "1081440",
+			"x-wago-id": "n6VPwWGd",
+			"x-wowi-id": "26797"
+		},
+		"updated-date": "2024-09-28T08:00:23Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 870007317,
+		"name": "NaowhUI_11.0.x",
+		"full_name": "rootkit1337tv/NaowhUI_11.0.x",
+		"html_url": "https://github.com/rootkit1337tv/NaowhUI_11.0.x",
+		"description": "",
+		"updated-date": "2024-10-09T09:34:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 853658706,
+		"name": "FishingDerbyTracker",
+		"full_name": "teelolws/FishingDerbyTracker",
+		"html_url": "https://github.com/teelolws/FishingDerbyTracker",
+		"description": "Helps with maximazing your gains of Mereldar Derby Mark during saturday's fishing derby",
+		"project-id-map": {
+			"x-curse-project-id": "1098378"
+		},
+		"updated-date": "2024-09-29T06:12:08Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
