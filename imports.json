@@ -1148,5 +1148,54 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 531275307,
+		"name": "SkuCustomBeaconsEssential",
+		"full_name": "Duugu/SkuCustomBeaconsEssential",
+		"html_url": "https://github.com/Duugu/SkuCustomBeaconsEssential",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "880026"
+		},
+		"updated-date": "2023-10-11T00:04:31Z",
+		"flavor-list": [
+			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 564054439,
+		"name": "AccWideUILayoutSelection",
+		"full_name": "NinerBull/AccWideUILayoutSelection",
+		"html_url": "https://github.com/NinerBull/AccWideUILayoutSelection",
+		"description": "WoW Addon - Makes various Character-Specific Interface Settings work Account Wide.",
+		"project-id-map": {
+			"x-curse-project-id": "700820",
+			"x-wago-id": "n6VPMLGd",
+			"x-wowi-id": "26459"
+		},
+		"updated-date": "2024-10-09T22:02:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 867044393,
+		"name": "Grid2TrailOfLight",
+		"full_name": "Skamer/Grid2TrailOfLight",
+		"html_url": "https://github.com/Skamer/Grid2TrailOfLight",
+		"description": "The module adds a support for Trail of Light (Holy priest talent) in Grid 2.",
+		"project-id-map": {
+			"x-curse-project-id": "101865"
+		},
+		"updated-date": "2024-10-06T13:49:14Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
