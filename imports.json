@@ -1197,5 +1197,50 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 868470509,
+		"name": "FarstaAddon",
+		"full_name": "Ahava/FarstaAddon",
+		"html_url": "https://github.com/Ahava/FarstaAddon",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1116337"
+		},
+		"updated-date": "2024-10-22T18:33:24Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 755770879,
+		"name": "WoW-Login-Tool",
+		"full_name": "Duugu/WoW-Login-Tool",
+		"html_url": "https://github.com/Duugu/WoW-Login-Tool",
+		"description": "",
+		"updated-date": "2024-03-18T16:24:10Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 215817211,
+		"name": "KiwiMBC",
+		"full_name": "michaelnpsp/KiwiMBC",
+		"html_url": "https://github.com/michaelnpsp/KiwiMBC",
+		"description": "Simple minimap buttons manager for World of Warcraft Classic",
+		"project-id-map": {
+			"x-curse-project-id": "521325",
+			"x-wago-id": "RqGYylGg"
+		},
+		"updated-date": "2024-09-27T00:47:08Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
 	}
 ]

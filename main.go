@@ -42,8 +42,8 @@ import (
 var APP_VERSION = "unreleased" // modified at release with `-ldflags "-X main.APP_VERSION=X.X.X"`
 var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
 
-var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
+var CACHE_DURATION = 48              // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 48       // hours. how long cached *search* files should live for.
 var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
 var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
 
