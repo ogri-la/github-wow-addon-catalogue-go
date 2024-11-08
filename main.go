@@ -78,9 +78,10 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"sfmict/CursorMod":                     true,
 	"sfmict/HidingBar":                     true,
 	"valkyrnstudios/RankSentinel":          true, // sometimes cata, sometimes not
+	"TorelTwiddler/CanIMogIt":              true,
 
 	// these guys are breaking up their releases across multiple github releases,
-	// but they're actually doing something good! they're keeping their their last major version updated.
+	// but they're actually doing something good! they're keeping their last major version updated.
 	// I'd like to accommodate this somehow. group releases by major version, nolib, game track?
 	"1onar/KeyUI": false,
 }
