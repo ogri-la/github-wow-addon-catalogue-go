@@ -1242,5 +1242,20 @@
 			"cata"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 705413217,
+		"name": "BattlePetUtilities",
+		"full_name": "JP1998/BattlePetUtilities",
+		"html_url": "https://github.com/JP1998/BattlePetUtilities",
+		"description": "A World of Warcraft addon specifically aimed at reminders (world/repeatable quests; squirt day etc.) and other utilities.",
+		"project-id-map": {
+			"x-wago-id": "mNwQzXKo"
+		},
+		"updated-date": "2024-08-31T07:24:13Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
