@@ -1257,5 +1257,20 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 859248682,
+		"name": "BigFootCommonweal",
+		"full_name": "BigFootWow/BigFootCommonweal",
+		"html_url": "https://github.com/BigFootWow/BigFootCommonweal",
+		"description": "大脚公益助手",
+		"project-id-map": {
+			"x-curse-project-id": "1105954"
+		},
+		"updated-date": "2024-10-29T06:44:31Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	}
 ]
