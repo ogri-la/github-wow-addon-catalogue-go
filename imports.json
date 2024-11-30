@@ -1272,5 +1272,65 @@
 			"mainline"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 353901657,
+		"name": "leatrix-plus-cata",
+		"full_name": "leatrix/leatrix-plus-cata",
+		"html_url": "https://github.com/leatrix/leatrix-plus-cata",
+		"description": "Leatrix Plus (Cataclysm Classic)",
+		"project-id-map": {
+			"x-curse-project-id": "463863"
+		},
+		"updated-date": "2024-11-20T08:20:47Z",
+		"flavor-list": [
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 319581491,
+		"name": "leatrix-plus-classic",
+		"full_name": "leatrix/leatrix-plus-classic",
+		"html_url": "https://github.com/leatrix/leatrix-plus-classic",
+		"description": "Leatrix Plus (Classic Era)",
+		"project-id-map": {
+			"x-curse-project-id": "322362"
+		},
+		"updated-date": "2024-11-20T22:40:37Z",
+		"flavor-list": [
+			"vanilla"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 353903386,
+		"name": "leatrix-sounds-cata",
+		"full_name": "leatrix/leatrix-sounds-cata",
+		"html_url": "https://github.com/leatrix/leatrix-sounds-cata",
+		"description": "Leatrix Sounds (Cataclysm Classic)",
+		"project-id-map": {
+			"x-curse-project-id": "463920"
+		},
+		"updated-date": "2024-11-22T10:47:35Z",
+		"flavor-list": [
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 319583075,
+		"name": "leatrix-sounds-classic",
+		"full_name": "leatrix/leatrix-sounds-classic",
+		"html_url": "https://github.com/leatrix/leatrix-sounds-classic",
+		"description": "Leatrix Sounds (Classic Era)",
+		"project-id-map": {
+			"x-curse-project-id": "323023"
+		},
+		"updated-date": "2024-11-22T10:45:34Z",
+		"flavor-list": [
+			"vanilla"
+		],
+		"has-release-json": true
 	}
 ]
