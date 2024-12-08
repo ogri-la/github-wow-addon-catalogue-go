@@ -1332,5 +1332,56 @@
 			"vanilla"
 		],
 		"has-release-json": true
+	},
+	{
+		"id": 888721258,
+		"name": "TFTB",
+		"full_name": "Gogo1951/TFTB",
+		"html_url": "https://github.com/Gogo1951/TFTB",
+		"description": "A simple add-on that automatically expresses happiness with an emote whenever you receive a new buff.",
+		"project-id-map": {
+			"x-curse-project-id": "1140285"
+		},
+		"updated-date": "2024-11-24T23:09:21Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 858196002,
+		"name": "TooltipEnhancement",
+		"full_name": "Kazte/TooltipEnhancement",
+		"html_url": "https://github.com/Kazte/TooltipEnhancement",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1103941",
+			"x-wago-id": "QN5m53NB",
+			"x-wowi-id": "26849"
+		},
+		"updated-date": "2024-09-17T15:44:40Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 870298954,
+		"name": "ColorToolsClassColors",
+		"full_name": "muhmiauwauWOW/ColorToolsClassColors",
+		"html_url": "https://github.com/muhmiauwauWOW/ColorToolsClassColors",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1118525"
+		},
+		"updated-date": "2024-11-22T19:03:00Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata"
+		],
+		"has-release-json": true
 	}
 ]
