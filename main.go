@@ -79,6 +79,8 @@ var REPO_MULTI_RELEASE = map[string]bool{
 	"sfmict/HidingBar":                     true,
 	"valkyrnstudios/RankSentinel":          true, // sometimes cata, sometimes not
 	"TorelTwiddler/CanIMogIt":              true,
+	"Gogo1951/Open-Sesame":                 true,
+	"Gogo1951/TFTB":                        true,
 
 	// these guys are breaking up their releases across multiple github releases,
 	// but they're actually doing something good! they're keeping their last major version updated.
