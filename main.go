@@ -126,6 +126,7 @@ var REPO_BLACKLIST = map[string]bool{
 	"juraj-hrivnak/Underdog":                   true, // Minecraft stuff
 	"kamoo1/Kamoo-s-TSM-App":                   true, // Not an add-on
 	"Kirri777/WorldQuestsList":                 true, // Fork
+	"leatrix/*":                                true, // 2025-01-27: releases removed
 	"livepeer/":                                true, // Minecraft stuff
 	"lowlee/MikScrollingBattleText":            true, // Fork
 	"lowlee/MSBTOptions":                       true, // Fork
