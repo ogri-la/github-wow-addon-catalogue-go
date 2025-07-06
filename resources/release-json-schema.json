@@ -3,7 +3,7 @@
     "type": "object",
     "definitions": {
         "flavor": {
-            "enum": ["mainline", "classic", "bcc", "wrath", "cata"]
+            "enum": ["mainline", "classic", "bcc", "wrath", "cata", "mists"]
         }
     },
     "properties": {

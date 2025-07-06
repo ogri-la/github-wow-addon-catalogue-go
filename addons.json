@@ -193,6 +193,26 @@
 		"has-release-json": true
 	},
 	{
+		"id": 120390732,
+		"name": "AllTheThings",
+		"full_name": "ATTWoWAddon/AllTheThings",
+		"html_url": "https://github.com/ATTWoWAddon/AllTheThings",
+		"description": "ALL THE THINGS - Addon for Tracking Collections \u0026 Account Completion in World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "267285",
+			"x-wago-id": "yQKyY5K7"
+		},
+		"updated-date": "2025-07-04T07:34:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 564714594,
 		"name": "ElvUI_ProfileConverter",
 		"full_name": "AcidWeb/ElvUI_ProfileConverter",
@@ -726,7 +746,7 @@
 		"description": "Discord Rich Presence for World of Warcraft",
 		"updated-date": "2021-04-07T07:45:38Z",
 		"flavor-list": [
-			"mainline"
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -793,6 +813,27 @@
 			"mainline",
 			"vanilla",
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 98059358,
+		"name": "AutoGear",
+		"full_name": "AlexFolland/AutoGear",
+		"html_url": "https://github.com/AlexFolland/AutoGear",
+		"description": "WoW convenience addon that automatically handles gear looting and equipping",
+		"project-id-map": {
+			"x-curse-project-id": "39179",
+			"x-wowi-id": "26415"
+		},
+		"updated-date": "2025-07-06T05:28:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -942,6 +983,24 @@
 		"updated-date": "2025-06-26T11:05:30Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 737523850,
+		"name": "BetterBags-Teleports",
+		"full_name": "AlexHaible/BetterBags-Teleports",
+		"html_url": "https://github.com/AlexHaible/BetterBags-Teleports",
+		"description": "Source code for a World of Warcraft addon, that puts all your teleporting items into a single category.",
+		"project-id-map": {
+			"x-curse-project-id": "956341"
+		},
+		"updated-date": "2025-06-28T11:02:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -1147,6 +1206,42 @@
 		"has-release-json": true
 	},
 	{
+		"id": 471844726,
+		"name": "ItemCache",
+		"full_name": "Anonomit/ItemCache",
+		"html_url": "https://github.com/Anonomit/ItemCache",
+		"description": "WoW addon. Caches item data returned by GetItemInfo() and more. Can be run standalone to store data between sessions, or can be embedded as a library.",
+		"project-id-map": {
+			"x-curse-project-id": "591277",
+			"x-wago-id": "RqGZgQNd"
+		},
+		"updated-date": "2025-07-01T20:42:54Z",
+		"flavor-list": [
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 383263077,
+		"name": "LootReserve",
+		"full_name": "Anonomit/LootReserve",
+		"html_url": "https://github.com/Anonomit/LootReserve",
+		"description": "WoW classic addon that helps master looters roll and distribute items.",
+		"project-id-map": {
+			"x-curse-project-id": "390790",
+			"x-wago-id": "WL6JpyGv"
+		},
+		"updated-date": "2025-07-03T20:32:33Z",
+		"flavor-list": [
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 860255208,
 		"name": "Luckometer",
 		"full_name": "Anonomit/Luckometer",
@@ -1160,6 +1255,24 @@
 		"flavor-list": [
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 412705213,
+		"name": "ZeraTooltip",
+		"full_name": "Anonomit/ZeraTooltip",
+		"html_url": "https://github.com/Anonomit/ZeraTooltip",
+		"description": "WoW Classic addon which simplifies tooltip text.",
+		"project-id-map": {
+			"x-curse-project-id": "533049",
+			"x-wago-id": "Qb6mJ1KP"
+		},
+		"updated-date": "2025-07-01T21:49:16Z",
+		"flavor-list": [
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -1293,6 +1406,22 @@
 			"wrath"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 643220886,
+		"name": "UtilitiesPlus",
+		"full_name": "Asaranth/UtilitiesPlus",
+		"html_url": "https://github.com/Asaranth/UtilitiesPlus",
+		"description": "UtilitiesPlus is a lightweight QoL addon for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "932306",
+			"x-wago-id": "bGoM5B60"
+		},
+		"updated-date": "2025-04-23T22:34:37Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 208504970,
@@ -1514,11 +1643,11 @@
 			"x-curse-project-id": "54541",
 			"x-wago-id": "RXKqy5Ky"
 		},
-		"updated-date": "2024-08-27T13:28:04Z",
+		"updated-date": "2025-07-06T13:17:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
-			"cata"
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -1590,6 +1719,25 @@
 			"vanilla",
 			"tbc",
 			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66207633,
+		"name": "ThreatPlates",
+		"full_name": "Backupiseasy/ThreatPlates",
+		"html_url": "https://github.com/Backupiseasy/ThreatPlates",
+		"description": "Nameplate addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "21217",
+			"x-wago-id": "RqGZkkNd",
+			"x-wowi-id": "15749"
+		},
+		"updated-date": "2025-07-06T11:05:11Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -2042,6 +2190,28 @@
 		"has-release-json": true
 	},
 	{
+		"id": 64665886,
+		"name": "BigWigs",
+		"full_name": "BigWigsMods/BigWigs",
+		"html_url": "https://github.com/BigWigsMods/BigWigs",
+		"description": "Modular and lightweight approach to providing you with the tools you need to beat any boss encounter.",
+		"project-id-map": {
+			"x-curse-project-id": "2382",
+			"x-wago-id": "5NRegwG3",
+			"x-wowi-id": "5086"
+		},
+		"updated-date": "2025-06-27T01:39:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 314970339,
 		"name": "BigWigs_BattleForAzeroth",
 		"full_name": "BigWigsMods/BigWigs_BattleForAzeroth",
@@ -2054,6 +2224,68 @@
 		"updated-date": "2025-05-03T00:51:11Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66114039,
+		"name": "BigWigs_BurningCrusade",
+		"full_name": "BigWigsMods/BigWigs_BurningCrusade",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_BurningCrusade",
+		"description": "A collection of BigWigs modules from the Burning Crusade era.",
+		"project-id-map": {
+			"x-curse-project-id": "50688",
+			"x-wago-id": "v63oQL6b",
+			"x-wowi-id": "22096"
+		},
+		"updated-date": "2025-05-02T21:17:59Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66124945,
+		"name": "BigWigs_Cataclysm",
+		"full_name": "BigWigsMods/BigWigs_Cataclysm",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_Cataclysm",
+		"description": "A collection of BigWigs modules from the Cataclysm era.",
+		"project-id-map": {
+			"x-curse-project-id": "45694",
+			"x-wago-id": "kGr0z76y",
+			"x-wowi-id": "21755"
+		},
+		"updated-date": "2025-05-26T20:19:53Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 65901765,
+		"name": "BigWigs_Classic",
+		"full_name": "BigWigsMods/BigWigs_Classic",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_Classic",
+		"description": "A collection of BigWigs modules from the Classic era.",
+		"project-id-map": {
+			"x-curse-project-id": "50625",
+			"x-wago-id": "rNkPgm6a",
+			"x-wowi-id": "22095"
+		},
+		"updated-date": "2025-05-26T20:46:24Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -2071,6 +2303,50 @@
 		"updated-date": "2025-05-14T10:32:46Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71806188,
+		"name": "BigWigs_Countdown_HeroesOfTheStorm",
+		"full_name": "BigWigsMods/BigWigs_Countdown_HeroesOfTheStorm",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_Countdown_HeroesOfTheStorm",
+		"description": "Adds countdown voices from Heroes of the Storm to BigWigs.",
+		"project-id-map": {
+			"x-curse-project-id": "89683",
+			"x-wago-id": "YK9E8lKL",
+			"x-wowi-id": "26065"
+		},
+		"updated-date": "2025-05-02T22:09:08Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71807780,
+		"name": "BigWigs_Countdown_Overwatch",
+		"full_name": "BigWigsMods/BigWigs_Countdown_Overwatch",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_Countdown_Overwatch",
+		"description": "Adds countdown voices from the heroes in Overwatch to BigWigs.",
+		"project-id-map": {
+			"x-curse-project-id": "100172",
+			"x-wago-id": "O67j8pN3",
+			"x-wowi-id": "26066"
+		},
+		"updated-date": "2025-05-17T08:51:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -2107,6 +2383,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 66284113,
+		"name": "BigWigs_MistsOfPandaria",
+		"full_name": "BigWigsMods/BigWigs_MistsOfPandaria",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_MistsOfPandaria",
+		"description": "A collection of BigWigs modules from the Mists of Pandaria era.",
+		"project-id-map": {
+			"x-curse-project-id": "86782",
+			"x-wago-id": "rN4VvxKD",
+			"x-wowi-id": "23493"
+		},
+		"updated-date": "2025-06-27T01:32:20Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 571654196,
 		"name": "BigWigs_Shadowlands",
 		"full_name": "BigWigsMods/BigWigs_Shadowlands",
@@ -2118,6 +2412,27 @@
 		"updated-date": "2025-05-03T00:01:57Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 65690241,
+		"name": "BigWigs_Transcriptor",
+		"full_name": "BigWigsMods/BigWigs_Transcriptor",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_Transcriptor",
+		"description": "Simple addon that uses BigWigs for pull/win/wipe detection and starts or stops Transcriptor logging accordingly.",
+		"project-id-map": {
+			"x-curse-project-id": "53389",
+			"x-wago-id": "ZKbe5d61"
+		},
+		"updated-date": "2025-06-24T22:15:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -2154,6 +2469,48 @@
 		"has-release-json": true
 	},
 	{
+		"id": 66278349,
+		"name": "BigWigs_WrathOfTheLichKing",
+		"full_name": "BigWigsMods/BigWigs_WrathOfTheLichKing",
+		"html_url": "https://github.com/BigWigsMods/BigWigs_WrathOfTheLichKing",
+		"description": "A collection of BigWigs modules from the Wrath of the Lich King era.",
+		"project-id-map": {
+			"x-curse-project-id": "50417",
+			"x-wago-id": "7nGvW2Nx",
+			"x-wowi-id": "22086"
+		},
+		"updated-date": "2025-06-10T01:02:16Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71355475,
+		"name": "Capping",
+		"full_name": "BigWigsMods/Capping",
+		"html_url": "https://github.com/BigWigsMods/Capping",
+		"description": "Battleground timers and other PvP features.",
+		"project-id-map": {
+			"x-curse-project-id": "20143",
+			"x-wago-id": "Rn6VXOGd",
+			"x-wowi-id": "11177"
+		},
+		"updated-date": "2025-05-14T23:06:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 1000519107,
 		"name": "LibKeystone",
 		"full_name": "BigWigsMods/LibKeystone",
@@ -2165,6 +2522,49 @@
 		"updated-date": "2025-06-20T23:18:56Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66183679,
+		"name": "LittleWigs",
+		"full_name": "BigWigsMods/LittleWigs",
+		"html_url": "https://github.com/BigWigsMods/LittleWigs",
+		"description": "Boss warnings for 5-man dungeons \u0026 scenarios.",
+		"project-id-map": {
+			"x-curse-project-id": "4383",
+			"x-wago-id": "5bGolnN0",
+			"x-wowi-id": "9577"
+		},
+		"updated-date": "2025-07-05T13:33:56Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 54476594,
+		"name": "Transcriptor",
+		"full_name": "BigWigsMods/Transcriptor",
+		"html_url": "https://github.com/BigWigsMods/Transcriptor",
+		"description": "Logging utility for boss encounters.",
+		"project-id-map": {
+			"x-curse-project-id": "14837",
+			"x-wago-id": "0mKOx1Gx"
+		},
+		"updated-date": "2025-05-02T16:36:05Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -2580,6 +2980,28 @@
 		"has-release-json": true
 	},
 	{
+		"id": 343661608,
+		"name": "CraftPresence-Wow-Edition",
+		"full_name": "CDAGaming/CraftPresence-Wow-Edition",
+		"html_url": "https://github.com/CDAGaming/CraftPresence-Wow-Edition",
+		"description": "Port of https://gitlab.com/CDAGaming/CraftPresence for World of Warcraft (Mirrored to Github from Gitlab)",
+		"project-id-map": {
+			"x-curse-project-id": "457334",
+			"x-wago-id": "R4N2naNL",
+			"x-wowi-id": "25986"
+		},
+		"updated-date": "2025-06-21T16:57:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 346407672,
 		"name": "WowLua",
 		"full_name": "CDAGaming/WowLua",
@@ -2727,6 +3149,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 310373168,
+		"name": "attributesmulti",
+		"full_name": "Canettieri/attributesmulti",
+		"html_url": "https://github.com/Canettieri/attributesmulti",
+		"description": "About This is the repository of a WoW addon called Titan Panel [Attributes] Multi. 💪",
+		"project-id-map": {
+			"x-curse-project-id": "94732",
+			"x-wago-id": "Xb6XjOGp"
+		},
+		"updated-date": "2025-07-06T03:18:20Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 309231317,
 		"name": "chat-sound",
 		"full_name": "Canettieri/chat-sound",
@@ -2741,6 +3181,59 @@
 			"mainline",
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 292990290,
+		"name": "currenciesmulti",
+		"full_name": "Canettieri/currenciesmulti",
+		"html_url": "https://github.com/Canettieri/currenciesmulti",
+		"description": "This is the repository of a WoW addon called Titan Panel Currencies [Multi]. 💲",
+		"project-id-map": {
+			"x-curse-project-id": "94508",
+			"x-wago-id": "xZKxeyGk"
+		},
+		"updated-date": "2025-07-05T09:42:07Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 310391583,
+		"name": "professionsmulti",
+		"full_name": "Canettieri/professionsmulti",
+		"html_url": "https://github.com/Canettieri/professionsmulti",
+		"description": "This is the repository of a WoW addon called Titan Panel [Professions] Multi. ⚒",
+		"project-id-map": {
+			"x-curse-project-id": "94459",
+			"x-wago-id": "e56nyWN9"
+		},
+		"updated-date": "2025-07-06T02:44:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 320001814,
+		"name": "spacer",
+		"full_name": "Canettieri/spacer",
+		"html_url": "https://github.com/Canettieri/spacer",
+		"description": "About This is the repository of a WoW addon called Titan Panel [Spacer]. 🚀",
+		"project-id-map": {
+			"x-curse-project-id": "94740",
+			"x-wago-id": "5bGogBG0"
+		},
+		"updated-date": "2025-07-05T09:37:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3209,6 +3702,27 @@
 		"has-release-json": true
 	},
 	{
+		"id": 101903936,
+		"name": "who-taunted",
+		"full_name": "Davie3/who-taunted",
+		"html_url": "https://github.com/Davie3/who-taunted",
+		"description": "Tracks player taunts and displays who they taunted, what ability they used to taunt, and if it failed in some way.",
+		"project-id-map": {
+			"x-curse-project-id": "20051",
+			"x-wago-id": "L6JDJxGv",
+			"x-wowi-id": "14842"
+		},
+		"updated-date": "2025-07-01T17:24:14Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 181242172,
 		"name": "DBM-Archaeology",
 		"full_name": "DeadlyBossMods/DBM-Archaeology",
@@ -3241,6 +3755,102 @@
 		"has-release-json": true
 	},
 	{
+		"id": 799222606,
+		"name": "DBM-BurningCrusade",
+		"full_name": "DeadlyBossMods/DBM-BurningCrusade",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-BurningCrusade",
+		"description": " Deadly Boss Mods (DBM) - Burning Crusade mods",
+		"project-id-map": {
+			"x-curse-project-id": "1016966",
+			"x-wago-id": "E6gLA4K1"
+		},
+		"updated-date": "2025-07-01T14:34:09Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181239900,
+		"name": "DBM-Cataclysm",
+		"full_name": "DeadlyBossMods/DBM-Cataclysm",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-Cataclysm",
+		"description": "Deadly Boss Mods (DBM) - Cataclysm mods",
+		"project-id-map": {
+			"x-curse-project-id": "43971",
+			"x-wago-id": "RBKpErGE",
+			"x-wowi-id": "21469"
+		},
+		"updated-date": "2025-07-01T14:36:36Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181240941,
+		"name": "DBM-Challenges",
+		"full_name": "DeadlyBossMods/DBM-Challenges",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-Challenges",
+		"description": "This mod will add support for player challenges such as Proving Grounds, Broken Shore Mage Tower, BfA Horrific Visions, and Torghast scenarios to Deadly Boss Mods (DBM).",
+		"project-id-map": {
+			"x-curse-project-id": "61621",
+			"x-wago-id": "Rn6VLLGd"
+		},
+		"updated-date": "2025-07-01T14:47:00Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181338147,
+		"name": "DBM-CountPack-HotS",
+		"full_name": "DeadlyBossMods/DBM-CountPack-HotS",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-CountPack-HotS",
+		"description": "A collection of Heroes of the Storm countdown sound options for use with Deadly Boss Mods.",
+		"project-id-map": {
+			"x-curse-project-id": "267646",
+			"x-wago-id": "XrNkewKa"
+		},
+		"updated-date": "2025-07-01T14:45:26Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181343542,
+		"name": "DBM-CountPack-Overwatch",
+		"full_name": "DeadlyBossMods/DBM-CountPack-Overwatch",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-CountPack-Overwatch",
+		"description": "A collection of Overwatch countdown sound options for use with Deadly Boss Mods.",
+		"project-id-map": {
+			"x-curse-project-id": "267605",
+			"x-wago-id": "kRNLxQNo"
+		},
+		"updated-date": "2025-07-01T14:45:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 856247013,
 		"name": "DBM-Dragonflight",
 		"full_name": "DeadlyBossMods/DBM-Dragonflight",
@@ -3253,6 +3863,28 @@
 		"updated-date": "2025-04-22T17:20:36Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181242114,
+		"name": "DBM-Dungeons",
+		"full_name": "DeadlyBossMods/DBM-Dungeons",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-Dungeons",
+		"description": "This mod will add support for 5 man Dungeons and World Events, spanning Classic all the way to Dragonflight, to Deadly Boss Mods (DBM).",
+		"project-id-map": {
+			"x-curse-project-id": "314994",
+			"x-wago-id": "xZKxZENk",
+			"x-wowi-id": "24904"
+		},
+		"updated-date": "2025-07-03T20:24:29Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3291,6 +3923,27 @@
 		"has-release-json": true
 	},
 	{
+		"id": 181240897,
+		"name": "DBM-PvP",
+		"full_name": "DeadlyBossMods/DBM-PvP",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-PvP",
+		"description": "This mod adds support for PvP battlegrounds and arena to Deadly Boss Mods.",
+		"project-id-map": {
+			"x-curse-project-id": "61882",
+			"x-wago-id": "Xb6Xe0Kp"
+		},
+		"updated-date": "2025-07-01T14:42:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 181240859,
 		"name": "DBM-RaidLeadTools",
 		"full_name": "DeadlyBossMods/DBM-RaidLeadTools",
@@ -3302,6 +3955,26 @@
 		"updated-date": "2021-06-29T17:16:41Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181339556,
+		"name": "DBM-SMGEventsPack",
+		"full_name": "DeadlyBossMods/DBM-SMGEventsPack",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-SMGEventsPack",
+		"description": "Several media files for DBM encounter Event feature.",
+		"project-id-map": {
+			"x-curse-project-id": "289632",
+			"x-wago-id": "Rn6VeENd"
+		},
+		"updated-date": "2025-07-01T14:43:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3318,6 +3991,83 @@
 		"updated-date": "2025-04-22T17:20:51Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181336781,
+		"name": "DBM-SoundEventsPack",
+		"full_name": "DeadlyBossMods/DBM-SoundEventsPack",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-SoundEventsPack",
+		"description": "Several media files for DBM encounter Event feature.",
+		"project-id-map": {
+			"x-curse-project-id": "289311",
+			"x-wago-id": "qv63WD6b"
+		},
+		"updated-date": "2025-07-01T14:44:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181240301,
+		"name": "DBM-SpellTimers",
+		"full_name": "DeadlyBossMods/DBM-SpellTimers",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-SpellTimers",
+		"description": "Addon that uses DBM timers to show spell cooldowns from raid members. It is fully configurable through a simple GUI so you can easily add new spells.",
+		"project-id-map": {
+			"x-curse-project-id": "18712"
+		},
+		"updated-date": "2025-07-01T14:43:15Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181242143,
+		"name": "DBM-TimelessIsle",
+		"full_name": "DeadlyBossMods/DBM-TimelessIsle",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-TimelessIsle",
+		"description": "This mod will add support for Timeless Isle to Deadly Boss Mods (DBM).",
+		"project-id-map": {
+			"x-curse-project-id": "84414"
+		},
+		"updated-date": "2025-07-01T14:39:50Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181239755,
+		"name": "DBM-Vanilla",
+		"full_name": "DeadlyBossMods/DBM-Vanilla",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-Vanilla",
+		"description": "Deadly Boss Mods (DBM) - Vanilla and Season of Discovery mods (Classic and Retail)",
+		"project-id-map": {
+			"x-curse-project-id": "16442",
+			"x-wago-id": "7x61xpN1",
+			"x-wowi-id": "11700"
+		},
+		"updated-date": "2025-07-01T14:33:44Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3352,6 +4102,48 @@
 		"updated-date": "2025-04-22T17:21:28Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181239873,
+		"name": "DBM-WotLK",
+		"full_name": "DeadlyBossMods/DBM-WotLK",
+		"html_url": "https://github.com/DeadlyBossMods/DBM-WotLK",
+		"description": "Deadly Boss Mods (DBM) - WotLK mods",
+		"project-id-map": {
+			"x-curse-project-id": "43970",
+			"x-wago-id": "WqKQg7Nx",
+			"x-wowi-id": "21522"
+		},
+		"updated-date": "2025-07-01T14:35:26Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 181219611,
+		"name": "DeadlyBossMods",
+		"full_name": "DeadlyBossMods/DeadlyBossMods",
+		"html_url": "https://github.com/DeadlyBossMods/DeadlyBossMods",
+		"description": "The ultimate encounter helper to give you fight info that's easy to process at a glance. DBM aims to focus on what's happening to you, and what YOU need to do about it.",
+		"project-id-map": {
+			"x-curse-project-id": "3358",
+			"x-wago-id": "qv633o6b",
+			"x-wowi-id": "8814"
+		},
+		"updated-date": "2025-07-03T14:41:06Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3430,6 +4222,25 @@
 		"updated-date": "2025-05-19T10:03:50Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 146717289,
+		"name": "Instance-Achievement-Tracker",
+		"full_name": "Dragnogd/Instance-Achievement-Tracker",
+		"html_url": "https://github.com/Dragnogd/Instance-Achievement-Tracker",
+		"description": "Track the completion and failure of achievements in raids and dungeons",
+		"project-id-map": {
+			"x-curse-project-id": "286675",
+			"x-wago-id": "RBKpXaKE",
+			"x-wowi-id": "24756"
+		},
+		"updated-date": "2025-07-02T20:18:25Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -3874,6 +4685,42 @@
 			"mainline",
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 44181087,
+		"name": "TitanProfession",
+		"full_name": "Eliote/TitanProfession",
+		"html_url": "https://github.com/Eliote/TitanProfession",
+		"description": "Titan Panel plugin that shows your Profession level",
+		"project-id-map": {
+			"x-curse-project-id": "94529",
+			"x-wago-id": "XrNkAzKa"
+		},
+		"updated-date": "2025-07-04T02:29:03Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 44180778,
+		"name": "TitanReputation",
+		"full_name": "Eliote/TitanReputation",
+		"html_url": "https://github.com/Eliote/TitanReputation",
+		"description": "Titan Panel plugin that shows your Reputations",
+		"project-id-map": {
+			"x-curse-project-id": "95571",
+			"x-wago-id": "Rn6VpLGd"
+		},
+		"updated-date": "2025-07-04T02:28:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -5636,6 +6483,23 @@
 		"has-release-json": true
 	},
 	{
+		"id": 208652008,
+		"name": "Carbonite-Classic",
+		"full_name": "IrcDirk/Carbonite-Classic",
+		"html_url": "https://github.com/IrcDirk/Carbonite-Classic",
+		"description": "Carbonite + Modules for WoW Classic",
+		"project-id-map": {
+			"x-curse-project-id": "342147",
+			"x-wowi-id": "25328"
+		},
+		"updated-date": "2025-07-05T21:11:18Z",
+		"flavor-list": [
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 906689867,
 		"name": "EarthenMasterHammerAddon",
 		"full_name": "Iryonis/EarthenMasterHammerAddon",
@@ -6159,6 +7023,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 574124479,
+		"name": "WoW-DragonflightUI",
+		"full_name": "Karl-HeinzSchneider/WoW-DragonflightUI",
+		"html_url": "https://github.com/Karl-HeinzSchneider/WoW-DragonflightUI",
+		"description": "World of Warcraft (classic) Addon to bring the new Retail UI to WoW Classic!",
+		"project-id-map": {
+			"x-curse-project-id": "819757"
+		},
+		"updated-date": "2025-07-03T17:11:36Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 858196002,
 		"name": "TooltipEnhancement",
 		"full_name": "Kazte/TooltipEnhancement",
@@ -6172,6 +7054,27 @@
 		"updated-date": "2024-09-17T15:44:40Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 86976556,
+		"name": "BlizzMove",
+		"full_name": "Kiatra/BlizzMove",
+		"html_url": "https://github.com/Kiatra/BlizzMove",
+		"description": "World of Warcraft add-on to make the default windows movable via drag \u0026 drop.",
+		"project-id-map": {
+			"x-curse-project-id": "17809",
+			"x-wowi-id": "23875"
+		},
+		"updated-date": "2025-07-06T13:18:27Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -6408,6 +7311,26 @@
 		"has-release-json": false
 	},
 	{
+		"id": 133984627,
+		"name": "AnnoyingPopupRemover",
+		"full_name": "KyrosKrane/AnnoyingPopupRemover",
+		"html_url": "https://github.com/KyrosKrane/AnnoyingPopupRemover",
+		"description": "World of Warcraft addon to remove some annoying popups in the game",
+		"project-id-map": {
+			"x-curse-project-id": "93154",
+			"x-wago-id": "0mKOLPGx",
+			"x-wowi-id": "23631"
+		},
+		"updated-date": "2025-07-01T03:50:37Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 133988621,
 		"name": "BiggerBagChecker",
 		"full_name": "KyrosKrane/BiggerBagChecker",
@@ -6631,11 +7554,12 @@
 		"project-id-map": {
 			"x-curse-project-id": "893895"
 		},
-		"updated-date": "2025-06-29T03:17:19Z",
+		"updated-date": "2025-07-06T10:34:59Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
-			"cata"
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -7124,6 +8048,23 @@
 		"has-release-json": true
 	},
 	{
+		"id": 141421624,
+		"name": "NeatPlates",
+		"full_name": "Luxocracy/NeatPlates",
+		"html_url": "https://github.com/Luxocracy/NeatPlates",
+		"description": "NeatPlates is a continuation of the original Tidy Plates in an attempt to keep it update date in the absence of its authors.",
+		"updated-date": "2025-05-30T09:01:18Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 943078011,
 		"name": "ORGA",
 		"full_name": "Lyderian/ORGA",
@@ -7258,6 +8199,64 @@
 		"has-release-json": true
 	},
 	{
+		"id": 839656634,
+		"name": "RPGLootFeed",
+		"full_name": "Mctalian/RPGLootFeed",
+		"html_url": "https://github.com/Mctalian/RPGLootFeed",
+		"description": "Declutter your chat - let RPGLootFeed show you what you looted and keep your chat for chat!",
+		"project-id-map": {
+			"x-curse-project-id": "1082791",
+			"x-wago-id": "56n9R0N9",
+			"x-wowi-id": "26799"
+		},
+		"updated-date": "2025-06-27T23:00:48Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 558845205,
+		"name": "AddonLocale",
+		"full_name": "Meorawr/AddonLocale",
+		"html_url": "https://github.com/Meorawr/AddonLocale",
+		"description": "World of Warcraft addon that allows configuring a custom client locale to be respected by addons that use AceLocale.",
+		"project-id-map": {
+			"x-curse-project-id": "694919",
+			"x-wago-id": "nQN5v36B",
+			"x-wowi-id": "26439"
+		},
+		"updated-date": "2025-07-01T10:57:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 621334322,
+		"name": "LibDBCompartment",
+		"full_name": "Meorawr/LibDBCompartment",
+		"html_url": "https://github.com/Meorawr/LibDBCompartment",
+		"description": "Library for handling integration into Blizzards' minimap addon compartment.",
+		"project-id-map": {
+			"x-curse-project-id": "844143",
+			"x-wago-id": "QN5mDvNB",
+			"x-wowi-id": "26567"
+		},
+		"updated-date": "2025-07-01T10:56:36Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 403309533,
 		"name": "LibFrameFade",
 		"full_name": "Meorawr/LibFrameFade",
@@ -7343,6 +8342,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 47267471,
+		"name": "GW2_UI",
+		"full_name": "Mortalknight/GW2_UI",
+		"html_url": "https://github.com/Mortalknight/GW2_UI",
+		"description": "g",
+		"project-id-map": {
+			"x-curse-project-id": "94310",
+			"x-wago-id": "Mj6jXpGR"
+		},
+		"updated-date": "2025-07-04T13:18:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 325486223,
 		"name": "RecklessAbandon",
 		"full_name": "MotherGinger/RecklessAbandon",
@@ -7403,7 +8420,7 @@
 			"x-curse-project-id": "1295509",
 			"x-wago-id": "4N2mZ4GL"
 		},
-		"updated-date": "2025-07-04T15:32:54Z",
+		"updated-date": "2025-07-06T12:34:06Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8225,6 +9242,42 @@
 		"has-release-json": true
 	},
 	{
+		"id": 188556365,
+		"name": "Bartender4",
+		"full_name": "Nevcairiel/Bartender4",
+		"html_url": "https://github.com/Nevcairiel/Bartender4",
+		"description": "ActionBar AddOn for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "13501",
+			"x-wago-id": "v63oVn6b",
+			"x-wowi-id": "11190"
+		},
+		"updated-date": "2025-07-02T21:24:41Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 201758998,
+		"name": "GatherMate2",
+		"full_name": "Nevcairiel/GatherMate2",
+		"html_url": "https://github.com/Nevcairiel/GatherMate2",
+		"description": "GatherMate2 is an addon to collect and track herbs, mines, fishing pools, gas clouds, archaelogy finds and treasures for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "405809"
+		},
+		"updated-date": "2025-07-03T07:29:22Z",
+		"flavor-list": [
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 322628243,
 		"name": "GatherMate2_Data",
 		"full_name": "Nevcairiel/GatherMate2_Data",
@@ -8236,6 +9289,42 @@
 		"updated-date": "2022-12-14T15:31:49Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 211287257,
+		"name": "HandyNotes",
+		"full_name": "Nevcairiel/HandyNotes",
+		"html_url": "https://github.com/Nevcairiel/HandyNotes",
+		"description": "Handy Notes for your maps. ",
+		"project-id-map": {
+			"x-curse-project-id": "14154",
+			"x-wago-id": "mNwQMlKo",
+			"x-wowi-id": "15716"
+		},
+		"updated-date": "2025-07-02T15:48:13Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 40768120,
+		"name": "HereBeDragons",
+		"full_name": "Nevcairiel/HereBeDragons",
+		"html_url": "https://github.com/Nevcairiel/HereBeDragons",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "94348"
+		},
+		"updated-date": "2025-07-02T15:09:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8271,6 +9360,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 204654906,
+		"name": "Quartz",
+		"full_name": "Nevcairiel/Quartz",
+		"html_url": "https://github.com/Nevcairiel/Quartz",
+		"description": "Quartz is a modular approach to a casting bar addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "4558",
+			"x-wowi-id": "7158"
+		},
+		"updated-date": "2025-07-03T06:27:54Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 191578463,
 		"name": "Quester",
 		"full_name": "Nevcairiel/Quester",
@@ -8282,6 +9389,23 @@
 		"updated-date": "2024-09-05T05:26:37Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 377508137,
+		"name": "Routes",
+		"full_name": "Nevcairiel/Routes",
+		"html_url": "https://github.com/Nevcairiel/Routes",
+		"description": "Routes WoW Addon",
+		"project-id-map": {
+			"x-curse-project-id": "14599"
+		},
+		"updated-date": "2025-07-02T15:45:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8299,6 +9423,110 @@
 			"mainline",
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 564054439,
+		"name": "AccWideUILayoutSelection",
+		"full_name": "NinerBull/AccWideUILayoutSelection",
+		"html_url": "https://github.com/NinerBull/AccWideUILayoutSelection",
+		"description": "WoW Addon - Synchronises various Character-Specific Interface Settings Account Wide.",
+		"project-id-map": {
+			"x-curse-project-id": "700820",
+			"x-wago-id": "n6VPMLGd",
+			"x-wowi-id": "26459"
+		},
+		"updated-date": "2025-07-04T22:35:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 835471221,
+		"name": "BlockBlizzChatChannels",
+		"full_name": "NinerBull/BlockBlizzChatChannels",
+		"html_url": "https://github.com/NinerBull/BlockBlizzChatChannels",
+		"description": "WoW Addon - Block various default Chat Channels such as Trade or Services, account wide.",
+		"project-id-map": {
+			"x-curse-project-id": "1074598",
+			"x-wago-id": "kNMdwOGz",
+			"x-wowi-id": "26788"
+		},
+		"updated-date": "2025-06-17T22:21:07Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 303422058,
+		"name": "NPCRPGossip",
+		"full_name": "NinerBull/NPCRPGossip",
+		"html_url": "https://github.com/NinerBull/NPCRPGossip",
+		"description": "WoW Addon - Allows hidden NPC dialog to be shown.",
+		"project-id-map": {
+			"x-curse-project-id": "84929",
+			"x-wago-id": "aNDmr96o",
+			"x-wowi-id": "25707"
+		},
+		"updated-date": "2025-06-17T22:24:48Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 303425183,
+		"name": "tRP3_RDotIO",
+		"full_name": "NinerBull/tRP3_RDotIO",
+		"html_url": "https://github.com/NinerBull/tRP3_RDotIO",
+		"description": "WoW Addon - Adds Raider.IO Information to Total RP 3's tooltips.",
+		"project-id-map": {
+			"x-curse-project-id": "316956",
+			"x-wago-id": "v63o5o6b",
+			"x-wowi-id": "25708"
+		},
+		"updated-date": "2025-06-17T22:27:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 594859393,
+		"name": "tRP3_RPNameInQuests",
+		"full_name": "NinerBull/tRP3_RPNameInQuests",
+		"html_url": "https://github.com/NinerBull/tRP3_RPNameInQuests",
+		"description": "WoW Addon  - Enhances questing immersion by putting your TRP3 Character Name (and optionally Race and Class) into Quest Text!",
+		"project-id-map": {
+			"x-curse-project-id": "822877",
+			"x-wago-id": "rNkP5z6a",
+			"x-wowi-id": "26545"
+		},
+		"updated-date": "2025-06-17T22:31:53Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8328,7 +9556,7 @@
 			"x-curse-project-id": "916354",
 			"x-wago-id": "EGPXd3G1"
 		},
-		"updated-date": "2025-07-03T15:49:34Z",
+		"updated-date": "2025-07-06T11:56:08Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -8507,6 +9735,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 291356562,
+		"name": "GatheringTracker",
+		"full_name": "Noshei/GatheringTracker",
+		"html_url": "https://github.com/Noshei/GatheringTracker",
+		"description": "Addon for tracking gathered items",
+		"project-id-map": {
+			"x-curse-project-id": "406104",
+			"x-wago-id": "Xb6XQbKp"
+		},
+		"updated-date": "2025-07-05T22:19:46Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 896160223,
 		"name": "Warband-Bank-Log",
 		"full_name": "Noshei/Warband-Bank-Log",
@@ -8533,6 +9780,43 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 907040083,
+		"name": "AddonProfiler",
+		"full_name": "NumyAddon/AddonProfiler",
+		"html_url": "https://github.com/NumyAddon/AddonProfiler",
+		"description": "UI for Blizzard's Addon Profiler",
+		"project-id-map": {
+			"x-curse-project-id": "1163936",
+			"x-wago-id": "XKq9nlKy"
+		},
+		"updated-date": "2025-06-18T10:00:06Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 403092926,
+		"name": "AuctionHouseConfirmQuantity",
+		"full_name": "NumyAddon/AuctionHouseConfirmQuantity",
+		"html_url": "https://github.com/NumyAddon/AuctionHouseConfirmQuantity",
+		"description": "Forces user to confirm quantity when buying more than 1 item from the AH",
+		"project-id-map": {
+			"x-curse-project-id": "523554",
+			"x-wago-id": "xZKxo36k"
+		},
+		"updated-date": "2025-06-18T10:00:05Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 210810348,
@@ -8562,6 +9846,27 @@
 		"updated-date": "2025-06-18T10:00:09Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 361409028,
+		"name": "BlizzMovePlugin_QuestTracker",
+		"full_name": "NumyAddon/BlizzMovePlugin_QuestTracker",
+		"html_url": "https://github.com/NumyAddon/BlizzMovePlugin_QuestTracker",
+		"description": "BlizzMove Plugin to make the QuestTracker movable",
+		"project-id-map": {
+			"x-curse-project-id": "475676",
+			"x-wago-id": "25NRw163"
+		},
+		"updated-date": "2025-06-18T10:00:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8612,6 +9917,21 @@
 		"has-release-json": true
 	},
 	{
+		"id": 977081280,
+		"name": "ClassicTalentViewer",
+		"full_name": "NumyAddon/ClassicTalentViewer",
+		"html_url": "https://github.com/NumyAddon/ClassicTalentViewer",
+		"description": "Talent viewer for mop style talents",
+		"project-id-map": {
+			"x-curse-project-id": "631740"
+		},
+		"updated-date": "2025-05-03T14:22:10Z",
+		"flavor-list": [
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 565135989,
 		"name": "CrossFactionRequestInvite",
 		"full_name": "NumyAddon/CrossFactionRequestInvite",
@@ -8624,6 +9944,27 @@
 		"updated-date": "2025-06-18T10:00:07Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 864190475,
+		"name": "DialogKey_Numy",
+		"full_name": "NumyAddon/DialogKey_Numy",
+		"html_url": "https://github.com/NumyAddon/DialogKey_Numy",
+		"description": "Addon to add keybinds to various buttons, including gossip windows",
+		"project-id-map": {
+			"x-curse-project-id": "1098587",
+			"x-wago-id": "BKpqVyGE"
+		},
+		"updated-date": "2025-06-18T10:00:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8660,6 +10001,27 @@
 		"has-release-json": true
 	},
 	{
+		"id": 210813094,
+		"name": "InviteOnWhisper",
+		"full_name": "NumyAddon/InviteOnWhisper",
+		"html_url": "https://github.com/NumyAddon/InviteOnWhisper",
+		"description": "WoW addon",
+		"project-id-map": {
+			"x-curse-project-id": "280284",
+			"x-wago-id": "PANz22N4"
+		},
+		"updated-date": "2025-06-18T10:00:09Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 210803661,
 		"name": "LazyCurve",
 		"full_name": "NumyAddon/LazyCurve",
@@ -8687,6 +10049,27 @@
 		"updated-date": "2025-06-18T10:00:11Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 545113026,
+		"name": "MacroToolkit",
+		"full_name": "NumyAddon/MacroToolkit",
+		"html_url": "https://github.com/NumyAddon/MacroToolkit",
+		"description": "https://www.curseforge.com/wow/addons/macro-toolkit",
+		"project-id-map": {
+			"x-curse-project-id": "47117",
+			"x-wago-id": "jK8XprKy"
+		},
+		"updated-date": "2025-06-18T10:00:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8719,6 +10102,48 @@
 		"updated-date": "2025-06-18T10:00:14Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 554126604,
+		"name": "NoAutoClose",
+		"full_name": "NumyAddon/NoAutoClose",
+		"html_url": "https://github.com/NumyAddon/NoAutoClose",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "689952",
+			"x-wago-id": "QN5mpPNB"
+		},
+		"updated-date": "2025-06-25T13:35:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 766119132,
+		"name": "NumysAutoMarker",
+		"full_name": "NumyAddon/NumysAutoMarker",
+		"html_url": "https://github.com/NumyAddon/NumysAutoMarker",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1156415",
+			"x-wago-id": "aN0YpM6j"
+		},
+		"updated-date": "2025-06-18T10:00:13Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -8819,6 +10244,27 @@
 		"has-release-json": true
 	},
 	{
+		"id": 812573257,
+		"name": "UnifiedProfileManager",
+		"full_name": "NumyAddon/UnifiedProfileManager",
+		"html_url": "https://github.com/NumyAddon/UnifiedProfileManager",
+		"description": "A simple overview of all addon profiles for addons that use AceDB",
+		"project-id-map": {
+			"x-curse-project-id": "1033706",
+			"x-wago-id": "BKpq3XGE"
+		},
+		"updated-date": "2025-06-18T10:00:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 306971018,
 		"name": "Nys_ToDoList",
 		"full_name": "Ny0n/Nys_ToDoList",
@@ -8860,6 +10306,26 @@
 		"has-release-json": false
 	},
 	{
+		"id": 278309701,
+		"name": "AutoPayout",
+		"full_name": "Oppzippy/AutoPayout",
+		"html_url": "https://github.com/Oppzippy/AutoPayout",
+		"description": "Quickly send out gold to many characters at once.",
+		"project-id-map": {
+			"x-curse-project-id": "693345",
+			"x-wago-id": "WL6Jzd6v",
+			"x-wowi-id": "26430"
+		},
+		"updated-date": "2025-07-03T00:24:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 216327027,
 		"name": "CollectionExporter",
 		"full_name": "Oppzippy/CollectionExporter",
@@ -8870,6 +10336,72 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 209021258,
+		"name": "CopyAnything",
+		"full_name": "Oppzippy/CopyAnything",
+		"html_url": "https://github.com/Oppzippy/CopyAnything",
+		"description": "World of Warcraft addon to copy text from any visible frame.",
+		"project-id-map": {
+			"x-curse-project-id": "341960",
+			"x-wago-id": "9rN40xND",
+			"x-wowi-id": "25626"
+		},
+		"updated-date": "2025-07-03T00:24:47Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 504819209,
+		"name": "GlobalSearch",
+		"full_name": "Oppzippy/GlobalSearch",
+		"html_url": "https://github.com/Oppzippy/GlobalSearch",
+		"description": "World of Warcraft addon that provides a global search, similar to what you'd find in an IDE.",
+		"project-id-map": {
+			"x-curse-project-id": "638729",
+			"x-wago-id": "vEGPPkG1",
+			"x-wowi-id": "26354"
+		},
+		"updated-date": "2025-07-04T10:51:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 512997091,
+		"name": "GoldStockSummary",
+		"full_name": "Oppzippy/GoldStockSummary",
+		"html_url": "https://github.com/Oppzippy/GoldStockSummary",
+		"description": "World of Warcaft addon that tracks gold across all characters on an account.",
+		"project-id-map": {
+			"x-curse-project-id": "650309",
+			"x-wago-id": "XrNkE8Ka",
+			"x-wowi-id": "26374"
+		},
+		"updated-date": "2025-07-03T00:25:01Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 163989322,
@@ -8886,6 +10418,26 @@
 			"vanilla"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 164317416,
+		"name": "TankMD",
+		"full_name": "Oppzippy/TankMD",
+		"html_url": "https://github.com/Oppzippy/TankMD",
+		"description": "World of Warcraft addon for easily casting Misdirection on tanks.",
+		"project-id-map": {
+			"x-curse-project-id": "258204",
+			"x-wago-id": "xZKxpqKk",
+			"x-wowi-id": "25625"
+		},
+		"updated-date": "2025-07-03T00:25:34Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 913435335,
@@ -9296,6 +10848,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 31859273,
+		"name": "Questie",
+		"full_name": "Questie/Questie",
+		"html_url": "https://github.com/Questie/Questie",
+		"description": "Questie: The WoW Classic quest helper",
+		"project-id-map": {
+			"x-curse-project-id": "334372",
+			"x-wago-id": "qv634BKb"
+		},
+		"updated-date": "2025-07-05T20:45:29Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 956201017,
 		"name": "Sippy-Cup",
 		"full_name": "Raenore/Sippy-Cup",
@@ -9605,9 +11176,9 @@
 		"html_url": "https://github.com/RealUI/RealUI",
 		"description": "A minimalistic UI for World of Warcraft designed to be functional, yet also efficient and elegant.",
 		"project-id-map": {
-			"x-curse-project-id": "35095",
-			"x-wago-id": "kNMd8qGz",
-			"x-wowi-id": "19390"
+			"x-curse-project-id": "13501",
+			"x-wago-id": "v63oVn6b",
+			"x-wowi-id": "11190"
 		},
 		"updated-date": "2025-04-27T23:37:21Z",
 		"flavor-list": [
@@ -9653,7 +11224,7 @@
 			"x-curse-project-id": "954018",
 			"x-wago-id": "rN4VDdKD"
 		},
-		"updated-date": "2025-06-30T16:19:17Z",
+		"updated-date": "2025-07-06T02:56:00Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -9691,6 +11262,27 @@
 			"mainline",
 			"vanilla",
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 356418010,
+		"name": "RXPGuides",
+		"full_name": "RestedXP/RXPGuides",
+		"html_url": "https://github.com/RestedXP/RXPGuides",
+		"description": "RXPGuides is a platform to write in-game leveling guides for WoW Classic",
+		"project-id-map": {
+			"x-curse-project-id": "486246",
+			"x-wago-id": "ZKbebq61"
+		},
+		"updated-date": "2025-06-30T17:58:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -9846,6 +11438,48 @@
 		"updated-date": "2024-10-21T06:32:10Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 155440455,
+		"name": "AceGUI-3.0_SFX-Widgets",
+		"full_name": "SFX-WoW/AceGUI-3.0_SFX-Widgets",
+		"html_url": "https://github.com/SFX-WoW/AceGUI-3.0_SFX-Widgets",
+		"description": "Custom widgets for AceGUI-3.0 and AceConfigDialog-3.0.",
+		"project-id-map": {
+			"x-curse-project-id": "340803",
+			"x-wago-id": "RaN0zvKj",
+			"x-wowi-id": "25658"
+		},
+		"updated-date": "2025-06-25T03:15:36Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 44074003,
+		"name": "Masque",
+		"full_name": "SFX-WoW/Masque",
+		"html_url": "https://github.com/SFX-WoW/Masque",
+		"description": "A button-skinning engine for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13592",
+			"x-wago-id": "kRNLgpGo",
+			"x-wowi-id": "12097"
+		},
+		"updated-date": "2025-07-03T14:26:42Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -10702,6 +12336,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 282687442,
+		"name": "Syling-Tracker",
+		"full_name": "Skamer/Syling-Tracker",
+		"html_url": "https://github.com/Skamer/Syling-Tracker",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "398177",
+			"x-wago-id": "Qb6m146P"
+		},
+		"updated-date": "2025-07-04T07:52:36Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 958589808,
 		"name": "Trilliax-Scrubber",
 		"full_name": "Skamer/Trilliax-Scrubber",
@@ -10844,6 +12497,44 @@
 		"has-release-json": false
 	},
 	{
+		"id": 289066816,
+		"name": "Clicked",
+		"full_name": "Snakybo/Clicked",
+		"html_url": "https://github.com/Snakybo/Clicked",
+		"description": "A keybind management addon for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "405267",
+			"x-wago-id": "WL6JPYGv",
+			"x-wowi-id": "25703"
+		},
+		"updated-date": "2025-06-29T13:08:58Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 309197444,
+		"name": "LibTalentInfo",
+		"full_name": "Snakybo/LibTalentInfo",
+		"html_url": "https://github.com/Snakybo/LibTalentInfo",
+		"description": "A WoW library to get PvP talent info from any spec.",
+		"project-id-map": {
+			"x-curse-project-id": "417044"
+		},
+		"updated-date": "2025-06-29T12:51:52Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 767200240,
 		"name": "BetterBagsItemDumper",
 		"full_name": "SpareSimian/BetterBagsItemDumper",
@@ -10976,9 +12667,31 @@
 			"vanilla",
 			"tbc",
 			"wrath",
-			"cata"
+			"cata",
+			"mists"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 58770598,
+		"name": "AdvancedInterfaceOptions",
+		"full_name": "Stanzilla/AdvancedInterfaceOptions",
+		"html_url": "https://github.com/Stanzilla/AdvancedInterfaceOptions",
+		"description": "WoW Addon that restores access to removed interface options in Legion",
+		"project-id-map": {
+			"x-curse-project-id": "99982",
+			"x-wago-id": "ZQ6aPNW7",
+			"x-wowi-id": "25002"
+		},
+		"updated-date": "2025-07-03T20:30:39Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 96258340,
@@ -11176,6 +12889,47 @@
 		"has-release-json": true
 	},
 	{
+		"id": 165897126,
+		"name": "AutoCombatLogger",
+		"full_name": "Talryn/AutoCombatLogger",
+		"html_url": "https://github.com/Talryn/AutoCombatLogger",
+		"description": "WoW addon that automatically enables or disables combat logging based on location.",
+		"project-id-map": {
+			"x-curse-project-id": "25333",
+			"x-wago-id": "WqKQonNx",
+			"x-wowi-id": "24941"
+		},
+		"updated-date": "2025-07-02T13:25:06Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 291209353,
+		"name": "BloodShieldTracker",
+		"full_name": "Talryn/BloodShieldTracker",
+		"html_url": "https://github.com/Talryn/BloodShieldTracker",
+		"description": "A World of Warcraft addon to track a Death Knight's Blood Shield and other resources.",
+		"project-id-map": {
+			"x-curse-project-id": "26759",
+			"x-wago-id": "Qb6mL7NP",
+			"x-wowi-id": "25918"
+		},
+		"updated-date": "2025-07-01T01:36:08Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 165971271,
 		"name": "CharacterNotes",
 		"full_name": "Talryn/CharacterNotes",
@@ -11305,6 +13059,25 @@
 		"has-release-json": false
 	},
 	{
+		"id": 179506957,
+		"name": "Plater-Nameplates",
+		"full_name": "Tercioo/Plater-Nameplates",
+		"html_url": "https://github.com/Tercioo/Plater-Nameplates",
+		"description": "Source code for World of Warcraft addon Plater Nameplates.",
+		"project-id-map": {
+			"x-curse-project-id": "100547",
+			"x-wago-id": "kRNLep6o"
+		},
+		"updated-date": "2025-06-18T07:49:45Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 606543105,
 		"name": "PlayerTitleDropDown-WrathFix",
 		"full_name": "ThatKalle/PlayerTitleDropDown-WrathFix",
@@ -11342,10 +13115,11 @@
 			"x-curse-project-id": "872787",
 			"x-wago-id": "mNwQwWKo"
 		},
-		"updated-date": "2025-07-02T11:29:56Z",
+		"updated-date": "2025-07-05T15:13:54Z",
 		"flavor-list": [
 			"mainline",
-			"vanilla"
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -11414,6 +13188,26 @@
 			"tbc",
 			"wrath",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 61849693,
+		"name": "GSE-Advanced-Macro-Compiler",
+		"full_name": "TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"html_url": "https://github.com/TimothyLuke/GSE-Advanced-Macro-Compiler",
+		"description": "GSE is an alternative advanced macro editor and engine for World of Warcraft.  ",
+		"project-id-map": {
+			"x-curse-project-id": "101161",
+			"x-wago-id": "kGr0YY6y",
+			"x-wowi-id": "23921"
+		},
+		"updated-date": "2025-06-21T08:00:09Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -11620,6 +13414,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 83542327,
+		"name": "Total-RP-3",
+		"full_name": "Total-RP/Total-RP-3",
+		"html_url": "https://github.com/Total-RP/Total-RP-3",
+		"description": "The best roleplaying add-on for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "75973",
+			"x-wago-id": "q96dnGOm",
+			"x-wowi-id": "24113"
+		},
+		"updated-date": "2025-07-01T21:51:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 83542968,
 		"name": "Total-RP-3-Extended",
 		"full_name": "Total-RP/Total-RP-3-Extended",
@@ -11633,6 +13446,25 @@
 		"updated-date": "2025-07-02T19:40:47Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 559215937,
+		"name": "toxiui",
+		"full_name": "Toxicom/toxiui",
+		"html_url": "https://github.com/Toxicom/toxiui",
+		"description": "ToxiUI is a plugin for ElvUI in World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "676447",
+			"x-wago-id": "XrNk5lKa",
+			"x-wowi-id": "25770"
+		},
+		"updated-date": "2025-07-02T20:26:44Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -11661,7 +13493,7 @@
 		"full_name": "Unmoist/ElvUI_AyijeUI",
 		"html_url": "https://github.com/Unmoist/ElvUI_AyijeUI",
 		"description": "",
-		"updated-date": "2025-06-18T05:12:50Z",
+		"updated-date": "2025-07-05T13:09:12Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -11821,7 +13653,8 @@
 			"vanilla",
 			"tbc",
 			"wrath",
-			"cata"
+			"cata",
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -12136,6 +13969,26 @@
 		"has-release-json": true
 	},
 	{
+		"id": 25056248,
+		"name": "WeakAuras2",
+		"full_name": "WeakAuras/WeakAuras2",
+		"html_url": "https://github.com/WeakAuras/WeakAuras2",
+		"description": "World of Warcraft addon that provides a powerful framework to display customizable graphics on your screen.",
+		"project-id-map": {
+			"x-curse-project-id": "65387",
+			"x-wago-id": "VBNBxKx5",
+			"x-wowi-id": "24910"
+		},
+		"updated-date": "2025-06-18T17:33:00Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 615984055,
 		"name": "ShestakUI",
 		"full_name": "Wetxius/ShestakUI",
@@ -12222,12 +14075,12 @@
 		"full_name": "Witnesscm/InboxMailBag",
 		"html_url": "https://github.com/Witnesscm/InboxMailBag",
 		"description": "The Mail addon for World of Warcraft.",
-		"updated-date": "2025-05-03T22:40:19Z",
+		"updated-date": "2025-07-05T17:49:50Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"wrath",
-			"cata"
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -12255,9 +14108,9 @@
 			"x-curse-project-id": "389434",
 			"x-wago-id": "0mKOvP6x"
 		},
-		"updated-date": "2025-06-18T03:17:47Z",
+		"updated-date": "2025-07-05T19:05:32Z",
 		"flavor-list": [
-			"mainline"
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -12295,12 +14148,27 @@
 		"full_name": "Witnesscm/WhisperPop",
 		"html_url": "https://github.com/Witnesscm/WhisperPop",
 		"description": "WhisperPop Continued",
-		"updated-date": "2024-08-21T04:57:18Z",
+		"updated-date": "2025-07-05T18:26:32Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"wrath",
-			"cata"
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 372592774,
+		"name": "xCT_Classic",
+		"full_name": "Witnesscm/xCT_Classic",
+		"html_url": "https://github.com/Witnesscm/xCT_Classic",
+		"description": "xCT+ for WoW Classic",
+		"updated-date": "2025-05-24T13:08:07Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -12316,6 +14184,23 @@
 		"updated-date": "2024-10-04T15:05:18Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 109406705,
+		"name": "Rarity",
+		"full_name": "WowRarity/Rarity",
+		"html_url": "https://github.com/WowRarity/Rarity",
+		"description": "Collectibles and statistics tracking addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "30801"
+		},
+		"updated-date": "2025-07-03T19:08:32Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -12496,6 +14381,27 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 205646582,
+		"name": "TotemTimers_Classic",
+		"full_name": "Xianghar/TotemTimers_Classic",
+		"html_url": "https://github.com/Xianghar/TotemTimers_Classic",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "339602",
+			"x-wago-id": "rkGrwANy",
+			"x-wowi-id": "25223"
+		},
+		"updated-date": "2025-06-06T23:20:08Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 340761558,
@@ -13186,6 +15092,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 762341062,
+		"name": "AllTheMogs",
+		"full_name": "ZeChrales/AllTheMogs",
+		"html_url": "https://github.com/ZeChrales/AllTheMogs",
+		"description": "World of Warcraft Addon to check all the Transmogrifications available in game",
+		"project-id-map": {
+			"x-curse-project-id": "978634"
+		},
+		"updated-date": "2025-07-04T11:04:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 855262774,
 		"name": "BeledarSpawnTimer",
 		"full_name": "ZehelFenris/BeledarSpawnTimer",
@@ -13246,6 +15171,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 375500205,
+		"name": "DBM-EpicMusicPack",
+		"full_name": "ZelionGG/DBM-EpicMusicPack",
+		"html_url": "https://github.com/ZelionGG/DBM-EpicMusicPack",
+		"description": "Epic Music Pack for DBM Event Sounds.",
+		"project-id-map": {
+			"x-curse-project-id": "492590",
+			"x-wago-id": "7x61aB61"
+		},
+		"updated-date": "2025-07-03T09:39:21Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 914627872,
 		"name": "KeystonePercentageHelper",
 		"full_name": "ZelionGG/KeystonePercentageHelper",
@@ -13259,6 +15202,25 @@
 		"updated-date": "2025-06-18T22:37:29Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 584527238,
+		"name": "XIV_Databar-Continued",
+		"full_name": "ZelionGG/XIV_Databar-Continued",
+		"html_url": "https://github.com/ZelionGG/XIV_Databar-Continued",
+		"description": "Continuation of XIV_Databar addon",
+		"project-id-map": {
+			"x-curse-project-id": "787614",
+			"x-wago-id": "WqKQVaGx",
+			"x-wowi-id": "26826"
+		},
+		"updated-date": "2025-07-02T22:24:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -13534,6 +15496,23 @@
 		"has-release-json": true
 	},
 	{
+		"id": 139490391,
+		"name": "AlreadyKnown",
+		"full_name": "ahakola/AlreadyKnown",
+		"html_url": "https://github.com/ahakola/AlreadyKnown",
+		"description": "WoW-addon // Puts green tint on already known scrolls/pets/other learnable items on vendors.",
+		"updated-date": "2025-07-02T17:15:24Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 146617914,
 		"name": "AzeritePowerWeights",
 		"full_name": "ahakola/AzeritePowerWeights",
@@ -13558,6 +15537,52 @@
 		"has-release-json": true
 	},
 	{
+		"id": 139490858,
+		"name": "DMFQuest",
+		"full_name": "ahakola/DMFQuest",
+		"html_url": "https://github.com/ahakola/DMFQuest",
+		"description": "WoW-addon // Reminder tool for Darkmoon Faire crafting quest materials",
+		"updated-date": "2025-07-02T17:11:36Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139489327,
+		"name": "DrunkardSK",
+		"full_name": "ahakola/DrunkardSK",
+		"html_url": "https://github.com/ahakola/DrunkardSK",
+		"description": "WoW-addon // Suicide Kings for the guild Drunkard of Bloodscalp. (I maintained this addon from MoP to Legion until Blizzard got rid of Masterlooter in BfA)",
+		"updated-date": "2025-07-02T17:19:18Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139493980,
+		"name": "LOIHCal",
+		"full_name": "ahakola/LOIHCal",
+		"html_url": "https://github.com/ahakola/LOIHCal",
+		"description": "WoW-addon // Calendar raid event role assignment tool for Lords of Ironhearts (Arathor EU)",
+		"updated-date": "2025-07-02T17:13:55Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 139496332,
 		"name": "LOIHInterrupt",
 		"full_name": "ahakola/LOIHInterrupt",
@@ -13566,6 +15591,19 @@
 		"updated-date": "2025-07-02T17:14:28Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139497162,
+		"name": "LOIHLoot",
+		"full_name": "ahakola/LOIHLoot",
+		"html_url": "https://github.com/ahakola/LOIHLoot",
+		"description": "WoW-addon // Syncs players' loot wishlists to raid leader(s) to help determine best loot method.",
+		"updated-date": "2025-07-02T17:12:32Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -13605,6 +15643,51 @@
 		"updated-date": "2022-06-07T14:18:49Z",
 		"flavor-list": [
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139499315,
+		"name": "SmartGuildRepairs",
+		"full_name": "ahakola/SmartGuildRepairs",
+		"html_url": "https://github.com/ahakola/SmartGuildRepairs",
+		"description": "WoW-addon // Use your guild repair funds to the maximum effiency!",
+		"updated-date": "2025-07-02T17:17:15Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 378491271,
+		"name": "WTSpam",
+		"full_name": "ahakola/WTSpam",
+		"html_url": "https://github.com/ahakola/WTSpam",
+		"description": "WoW-addon // WTSpam - F#*\u0026 boost sellers! LFG is filled with \"WTS Boost\"-spam, lets get rid of it.",
+		"updated-date": "2025-07-02T17:20:40Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139493024,
+		"name": "iLevel",
+		"full_name": "ahakola/iLevel",
+		"html_url": "https://github.com/ahakola/iLevel",
+		"description": "WoW-addon // Shows equiped items itemlevel on Paperdoll frame view.",
+		"updated-date": "2025-07-02T17:14:36Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -13831,11 +15914,12 @@
 			"x-wago-id": "ZQ6aZqKW",
 			"x-wowi-id": "10855"
 		},
-		"updated-date": "2025-06-19T02:34:42Z",
+		"updated-date": "2025-07-06T06:23:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
-			"cata"
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -13975,6 +16059,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 563039331,
+		"name": "pbs",
+		"full_name": "axc450/pbs",
+		"html_url": "https://github.com/axc450/pbs",
+		"description": "Battle Pet Combat Scripting",
+		"project-id-map": {
+			"x-curse-project-id": "699660",
+			"x-wago-id": "WYK9036L",
+			"x-wowi-id": "26435"
+		},
+		"updated-date": "2025-06-24T09:06:57Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 339259431,
 		"name": "Skillet",
 		"full_name": "b-morgan/Skillet",
@@ -13988,6 +16090,25 @@
 		"updated-date": "2025-06-16T17:00:28Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 339395320,
+		"name": "Skillet-Classic",
+		"full_name": "b-morgan/Skillet-Classic",
+		"html_url": "https://github.com/b-morgan/Skillet-Classic",
+		"description": "World of Warcraft Classic addon",
+		"project-id-map": {
+			"x-curse-project-id": "447401",
+			"x-wago-id": "Mj6jqMNR",
+			"x-wowi-id": "25287"
+		},
+		"updated-date": "2025-06-30T20:27:19Z",
+		"flavor-list": [
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -14263,6 +16384,42 @@
 		"updated-date": "2024-06-17T21:34:05Z",
 		"flavor-list": null,
 		"has-release-json": false
+	},
+	{
+		"id": 361540553,
+		"name": "DevTool",
+		"full_name": "brittyazel/DevTool",
+		"html_url": "https://github.com/brittyazel/DevTool",
+		"description": "A multipurpose tool to assist with World of Warcraft addon development",
+		"project-id-map": {
+			"x-curse-project-id": "860160",
+			"x-wago-id": "EGPXX5G1"
+		},
+		"updated-date": "2025-07-01T18:02:06Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 139295117,
+		"name": "EnhancedRaidFrames",
+		"full_name": "brittyazel/EnhancedRaidFrames",
+		"html_url": "https://github.com/brittyazel/EnhancedRaidFrames",
+		"description": "World of Warcraft addon to enhance the built-in raid frames with Grid like functionality!",
+		"project-id-map": {
+			"x-curse-project-id": "298558",
+			"x-wago-id": "xZKxkE6k"
+		},
+		"updated-date": "2025-07-06T03:43:13Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 208347861,
@@ -14570,6 +16727,28 @@
 		"has-release-json": true
 	},
 	{
+		"id": 137567169,
+		"name": "buff-overlay",
+		"full_name": "clicketz/buff-overlay",
+		"html_url": "https://github.com/clicketz/buff-overlay",
+		"description": "Quickly and easily see active auras on other players so you can adjust your gameplay accordingly.",
+		"project-id-map": {
+			"x-curse-project-id": "296067",
+			"x-wago-id": "RBKpvqNE",
+			"x-wowi-id": "24683"
+		},
+		"updated-date": "2025-06-29T18:09:41Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 797468538,
 		"name": "clickUI",
 		"full_name": "clicketz/clickUI",
@@ -14864,6 +17043,48 @@
 		"has-release-json": false
 	},
 	{
+		"id": 686955857,
+		"name": "CVARs",
+		"full_name": "d4kir92/CVARs",
+		"html_url": "https://github.com/d4kir92/CVARs",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "909920",
+			"x-wago-id": "EGPXajG1"
+		},
+		"updated-date": "2025-07-02T07:01:41Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530076033,
+		"name": "Centered",
+		"full_name": "d4kir92/Centered",
+		"html_url": "https://github.com/d4kir92/Centered",
+		"description": "Centers the Unitframes",
+		"project-id-map": {
+			"x-curse-project-id": "386754",
+			"x-wago-id": "25NRrvN3"
+		},
+		"updated-date": "2025-07-02T06:59:20Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 527987023,
 		"name": "D4KiR-MoveAndImprove",
 		"full_name": "d4kir92/D4KiR-MoveAndImprove",
@@ -14880,6 +17101,341 @@
 			"tbc",
 			"wrath",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530073795,
+		"name": "DRaidFrames",
+		"full_name": "d4kir92/DRaidFrames",
+		"html_url": "https://github.com/d4kir92/DRaidFrames",
+		"description": "Raid Frame Addon",
+		"project-id-map": {
+			"x-curse-project-id": "402235",
+			"x-wago-id": "qv63roNb"
+		},
+		"updated-date": "2025-07-02T07:02:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530073920,
+		"name": "DUnitFrames",
+		"full_name": "d4kir92/DUnitFrames",
+		"html_url": "https://github.com/d4kir92/DUnitFrames",
+		"description": "UnitFrame Addon",
+		"project-id-map": {
+			"x-curse-project-id": "409653",
+			"x-wago-id": "kRNLAb6o"
+		},
+		"updated-date": "2025-07-04T12:14:08Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 591648528,
+		"name": "DarkMode",
+		"full_name": "d4kir92/DarkMode",
+		"html_url": "https://github.com/d4kir92/DarkMode",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "812982",
+			"x-wago-id": "VBNBDqKx"
+		},
+		"updated-date": "2025-07-05T00:13:43Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530074923,
+		"name": "ExtendedVariables",
+		"full_name": "d4kir92/ExtendedVariables",
+		"html_url": "https://github.com/d4kir92/ExtendedVariables",
+		"description": "Replicates Variables in WoW",
+		"project-id-map": {
+			"x-curse-project-id": "449513",
+			"x-wago-id": "XrNkvzGa"
+		},
+		"updated-date": "2025-07-02T07:03:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075148,
+		"name": "HealerProtection",
+		"full_name": "d4kir92/HealerProtection",
+		"html_url": "https://github.com/d4kir92/HealerProtection",
+		"description": "Chat messages for Healers",
+		"project-id-map": {
+			"x-curse-project-id": "318461",
+			"x-wago-id": "LvNAy9No"
+		},
+		"updated-date": "2025-07-04T12:01:29Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 629878133,
+		"name": "HighLevelAlert",
+		"full_name": "d4kir92/HighLevelAlert",
+		"html_url": "https://github.com/d4kir92/HighLevelAlert",
+		"description": "A Warning and Sound when you are near highlevel/elite",
+		"project-id-map": {
+			"x-curse-project-id": "852302",
+			"x-wago-id": "QNlqq46e"
+		},
+		"updated-date": "2025-07-02T07:05:52Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530073521,
+		"name": "ImproveAny",
+		"full_name": "d4kir92/ImproveAny",
+		"html_url": "https://github.com/d4kir92/ImproveAny",
+		"description": "Improves Ui",
+		"project-id-map": {
+			"x-curse-project-id": "646135",
+			"x-wago-id": "5bGoV1K0"
+		},
+		"updated-date": "2025-07-02T07:06:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530673480,
+		"name": "LossOfControlMessages",
+		"full_name": "d4kir92/LossOfControlMessages",
+		"html_url": "https://github.com/d4kir92/LossOfControlMessages",
+		"description": "loss of control messages in chat",
+		"project-id-map": {
+			"x-curse-project-id": "391012",
+			"x-wago-id": "anKW5rNE"
+		},
+		"updated-date": "2025-07-05T07:03:07Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075261,
+		"name": "MissingPower",
+		"full_name": "d4kir92/MissingPower",
+		"html_url": "https://github.com/d4kir92/MissingPower",
+		"description": "Shows how often you can cast a spell",
+		"project-id-map": {
+			"x-curse-project-id": "341275",
+			"x-wago-id": "RXKqO8Ny"
+		},
+		"updated-date": "2025-07-02T07:07:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530073351,
+		"name": "MoveAny",
+		"full_name": "d4kir92/MoveAny",
+		"html_url": "https://github.com/d4kir92/MoveAny",
+		"description": "Move Addon",
+		"project-id-map": {
+			"x-curse-project-id": "646134",
+			"x-wago-id": "e56n3pK9"
+		},
+		"updated-date": "2025-07-05T06:52:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075454,
+		"name": "RatePlayer",
+		"full_name": "d4kir92/RatePlayer",
+		"html_url": "https://github.com/d4kir92/RatePlayer",
+		"description": "You can rate Players and see what other rated",
+		"project-id-map": {
+			"x-curse-project-id": "472655",
+			"x-wago-id": "PANzVMN4"
+		},
+		"updated-date": "2025-07-02T07:08:59Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 604963880,
+		"name": "SpecBisTooltip",
+		"full_name": "d4kir92/SpecBisTooltip",
+		"html_url": "https://github.com/d4kir92/SpecBisTooltip",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "827800",
+			"x-wago-id": "56n9g2N9"
+		},
+		"updated-date": "2025-07-04T12:01:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075662,
+		"name": "StreamerMode",
+		"full_name": "d4kir92/StreamerMode",
+		"html_url": "https://github.com/d4kir92/StreamerMode",
+		"description": "Hides your Character Name and Realm ingame",
+		"project-id-map": {
+			"x-curse-project-id": "573691",
+			"x-wago-id": "baND79Go"
+		},
+		"updated-date": "2025-07-02T07:10:01Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075770,
+		"name": "TankHelper",
+		"full_name": "d4kir92/TankHelper",
+		"html_url": "https://github.com/d4kir92/TankHelper",
+		"description": "RaidMarks, Pulltimer and more",
+		"project-id-map": {
+			"x-curse-project-id": "398385",
+			"x-wago-id": "lQNlmP6e"
+		},
+		"updated-date": "2025-07-02T07:10:54Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 647591450,
+		"name": "ThreatMeter",
+		"full_name": "d4kir92/ThreatMeter",
+		"html_url": "https://github.com/d4kir92/ThreatMeter",
+		"description": "Display the highest threat percentage of all mobs currently visible on the screen.",
+		"project-id-map": {
+			"x-curse-project-id": "868151",
+			"x-wago-id": "j6jzz16R"
+		},
+		"updated-date": "2025-07-04T11:54:32Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 530075880,
+		"name": "WorldMapPin",
+		"full_name": "d4kir92/WorldMapPin",
+		"html_url": "https://github.com/d4kir92/WorldMapPin",
+		"description": "Adds a Marker to the WorldMap",
+		"project-id-map": {
+			"x-curse-project-id": "603848",
+			"x-wago-id": "Rn6V8LGd"
+		},
+		"updated-date": "2025-07-02T07:11:52Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -15023,6 +17579,25 @@
 		"updated-date": "2025-06-24T23:46:59Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 317145867,
+		"name": "HideButtonGlow",
+		"full_name": "dekallo/HideButtonGlow",
+		"html_url": "https://github.com/dekallo/HideButtonGlow",
+		"description": "Prevents addons (Bartender, etc) from making your action buttons glow. Can disable button glow for certain spells or just prevent all button glow.",
+		"project-id-map": {
+			"x-curse-project-id": "426069",
+			"x-wago-id": "RBKpVONE",
+			"x-wowi-id": "26179"
+		},
+		"updated-date": "2025-06-28T02:12:28Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -15895,7 +18470,7 @@
 		"name": "CoordinationCloakUtility",
 		"full_name": "donniedice/CoordinationCloakUtility",
 		"html_url": "https://github.com/donniedice/CoordinationCloakUtility",
-		"description": "Coordination Cloak Utility automates the use of the Cloak of Coordination and Wrap of Unity. It equips the cloak for teleportation and automatically re-equips your original cloak afterward. Use the /ccu command for quick access.",
+		"description": "Coordination Cloak Utility automates the use of the Cloak of Coordination and Wrap of Unity. It equips the cloak for teleportation and automatically re-equips your original cloak afterward. Use the /equipcoord command for quick access.",
 		"project-id-map": {
 			"x-curse-project-id": "1086635"
 		},
@@ -16035,6 +18610,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 405089813,
+		"name": "eltruism",
+		"full_name": "eltreum0/eltruism",
+		"html_url": "https://github.com/eltreum0/eltruism",
+		"description": "An ElvUI Plugin containing many features not available in ElvUI alongside DPS/Tank/Healer profiles and settings for other addons",
+		"project-id-map": {
+			"x-curse-project-id": "459494",
+			"x-wago-id": "vEGPqEN1"
+		},
+		"updated-date": "2025-07-02T15:55:27Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 560171988,
 		"name": "HideActionBarBorders",
 		"full_name": "emallson/HideActionBarBorders",
@@ -16104,6 +18697,27 @@
 		"updated-date": "2025-05-30T04:51:39Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 290907987,
+		"name": "Cell",
+		"full_name": "enderneko/Cell",
+		"html_url": "https://github.com/enderneko/Cell",
+		"description": "A World of Warcraft raid frame addon.",
+		"project-id-map": {
+			"x-curse-project-id": "409666",
+			"x-wago-id": "qv63LLKb",
+			"x-wowi-id": "26244"
+		},
+		"updated-date": "2025-07-04T13:35:13Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -16326,6 +18940,23 @@
 		"has-release-json": true
 	},
 	{
+		"id": 68710116,
+		"name": "RCLootCouncil_GroupGear",
+		"full_name": "evil-morfar/RCLootCouncil_GroupGear",
+		"html_url": "https://github.com/evil-morfar/RCLootCouncil_GroupGear",
+		"description": "A simple module for showing group/guild ilvl and number of artifact traits.",
+		"project-id-map": {
+			"x-curse-project-id": "102435"
+		},
+		"updated-date": "2025-07-03T15:36:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 318738273,
 		"name": "BlockQuickJoin",
 		"full_name": "exochron/BlockQuickJoin",
@@ -16337,6 +18968,25 @@
 		"updated-date": "2024-12-15T11:42:39Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 88438414,
+		"name": "Favorite-Contacts",
+		"full_name": "exochron/Favorite-Contacts",
+		"html_url": "https://github.com/exochron/Favorite-Contacts",
+		"description": " This is an interface addon for World of Warcraft, which adds more buttons to the mailbox to easily access to your favorite contacts",
+		"project-id-map": {
+			"x-curse-project-id": "88756",
+			"x-wago-id": "q96dYPKO"
+		},
+		"updated-date": "2025-06-11T14:36:55Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -16353,6 +19003,97 @@
 		"updated-date": "2025-03-02T14:23:55Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 88516088,
+		"name": "MountJournalEnhanced",
+		"full_name": "exochron/MountJournalEnhanced",
+		"html_url": "https://github.com/exochron/MountJournalEnhanced",
+		"description": "This is an interface addon for World of Warcraft, which extends the ingame mount journal with some cool stuff.",
+		"project-id-map": {
+			"x-curse-project-id": "86372",
+			"x-wago-id": "nQN5m7NB"
+		},
+		"updated-date": "2025-07-05T19:18:44Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 294053443,
+		"name": "MouseoverPortrai",
+		"full_name": "exochron/MouseoverPortrai",
+		"html_url": "https://github.com/exochron/MouseoverPortrai",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "88398",
+			"x-wago-id": "J96Eav6g"
+		},
+		"updated-date": "2025-06-11T14:44:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 907267449,
+		"name": "Scotty",
+		"full_name": "exochron/Scotty",
+		"html_url": "https://github.com/exochron/Scotty",
+		"description": "Scotty is your personal transportation assistant for WoW.",
+		"project-id-map": {
+			"x-curse-project-id": "1166725",
+			"x-wago-id": "kGr0EX6y"
+		},
+		"updated-date": "2025-06-11T14:28:45Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 88440805,
+		"name": "ToyBoxEnhanced",
+		"full_name": "exochron/ToyBoxEnhanced",
+		"html_url": "https://github.com/exochron/ToyBoxEnhanced",
+		"description": "an interface addon for World of Warcraft and its ingame toy box",
+		"project-id-map": {
+			"x-curse-project-id": "87878",
+			"x-wago-id": "pkNMXrGz"
+		},
+		"updated-date": "2025-06-10T21:09:33Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 118263916,
+		"name": "hide-increase-backpack-button",
+		"full_name": "exochron/hide-increase-backpack-button",
+		"html_url": "https://github.com/exochron/hide-increase-backpack-button",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "285782",
+			"x-wago-id": "2jK8V4Ny"
+		},
+		"updated-date": "2025-06-11T14:49:40Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -16446,7 +19187,7 @@
 		"project-id-map": {
 			"x-wago-id": "E6gLaAK1"
 		},
-		"updated-date": "2025-07-02T08:16:53Z",
+		"updated-date": "2025-07-05T21:40:50Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -16556,7 +19297,7 @@
 		"description": "A World of Warcraft addon to show a timer for your flight paths. Tested clients: 5.4.8 (Mists of Pandaria).",
 		"updated-date": "2025-01-15T23:34:30Z",
 		"flavor-list": [
-			"mainline"
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -16859,6 +19600,292 @@
 		"has-release-json": true
 	},
 	{
+		"id": 68486852,
+		"name": "BadBoy",
+		"full_name": "funkydude/BadBoy",
+		"html_url": "https://github.com/funkydude/BadBoy",
+		"description": "A simple spam blocker \u0026 reporter for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "5547",
+			"x-wago-id": "LvNAbo6o",
+			"x-wowi-id": "8736"
+		},
+		"updated-date": "2025-06-26T14:27:55Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71938029,
+		"name": "BadBoy_CCleaner",
+		"full_name": "funkydude/BadBoy_CCleaner",
+		"html_url": "https://github.com/funkydude/BadBoy_CCleaner",
+		"description": "Filter crap from your chat in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "19305",
+			"x-wago-id": "RXKqooNy",
+			"x-wowi-id": "13526"
+		},
+		"updated-date": "2025-06-26T14:03:05Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71261617,
+		"name": "BadBoy_Guilded",
+		"full_name": "funkydude/BadBoy_Guilded",
+		"html_url": "https://github.com/funkydude/BadBoy_Guilded",
+		"description": "Removes guild advertising from public channels in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "24324",
+			"x-wago-id": "WqKQln6x",
+			"x-wowi-id": "16951"
+		},
+		"updated-date": "2025-06-26T14:01:34Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 111296465,
+		"name": "BadBoy_History",
+		"full_name": "funkydude/BadBoy_History",
+		"html_url": "https://github.com/funkydude/BadBoy_History",
+		"description": "Log all chat that's removed by the various BadBoy addons in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "28451",
+			"x-wago-id": "e56n5mN9",
+			"x-wowi-id": "21134"
+		},
+		"updated-date": "2025-06-26T13:59:22Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 73135170,
+		"name": "BadBoy_Ignore",
+		"full_name": "funkydude/BadBoy_Ignore",
+		"html_url": "https://github.com/funkydude/BadBoy_Ignore",
+		"description": "A simple and infinite ignore list to block chat from players in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "103223",
+			"x-wago-id": "xZKxnvNk",
+			"x-wowi-id": "24293"
+		},
+		"updated-date": "2025-06-26T13:59:16Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 71954114,
+		"name": "BadBoy_Levels",
+		"full_name": "funkydude/BadBoy_Levels",
+		"html_url": "https://github.com/funkydude/BadBoy_Levels",
+		"description": "Filter whispers by level in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "18879",
+			"x-wago-id": "lQNlVxKe",
+			"x-wowi-id": "13270"
+		},
+		"updated-date": "2025-06-26T13:56:41Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 65349862,
+		"name": "BasicBuffHide",
+		"full_name": "funkydude/BasicBuffHide",
+		"html_url": "https://github.com/funkydude/BasicBuffHide",
+		"description": "Hide the Blizzard Buff frame in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13502",
+			"x-wago-id": "JZKbL4N1",
+			"x-wowi-id": "21687"
+		},
+		"updated-date": "2025-05-21T14:47:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 65345162,
+		"name": "BasicBuffs",
+		"full_name": "funkydude/BasicBuffs",
+		"html_url": "https://github.com/funkydude/BasicBuffs",
+		"description": "Allows you to move the default buff frame in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13503",
+			"x-wago-id": "Mj6jkxKR",
+			"x-wowi-id": "21939"
+		},
+		"updated-date": "2025-05-21T14:35:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 68293773,
+		"name": "BasicChatMods",
+		"full_name": "funkydude/BasicChatMods",
+		"html_url": "https://github.com/funkydude/BasicChatMods",
+		"description": "Basic Chat Mods for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13504",
+			"x-wago-id": "9rN4PrND",
+			"x-wowi-id": "11290"
+		},
+		"updated-date": "2025-05-02T15:05:15Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66744343,
+		"name": "BasicComboPoints",
+		"full_name": "funkydude/BasicComboPoints",
+		"html_url": "https://github.com/funkydude/BasicComboPoints",
+		"description": "A numerical display of current combo points in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13505",
+			"x-wago-id": "ME6gpRK1",
+			"x-wowi-id": "9105"
+		},
+		"updated-date": "2025-06-17T16:00:59Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 66793284,
+		"name": "BasicMinimap",
+		"full_name": "funkydude/BasicMinimap",
+		"html_url": "https://github.com/funkydude/BasicMinimap",
+		"description": "BasicMinimap is a basic solution to a clean, square minimap for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "13506",
+			"x-wago-id": "5bGoroK0",
+			"x-wowi-id": "9101"
+		},
+		"updated-date": "2025-05-02T00:27:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 90566367,
+		"name": "BugSack",
+		"full_name": "funkydude/BugSack",
+		"html_url": "https://github.com/funkydude/BugSack",
+		"description": "A simple display for collected errors in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "6273",
+			"x-wago-id": "rkGrrgGy",
+			"x-wowi-id": "5995"
+		},
+		"updated-date": "2025-06-20T01:31:41Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 111303818,
+		"name": "ErrorMonster",
+		"full_name": "funkydude/ErrorMonster",
+		"html_url": "https://github.com/funkydude/ErrorMonster",
+		"description": "Redirect character errors, system messages and information messages in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "3367",
+			"x-wago-id": "yQKya5K7",
+			"x-wowi-id": "5949"
+		},
+		"updated-date": "2025-05-02T15:12:12Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 65402713,
 		"name": "LegionInvasionTimer",
 		"full_name": "funkydude/LegionInvasionTimer",
@@ -16872,6 +19899,72 @@
 		"updated-date": "2025-06-17T14:59:21Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 194183095,
+		"name": "MuteSoundFile",
+		"full_name": "funkydude/MuteSoundFile",
+		"html_url": "https://github.com/funkydude/MuteSoundFile",
+		"description": "Mute sound files in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "325542",
+			"x-wago-id": "vEGPne61",
+			"x-wowi-id": "25045"
+		},
+		"updated-date": "2025-05-02T01:01:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 69157836,
+		"name": "SexyMap",
+		"full_name": "funkydude/SexyMap",
+		"html_url": "https://github.com/funkydude/SexyMap",
+		"description": "Spice up your minimap in World of Warcraft with some sexy options.",
+		"project-id-map": {
+			"x-curse-project-id": "15936",
+			"x-wago-id": "e56no0K9",
+			"x-wowi-id": "21538"
+		},
+		"updated-date": "2025-05-02T01:08:05Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 147976415,
+		"name": "SharedMedia_Noto",
+		"full_name": "funkydude/SharedMedia_Noto",
+		"html_url": "https://github.com/funkydude/SharedMedia_Noto",
+		"description": "Add the Noto fonts to SharedMedia addons in World of Warcraft. ",
+		"project-id-map": {
+			"x-curse-project-id": "302642",
+			"x-wago-id": "R4N2rmNL",
+			"x-wowi-id": "24813"
+		},
+		"updated-date": "2025-05-02T01:09:01Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -16892,6 +19985,28 @@
 			"vanilla",
 			"tbc",
 			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 73651203,
+		"name": "TargetPercent",
+		"full_name": "funkydude/TargetPercent",
+		"html_url": "https://github.com/funkydude/TargetPercent",
+		"description": "Adds a health percentage to the Blizzard unit frames in World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "22140",
+			"x-wago-id": "J96E186g",
+			"x-wowi-id": "15903"
+		},
+		"updated-date": "2025-05-02T01:13:22Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -17519,7 +20634,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "809313"
 		},
-		"updated-date": "2025-07-05T05:16:03Z",
+		"updated-date": "2025-07-06T05:16:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -17568,6 +20683,33 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 475790813,
+		"name": "BriefStats",
+		"full_name": "iambz00/BriefStats",
+		"html_url": "https://github.com/iambz00/BriefStats",
+		"description": "Simple WoW addon to check status at a glance",
+		"project-id-map": {
+			"x-curse-project-id": "605574"
+		},
+		"updated-date": "2025-07-03T16:15:18Z",
+		"flavor-list": [
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 65121753,
+		"name": "GearUp",
+		"full_name": "iambz00/GearUp",
+		"html_url": "https://github.com/iambz00/GearUp",
+		"description": "Wow addon. Simple Equipment set manager with auto-swap",
+		"updated-date": "2025-07-03T16:06:09Z",
+		"flavor-list": [
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 225678679,
@@ -17826,6 +20968,23 @@
 		"has-release-json": false
 	},
 	{
+		"id": 620113559,
+		"name": "ElvUI_JiberishUI",
+		"full_name": "jiberishxd/ElvUI_JiberishUI",
+		"html_url": "https://github.com/jiberishxd/ElvUI_JiberishUI",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "843406"
+		},
+		"updated-date": "2025-07-02T02:09:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 907644746,
 		"name": "jChat",
 		"full_name": "jlelz/jChat",
@@ -17898,6 +21057,25 @@
 			"mainline",
 			"vanilla",
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 412559106,
+		"name": "Skinner",
+		"full_name": "jncl/Skinner",
+		"html_url": "https://github.com/jncl/Skinner",
+		"description": "World of Warcraft AddOn which changes the look of the default UI",
+		"project-id-map": {
+			"x-curse-project-id": "14661",
+			"x-wago-id": "aN0YXL6j"
+		},
+		"updated-date": "2025-06-23T15:33:44Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -18100,6 +21278,28 @@
 		"has-release-json": true
 	},
 	{
+		"id": 94401551,
+		"name": "bigdebuffs",
+		"full_name": "jordonwow/bigdebuffs",
+		"html_url": "https://github.com/jordonwow/bigdebuffs",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "82697",
+			"x-wago-id": "WYK98e6L",
+			"x-wowi-id": "26006"
+		},
+		"updated-date": "2025-07-04T15:11:57Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 94401644,
 		"name": "omnibar",
 		"full_name": "jordonwow/omnibar",
@@ -18219,6 +21419,47 @@
 		"has-release-json": true
 	},
 	{
+		"id": 141499509,
+		"name": "MaxDps",
+		"full_name": "kaminaris/MaxDps",
+		"html_url": "https://github.com/kaminaris/MaxDps",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "91970",
+			"x-wago-id": "VBNBWM6x",
+			"x-wowi-id": "24637"
+		},
+		"updated-date": "2025-07-01T04:35:43Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 147022679,
+		"name": "MaxDps-DeathKnight",
+		"full_name": "kaminaris/MaxDps-DeathKnight",
+		"html_url": "https://github.com/kaminaris/MaxDps-DeathKnight",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "258275",
+			"x-wago-id": "QNlqwY6e",
+			"x-wowi-id": "24638"
+		},
+		"updated-date": "2025-06-30T22:44:31Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 149892664,
 		"name": "MaxDps-DemonHunter",
 		"full_name": "kaminaris/MaxDps-DemonHunter",
@@ -18236,6 +21477,26 @@
 		"has-release-json": true
 	},
 	{
+		"id": 142221850,
+		"name": "MaxDps-Druid",
+		"full_name": "kaminaris/MaxDps-Druid",
+		"html_url": "https://github.com/kaminaris/MaxDps-Druid",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "103301",
+			"x-wago-id": "ANz0YDK4",
+			"x-wowi-id": "24641"
+		},
+		"updated-date": "2025-06-28T21:56:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 560106295,
 		"name": "MaxDps-Evoker",
 		"full_name": "kaminaris/MaxDps-Evoker",
@@ -18249,6 +21510,184 @@
 		"updated-date": "2025-06-19T07:35:42Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 141853838,
+		"name": "MaxDps-Hunter",
+		"full_name": "kaminaris/MaxDps-Hunter",
+		"html_url": "https://github.com/kaminaris/MaxDps-Hunter",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "98966",
+			"x-wago-id": "XKq9w5Ky",
+			"x-wowi-id": "24642"
+		},
+		"updated-date": "2025-07-03T01:56:30Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 148030839,
+		"name": "MaxDps-Mage",
+		"full_name": "kaminaris/MaxDps-Mage",
+		"html_url": "https://github.com/kaminaris/MaxDps-Mage",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "99327",
+			"x-wago-id": "nKW1bLNE",
+			"x-wowi-id": "24643"
+		},
+		"updated-date": "2025-07-02T12:19:29Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 142345270,
+		"name": "MaxDps-Monk",
+		"full_name": "kaminaris/MaxDps-Monk",
+		"html_url": "https://github.com/kaminaris/MaxDps-Monk",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "255355",
+			"x-wago-id": "vNAe5ONo",
+			"x-wowi-id": "24647"
+		},
+		"updated-date": "2025-06-22T09:06:03Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 143335543,
+		"name": "MaxDps-Paladin",
+		"full_name": "kaminaris/MaxDps-Paladin",
+		"html_url": "https://github.com/kaminaris/MaxDps-Paladin",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "98895",
+			"x-wago-id": "5NReYJG3",
+			"x-wowi-id": "24646"
+		},
+		"updated-date": "2025-06-26T09:46:53Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 145791894,
+		"name": "MaxDps-Priest",
+		"full_name": "kaminaris/MaxDps-Priest",
+		"html_url": "https://github.com/kaminaris/MaxDps-Priest",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "98744",
+			"x-wago-id": "qGZRbvGd",
+			"x-wowi-id": "24648"
+		},
+		"updated-date": "2025-06-21T05:07:32Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 153964615,
+		"name": "MaxDps-Rogue",
+		"full_name": "kaminaris/MaxDps-Rogue",
+		"html_url": "https://github.com/kaminaris/MaxDps-Rogue",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "256432",
+			"x-wago-id": "2jK8bqNy",
+			"x-wowi-id": "24649"
+		},
+		"updated-date": "2025-06-21T05:07:17Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 144340532,
+		"name": "MaxDps-Shaman",
+		"full_name": "kaminaris/MaxDps-Shaman",
+		"html_url": "https://github.com/kaminaris/MaxDps-Shaman",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "92010",
+			"x-wago-id": "aNevwk62",
+			"x-wowi-id": "24640"
+		},
+		"updated-date": "2025-06-22T07:59:44Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 142083396,
+		"name": "MaxDps-Warlock",
+		"full_name": "kaminaris/MaxDps-Warlock",
+		"html_url": "https://github.com/kaminaris/MaxDps-Warlock",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "91983",
+			"x-wago-id": "qGYM9RGg",
+			"x-wowi-id": "24639"
+		},
+		"updated-date": "2025-06-27T14:47:24Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 142795478,
+		"name": "MaxDps-Warrior",
+		"full_name": "kaminaris/MaxDps-Warrior",
+		"html_url": "https://github.com/kaminaris/MaxDps-Warrior",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "92062",
+			"x-wago-id": "ZQ6anYKW",
+			"x-wowi-id": "24645"
+		},
+		"updated-date": "2025-06-25T12:52:57Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -18448,6 +21887,26 @@
 		"has-release-json": true
 	},
 	{
+		"id": 46021117,
+		"name": "wow-bankstack",
+		"full_name": "kemayo/wow-bankstack",
+		"html_url": "https://github.com/kemayo/wow-bankstack",
+		"description": "World of Warcraft addon to move items around in your inventory, bank, and guild bank",
+		"project-id-map": {
+			"x-curse-project-id": "13494",
+			"x-wago-id": "25NR1EG3",
+			"x-wowi-id": "7761"
+		},
+		"updated-date": "2025-07-02T16:30:29Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 857423243,
 		"name": "wow-delverview",
 		"full_name": "kemayo/wow-delverview",
@@ -18479,6 +21938,42 @@
 		"has-release-json": true
 	},
 	{
+		"id": 46021378,
+		"name": "wow-dropthecheapestthing",
+		"full_name": "kemayo/wow-dropthecheapestthing",
+		"html_url": "https://github.com/kemayo/wow-dropthecheapestthing",
+		"description": "World of Warcraft addon to drop/sell the cheapest thing you're carrying",
+		"project-id-map": {
+			"x-curse-project-id": "17852",
+			"x-wowi-id": "12596"
+		},
+		"updated-date": "2025-07-02T15:58:47Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 394095700,
+		"name": "wow-handyminimaparrow",
+		"full_name": "kemayo/wow-handyminimaparrow",
+		"html_url": "https://github.com/kemayo/wow-handyminimaparrow",
+		"description": "World of Warcraft addon that layers an arrow onto the minimap higher up than anything else",
+		"project-id-map": {
+			"x-curse-project-id": "513744"
+		},
+		"updated-date": "2025-07-02T15:19:48Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 142099456,
 		"name": "wow-handynotes-battleforazerothtreasures",
 		"full_name": "kemayo/wow-handynotes-battleforazerothtreasures",
@@ -18491,6 +21986,42 @@
 		"updated-date": "2025-07-02T15:20:21Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 568245544,
+		"name": "wow-handynotes-burningcrusade",
+		"full_name": "kemayo/wow-handynotes-burningcrusade",
+		"html_url": "https://github.com/kemayo/wow-handynotes-burningcrusade",
+		"description": " World of Warcraft addon to tell you where treasures are in the Burning Crusade (requires HandyNotes) ",
+		"project-id-map": {
+			"x-curse-project-id": "706498",
+			"x-wago-id": "7nGvyjKx"
+		},
+		"updated-date": "2025-07-05T04:20:56Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 46107804,
+		"name": "wow-handynotes-directions",
+		"full_name": "kemayo/wow-handynotes-directions",
+		"html_url": "https://github.com/kemayo/wow-handynotes-directions",
+		"description": "World of Warcraft addon to remember directions you're given (requires HandyNotes)",
+		"project-id-map": {
+			"x-curse-project-id": "14155"
+		},
+		"updated-date": "2025-07-02T15:42:04Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -18553,6 +22084,23 @@
 		"updated-date": "2024-08-07T00:21:33Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 211623250,
+		"name": "wow-handynotes-lostandfound",
+		"full_name": "kemayo/wow-handynotes-lostandfound",
+		"html_url": "https://github.com/kemayo/wow-handynotes-lostandfound",
+		"description": "World of Warcraft addon to help you find the Lost and Found treasures in Pandaria",
+		"project-id-map": {
+			"x-curse-project-id": "45644",
+			"x-wago-id": "RBKp1vGE"
+		},
+		"updated-date": "2025-07-02T15:50:55Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -18635,6 +22183,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 538756436,
+		"name": "wow-handynotes-wrath",
+		"full_name": "kemayo/wow-handynotes-wrath",
+		"html_url": "https://github.com/kemayo/wow-handynotes-wrath",
+		"description": "World of Warcraft addon to tell you where things are in Northrend (requires HandyNotes)",
+		"project-id-map": {
+			"x-curse-project-id": "678106",
+			"x-wago-id": "xZKxlvKk"
+		},
+		"updated-date": "2025-07-02T15:57:26Z",
+		"flavor-list": [
+			"mainline",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 46102372,
 		"name": "wow-haveidonethat",
 		"full_name": "kemayo/wow-haveidonethat",
@@ -18661,6 +22227,22 @@
 		"updated-date": "2024-07-29T21:28:35Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 145272906,
+		"name": "wow-minimaprangeextender",
+		"full_name": "kemayo/wow-minimaprangeextender",
+		"html_url": "https://github.com/kemayo/wow-minimaprangeextender",
+		"description": "World of Warcraft addon to show minimap vignette icons sooner",
+		"project-id-map": {
+			"x-curse-project-id": "301149"
+		},
+		"updated-date": "2025-07-02T16:23:32Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -18712,6 +22294,40 @@
 		"has-release-json": true
 	},
 	{
+		"id": 57183282,
+		"name": "wow-questpointer",
+		"full_name": "kemayo/wow-questpointer",
+		"html_url": "https://github.com/kemayo/wow-questpointer",
+		"description": "World of Warcraft addon to point at quests",
+		"project-id-map": {
+			"x-curse-project-id": "22106",
+			"x-wago-id": "0mNwYLKo"
+		},
+		"updated-date": "2025-07-05T22:39:28Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 145278493,
+		"name": "wow-questschanged",
+		"full_name": "kemayo/wow-questschanged",
+		"html_url": "https://github.com/kemayo/wow-questschanged",
+		"description": "World of Warcraft addon for developers to log quest completion changes",
+		"project-id-map": {
+			"x-curse-project-id": "86759",
+			"x-wago-id": "2jK8746y"
+		},
+		"updated-date": "2025-07-05T21:38:58Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 840119026,
 		"name": "wow-routerecorder",
 		"full_name": "kemayo/wow-routerecorder",
@@ -18723,6 +22339,45 @@
 		"updated-date": "2025-03-01T17:57:24Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 30380660,
+		"name": "wow-silverdragon",
+		"full_name": "kemayo/wow-silverdragon",
+		"html_url": "https://github.com/kemayo/wow-silverdragon",
+		"description": "World of Warcraft addon to find rare mobs",
+		"project-id-map": {
+			"x-curse-project-id": "14647",
+			"x-wago-id": "LvNALQGo",
+			"x-wowi-id": "6606"
+		},
+		"updated-date": "2025-07-05T04:18:43Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 145285367,
+		"name": "wow-simpleitemlevel",
+		"full_name": "kemayo/wow-simpleitemlevel",
+		"html_url": "https://github.com/kemayo/wow-simpleitemlevel",
+		"description": "World of Warcraft addon to show item levels",
+		"project-id-map": {
+			"x-curse-project-id": "287692",
+			"x-wago-id": "WYK9Da6L"
+		},
+		"updated-date": "2025-07-05T03:44:58Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -19059,6 +22714,25 @@
 		"flavor-list": [
 			"vanilla",
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 201581278,
+		"name": "KethoInstanceTimer",
+		"full_name": "ketho-wow/KethoInstanceTimer",
+		"html_url": "https://github.com/ketho-wow/KethoInstanceTimer",
+		"description": "Shows the time taken for completing a Dungeon",
+		"project-id-map": {
+			"x-curse-project-id": "30054",
+			"x-wowi-id": "19910"
+		},
+		"updated-date": "2025-06-17T16:51:26Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -19802,6 +23476,63 @@
 		"has-release-json": true
 	},
 	{
+		"id": 403385921,
+		"name": "ElvUI_FCT",
+		"full_name": "kodewdle/ElvUI_FCT",
+		"html_url": "https://github.com/kodewdle/ElvUI_FCT",
+		"description": "Floating Combat Text plugin for ElvUI.",
+		"updated-date": "2025-07-01T23:25:02Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 559447157,
+		"name": "MasqueBlizzBars",
+		"full_name": "kstange/MasqueBlizzBars",
+		"html_url": "https://github.com/kstange/MasqueBlizzBars",
+		"description": "This addon enables Masque to skin the built-in WoW action bars",
+		"project-id-map": {
+			"x-curse-project-id": "694481",
+			"x-wago-id": "e56nWDK9",
+			"x-wowi-id": "26502"
+		},
+		"updated-date": "2025-07-02T05:50:26Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 577990886,
+		"name": "MasqueBlizzInv",
+		"full_name": "kstange/MasqueBlizzInv",
+		"html_url": "https://github.com/kstange/MasqueBlizzInv",
+		"description": "This addon enables Masque to skin the built-in WoW inventory UI",
+		"project-id-map": {
+			"x-curse-project-id": "736923",
+			"x-wago-id": "baNDxoNo",
+			"x-wowi-id": "26503"
+		},
+		"updated-date": "2025-07-02T05:50:52Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 615963444,
 		"name": "MerchantPlus",
 		"full_name": "kstange/MerchantPlus",
@@ -20461,6 +24192,24 @@
 		"has-release-json": false
 	},
 	{
+		"id": 804657224,
+		"name": "Wago-Creator-UI",
+		"full_name": "methodgg/Wago-Creator-UI",
+		"html_url": "https://github.com/methodgg/Wago-Creator-UI",
+		"description": "",
+		"project-id-map": {
+			"x-wago-id": "O67jdaN3"
+		},
+		"updated-date": "2025-06-20T14:54:49Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 518176821,
 		"name": "CharacterTooltip",
 		"full_name": "mhco/CharacterTooltip",
@@ -20493,6 +24242,139 @@
 		"updated-date": "2022-09-02T12:22:54Z",
 		"flavor-list": [
 			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 364423976,
+		"name": "CastCursor",
+		"full_name": "michaelnpsp/CastCursor",
+		"html_url": "https://github.com/michaelnpsp/CastCursor",
+		"description": "Displays circular cast bars around the cursor",
+		"project-id-map": {
+			"x-curse-project-id": "305957",
+			"x-wago-id": "9rN4Er6D"
+		},
+		"updated-date": "2025-07-02T16:44:26Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 409731887,
+		"name": "GatherMate2GasClouds",
+		"full_name": "michaelnpsp/GatherMate2GasClouds",
+		"html_url": "https://github.com/michaelnpsp/GatherMate2GasClouds",
+		"description": "Gas Clouds Data for World of Warcraft Burning Crusade GatherMate2 Addon",
+		"project-id-map": {
+			"x-curse-project-id": "530769",
+			"x-wago-id": "7x61nEK1"
+		},
+		"updated-date": "2025-07-02T16:37:16Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 318657346,
+		"name": "Grid2",
+		"full_name": "michaelnpsp/Grid2",
+		"html_url": "https://github.com/michaelnpsp/Grid2",
+		"description": "Grid2 is a party/raid unit frame addon for World of Warcraft.",
+		"project-id-map": {
+			"x-curse-project-id": "15226",
+			"x-wago-id": "vEGPyeN1"
+		},
+		"updated-date": "2025-07-05T20:28:30Z",
+		"flavor-list": [
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 218623163,
+		"name": "KiwiFarm",
+		"full_name": "michaelnpsp/KiwiFarm",
+		"html_url": "https://github.com/michaelnpsp/KiwiFarm",
+		"description": "Resets \u0026 gold tracking addon for World of Warcraft Classic",
+		"project-id-map": {
+			"x-curse-project-id": "350500",
+			"x-wago-id": "0mNw9BKo"
+		},
+		"updated-date": "2025-07-02T16:31:59Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 215817211,
+		"name": "KiwiMBC",
+		"full_name": "michaelnpsp/KiwiMBC",
+		"html_url": "https://github.com/michaelnpsp/KiwiMBC",
+		"description": "Simple minimap buttons manager for World of Warcraft Classic",
+		"project-id-map": {
+			"x-curse-project-id": "521325",
+			"x-wago-id": "RqGYylGg"
+		},
+		"updated-date": "2025-07-02T16:47:39Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 318382458,
+		"name": "KiwiPlates",
+		"full_name": "michaelnpsp/KiwiPlates",
+		"html_url": "https://github.com/michaelnpsp/KiwiPlates",
+		"description": "Nameplates Addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "95612",
+			"x-wago-id": "RaN0xANj"
+		},
+		"updated-date": "2025-07-02T16:57:50Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 728937267,
+		"name": "KiwiPlatesProfiles",
+		"full_name": "michaelnpsp/KiwiPlatesProfiles",
+		"html_url": "https://github.com/michaelnpsp/KiwiPlatesProfiles",
+		"description": "Additional Profiles for KiwiPlates addon.",
+		"project-id-map": {
+			"x-curse-project-id": "947825",
+			"x-wago-id": "L6JD2yGv"
+		},
+		"updated-date": "2025-07-02T16:58:38Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -21246,6 +25128,24 @@
 		"has-release-json": true
 	},
 	{
+		"id": 868142625,
+		"name": "Atlas",
+		"full_name": "nanderson11/Atlas",
+		"html_url": "https://github.com/nanderson11/Atlas",
+		"description": "Updated fork of Atlas, a World of Warcraft addon",
+		"project-id-map": {
+			"x-curse-project-id": "1115649"
+		},
+		"updated-date": "2025-07-03T05:01:54Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 912273174,
 		"name": "AtlasLootEnhanced",
 		"full_name": "nanderson11/AtlasLootEnhanced",
@@ -21322,6 +25222,25 @@
 			"tbc",
 			"wrath",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 78258400,
+		"name": "PitBull4",
+		"full_name": "nebularg/PitBull4",
+		"html_url": "https://github.com/nebularg/PitBull4",
+		"description": "Woof. Arf. Yip.",
+		"project-id-map": {
+			"x-curse-project-id": "7522",
+			"x-wago-id": "LvNAmONo",
+			"x-wowi-id": "20021"
+		},
+		"updated-date": "2025-06-19T01:35:55Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -21635,6 +25554,26 @@
 		"has-release-json": false
 	},
 	{
+		"id": 168688284,
+		"name": "AutoPotion",
+		"full_name": "ollidiemaus/AutoPotion",
+		"html_url": "https://github.com/ollidiemaus/AutoPotion",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "312940",
+			"x-wago-id": "yQKybBG7"
+		},
+		"updated-date": "2025-07-02T07:45:08Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 552714363,
 		"name": "BetterRaidInfoFrame",
 		"full_name": "orionshock/BetterRaidInfoFrame",
@@ -21760,6 +25699,26 @@
 			"vanilla",
 			"tbc",
 			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 388670,
+		"name": "Molinari",
+		"full_name": "p3lim-wow/Molinari",
+		"html_url": "https://github.com/p3lim-wow/Molinari",
+		"description": "One-click Milling, Prospecting, Disenchanting and Lockpicking!",
+		"project-id-map": {
+			"x-curse-project-id": "20338",
+			"x-wago-id": "WqKQQEKx",
+			"x-wowi-id": "13188"
+		},
+		"updated-date": "2025-06-23T15:49:09Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -21958,6 +25917,130 @@
 		"has-release-json": true
 	},
 	{
+		"id": 322880519,
+		"name": "Gargul",
+		"full_name": "papa-smurf/Gargul",
+		"html_url": "https://github.com/papa-smurf/Gargul",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "418746",
+			"x-wago-id": "Xb6XmOKp"
+		},
+		"updated-date": "2025-06-24T21:26:19Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 303714251,
+		"name": "LibDogTag-3.0",
+		"full_name": "parnic/LibDogTag-3.0",
+		"html_url": "https://github.com/parnic/LibDogTag-3.0",
+		"description": "WoW addon library",
+		"project-id-map": {
+			"x-curse-project-id": "14280"
+		},
+		"updated-date": "2025-07-03T00:49:39Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 303714683,
+		"name": "LibDogTag-Unit-3.0",
+		"full_name": "parnic/LibDogTag-Unit-3.0",
+		"html_url": "https://github.com/parnic/LibDogTag-Unit-3.0",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "14282"
+		},
+		"updated-date": "2025-07-03T00:51:15Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 303715258,
+		"name": "RepairBroker",
+		"full_name": "parnic/RepairBroker",
+		"html_url": "https://github.com/parnic/RepairBroker",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "16139"
+		},
+		"updated-date": "2025-07-03T00:52:16Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 80773135,
+		"name": "breakables",
+		"full_name": "parnic/breakables",
+		"html_url": "https://github.com/parnic/breakables",
+		"description": "Breakables addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "16629",
+			"x-wago-id": "rkGrlA6y",
+			"x-wowi-id": "17929"
+		},
+		"updated-date": "2025-07-03T00:54:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 80773059,
+		"name": "ice-hud",
+		"full_name": "parnic/ice-hud",
+		"html_url": "https://github.com/parnic/ice-hud",
+		"description": "IceHUD addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "5394",
+			"x-wago-id": "5bGolJN0",
+			"x-wowi-id": "8149"
+		},
+		"updated-date": "2025-07-03T19:08:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 737424019,
 		"name": "titan-reputation",
 		"full_name": "paulbuechner/titan-reputation",
@@ -22031,7 +26114,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "1198986"
 		},
-		"updated-date": "2025-07-05T12:10:07Z",
+		"updated-date": "2025-07-06T12:10:26Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -22456,7 +26539,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "937058"
 		},
-		"updated-date": "2025-07-05T05:32:11Z",
+		"updated-date": "2025-07-06T05:33:20Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -22601,6 +26684,27 @@
 		"has-release-json": true
 	},
 	{
+		"id": 335009123,
+		"name": "RatingBuster",
+		"full_name": "raethkcj/RatingBuster",
+		"html_url": "https://github.com/raethkcj/RatingBuster",
+		"description": "An item comparison tool for WoW Classic.",
+		"project-id-map": {
+			"x-curse-project-id": "837687",
+			"x-wago-id": "RaN0eM6j",
+			"x-wowi-id": "26235"
+		},
+		"updated-date": "2025-07-03T01:06:50Z",
+		"flavor-list": [
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 623962130,
 		"name": "wow-quest-reader",
 		"full_name": "rainu/wow-quest-reader",
@@ -22684,6 +26788,28 @@
 		"updated-date": "2025-05-13T18:49:49Z",
 		"flavor-list": [
 			"vanilla"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 796188,
+		"name": "Aptechka",
+		"full_name": "rgd87/Aptechka",
+		"html_url": "https://github.com/rgd87/Aptechka",
+		"description": "WoW Addon - Raid Frames",
+		"project-id-map": {
+			"x-curse-project-id": "280790",
+			"x-wago-id": "5bGoY160",
+			"x-wowi-id": "14339"
+		},
+		"updated-date": "2025-07-02T03:17:04Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -22795,6 +26921,49 @@
 			"vanilla",
 			"tbc",
 			"wrath"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 882105,
+		"name": "NugComboBar",
+		"full_name": "rgd87/NugComboBar",
+		"html_url": "https://github.com/rgd87/NugComboBar",
+		"description": "WoW Addon - Class resources",
+		"project-id-map": {
+			"x-curse-project-id": "2538",
+			"x-wago-id": "9rN4yy6D",
+			"x-wowi-id": "6308"
+		},
+		"updated-date": "2025-07-05T00:51:38Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 941682,
+		"name": "NugEnergy",
+		"full_name": "rgd87/NugEnergy",
+		"html_url": "https://github.com/rgd87/NugEnergy",
+		"description": "WoW Addon - Energy monitor",
+		"project-id-map": {
+			"x-curse-project-id": "43975",
+			"x-wowi-id": "9099"
+		},
+		"updated-date": "2025-07-04T04:03:27Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -22986,6 +27155,67 @@
 			"cata"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 1006115004,
+		"name": "NaowhUI_Data",
+		"full_name": "rootkit1337tv/NaowhUI_Data",
+		"html_url": "https://github.com/rootkit1337tv/NaowhUI_Data",
+		"description": "",
+		"updated-date": "2025-07-03T16:52:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 990710625,
+		"name": "NaowhUI_Data",
+		"full_name": "rootkit1337tv/NaowhUI_Data",
+		"html_url": "https://github.com/rootkit1337tv/NaowhUI_Data",
+		"description": "",
+		"updated-date": "2025-07-03T16:52:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 1010714372,
+		"name": "NaowhUI_Data",
+		"full_name": "rootkit1337tv/NaowhUI_Data",
+		"html_url": "https://github.com/rootkit1337tv/NaowhUI_Data",
+		"description": "",
+		"updated-date": "2025-07-03T16:52:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 539035457,
+		"name": "KeyBindProfiles",
+		"full_name": "rscheele/KeyBindProfiles",
+		"html_url": "https://github.com/rscheele/KeyBindProfiles",
+		"description": "Key Bind Profiles World of Warcraft addon",
+		"project-id-map": {
+			"x-curse-project-id": "681984",
+			"x-wago-id": "9rN4RjKD",
+			"x-wowi-id": "26417"
+		},
+		"updated-date": "2025-07-02T16:49:18Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 192831440,
@@ -23236,6 +27466,44 @@
 		"has-release-json": true
 	},
 	{
+		"id": 30387608,
+		"name": "ConsolePort",
+		"full_name": "seblindfors/ConsolePort",
+		"html_url": "https://github.com/seblindfors/ConsolePort",
+		"description": "ConsolePort - Game Controller Addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "91376",
+			"x-wago-id": "LvNAYjNo",
+			"x-wowi-id": "23536"
+		},
+		"updated-date": "2025-07-06T01:16:31Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 79417795,
+		"name": "Immersion",
+		"full_name": "seblindfors/Immersion",
+		"html_url": "https://github.com/seblindfors/Immersion",
+		"description": "Immersive questing addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "257550",
+			"x-wago-id": "RaN0MP6j",
+			"x-wowi-id": "24714"
+		},
+		"updated-date": "2025-07-02T19:44:08Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 752829531,
 		"name": "LibSettings",
 		"full_name": "seblindfors/LibSettings",
@@ -23272,7 +27540,8 @@
 		"updated-date": "2025-07-02T08:35:44Z",
 		"flavor-list": [
 			"mainline",
-			"vanilla"
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -23284,7 +27553,7 @@
 		"description": "Makes mouse pointer remain on screen while mouselook/steering.",
 		"updated-date": "2025-07-02T08:40:19Z",
 		"flavor-list": [
-			"mainline"
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -23297,7 +27566,8 @@
 		"updated-date": "2025-07-03T05:06:10Z",
 		"flavor-list": [
 			"mainline",
-			"vanilla"
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -23360,9 +27630,9 @@
 		"full_name": "sfmict/MountsJournal_Classic",
 		"html_url": "https://github.com/sfmict/MountsJournal_Classic",
 		"description": "Addon makes it possible to sort mounts on waterfowl, flying, ground and allows to use in suitable conditions (random mount summoning). ",
-		"updated-date": "2025-07-04T22:47:30Z",
+		"updated-date": "2025-07-05T16:44:32Z",
 		"flavor-list": [
-			"mainline"
+			"mists"
 		],
 		"has-release-json": false
 	},
@@ -23375,7 +27645,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "918022"
 		},
-		"updated-date": "2025-07-03T01:51:48Z",
+		"updated-date": "2025-07-06T02:00:06Z",
 		"flavor-list": [
 			"mainline"
 		],
@@ -23418,6 +27688,24 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 1866682,
+		"name": "idTip",
+		"full_name": "silverwind/idTip",
+		"html_url": "https://github.com/silverwind/idTip",
+		"description": "WoW Addon: Adds IDs to the ingame tooltips",
+		"project-id-map": {
+			"x-curse-project-id": "24541",
+			"x-wowi-id": "17033"
+		},
+		"updated-date": "2025-07-01T18:50:18Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 86609882,
@@ -23502,6 +27790,23 @@
 		"flavor-list": [
 			"vanilla",
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 795572864,
+		"name": "AtlasLootClassic_MoP",
+		"full_name": "snowflame0/AtlasLootClassic_MoP",
+		"html_url": "https://github.com/snowflame0/AtlasLootClassic_MoP",
+		"description": "AtlasLootClassic MoP",
+		"project-id-map": {
+			"x-curse-project-id": "1024670",
+			"x-wago-id": "ANz0LwK4",
+			"x-wowi-id": "26745"
+		},
+		"updated-date": "2025-07-03T16:46:00Z",
+		"flavor-list": [
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -23845,6 +28150,41 @@
 		"has-release-json": true
 	},
 	{
+		"id": 387064872,
+		"name": "AddonProfiles",
+		"full_name": "syndenbock/AddonProfiles",
+		"html_url": "https://github.com/syndenbock/AddonProfiles",
+		"description": "World of Warcraft addon that allows easy saving and restoring of lists of enabled addons.",
+		"project-id-map": {
+			"x-curse-project-id": "504844"
+		},
+		"updated-date": "2025-07-02T14:20:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 218417567,
+		"name": "Farmer",
+		"full_name": "syndenbock/Farmer",
+		"html_url": "https://github.com/syndenbock/Farmer",
+		"description": "World of Warcraft addon that makes farming fun",
+		"project-id-map": {
+			"x-curse-project-id": "282961",
+			"x-wago-id": "J96EDgNg"
+		},
+		"updated-date": "2025-07-02T14:22:10Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 224240745,
 		"name": "Handynotes_Pandaria",
 		"full_name": "syndenbock/Handynotes_Pandaria",
@@ -23871,6 +28211,24 @@
 		"updated-date": "2025-07-02T14:42:32Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 338408849,
+		"name": "MinimapButtonButton",
+		"full_name": "syndenbock/MinimapButtonButton",
+		"html_url": "https://github.com/syndenbock/MinimapButtonButton",
+		"description": "A World of Warcraft addon for collecting minimap buttons",
+		"project-id-map": {
+			"x-curse-project-id": "446096",
+			"x-wago-id": "pkNM4QGz"
+		},
+		"updated-date": "2025-07-02T14:14:22Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -24422,6 +28780,41 @@
 		"has-release-json": false
 	},
 	{
+		"id": 884562,
+		"name": "Dominos",
+		"full_name": "tullamods/Dominos",
+		"html_url": "https://github.com/tullamods/Dominos",
+		"description": "A main actionbar replacement",
+		"project-id-map": {
+			"x-curse-project-id": "699643",
+			"x-wago-id": "WL6JYRNv",
+			"x-wowi-id": "26455"
+		},
+		"updated-date": "2025-07-03T23:08:14Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 708657,
+		"name": "OmniCC",
+		"full_name": "tullamods/OmniCC",
+		"html_url": "https://github.com/tullamods/OmniCC",
+		"description": "Cooldown count for everything",
+		"updated-date": "2025-06-17T22:59:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 797082,
 		"name": "tullaCC",
 		"full_name": "tullamods/tullaCC",
@@ -24446,6 +28839,21 @@
 			"mainline",
 			"vanilla",
 			"cata"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 491432,
+		"name": "tullaRange",
+		"full_name": "tullamods/tullaRange",
+		"html_url": "https://github.com/tullamods/tullaRange",
+		"description": "Colors actionbuttons when out of range",
+		"updated-date": "2025-06-19T14:20:08Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -24629,6 +29037,26 @@
 		"has-release-json": false
 	},
 	{
+		"id": 25476248,
+		"name": "GladiusEx",
+		"full_name": "vendethiel/GladiusEx",
+		"html_url": "https://github.com/vendethiel/GladiusEx",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "45973",
+			"x-wago-id": "2jK8q5Gy"
+		},
+		"updated-date": "2025-07-02T09:26:54Z",
+		"flavor-list": [
+			"mainline",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 548421246,
 		"name": "BPGP-Loot-System",
 		"full_name": "veyh/BPGP-Loot-System",
@@ -24705,6 +29133,26 @@
 		"updated-date": "2022-02-08T15:34:45Z",
 		"flavor-list": [
 			"tbc"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 363957717,
+		"name": "WagoAnalytics",
+		"full_name": "wagoio/WagoAnalytics",
+		"html_url": "https://github.com/wagoio/WagoAnalytics",
+		"description": "",
+		"project-id-map": {
+			"x-wago-id": "qv63o6bQ"
+		},
+		"updated-date": "2025-04-28T03:59:35Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -24912,6 +29360,48 @@
 		"has-release-json": true
 	},
 	{
+		"id": 857550286,
+		"name": "DisableBlizzardCastBar",
+		"full_name": "will0w7/DisableBlizzardCastBar",
+		"html_url": "https://github.com/will0w7/DisableBlizzardCastBar",
+		"description": "Just that, disables blizzard default cast bar",
+		"project-id-map": {
+			"x-curse-project-id": "1102964",
+			"x-wago-id": "qKQxQ16x"
+		},
+		"updated-date": "2025-06-11T20:19:25Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 314784268,
+		"name": "MoneyLooter",
+		"full_name": "will0w7/MoneyLooter",
+		"html_url": "https://github.com/will0w7/MoneyLooter",
+		"description": "MoneyLooter - Loot and Gold Farm Tracker Addon for World of Warcraft",
+		"project-id-map": {
+			"x-curse-project-id": "1098459",
+			"x-wago-id": "qKQxDo6x"
+		},
+		"updated-date": "2025-06-10T13:57:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 829537358,
 		"name": "reaper",
 		"full_name": "williamgrosset/reaper",
@@ -25011,6 +29501,21 @@
 		"has-release-json": true
 	},
 	{
+		"id": 715734487,
+		"name": "WeakAurasPatched",
+		"full_name": "wind-addons/WeakAurasPatched",
+		"html_url": "https://github.com/wind-addons/WeakAurasPatched",
+		"description": "✨ A patched version of WeakAuras (WoW Addon)",
+		"updated-date": "2025-06-18T17:51:58Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 596861413,
 		"name": "WindChatFilter",
 		"full_name": "wind-addons/WindChatFilter",
@@ -25052,6 +29557,21 @@
 		"updated-date": "2025-07-03T21:22:01Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 987126647,
+		"name": "Memento",
+		"full_name": "wow-addon-dev/Memento",
+		"html_url": "https://github.com/wow-addon-dev/Memento",
+		"description": "This is a World of Warcraft addon that automatically takes screenshots of meaningful gameplay events and personal milestones.",
+		"updated-date": "2025-07-01T21:28:23Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -25098,6 +29618,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 191448345,
+		"name": "LibRPMedia",
+		"full_name": "wow-rp-addons/LibRPMedia",
+		"html_url": "https://github.com/wow-rp-addons/LibRPMedia",
+		"description": "LibRPMedia provides a common database of in-game resources for use by World of Warcraft RP addons.",
+		"project-id-map": {
+			"x-curse-project-id": "324111",
+			"x-wago-id": "qv6357Gb",
+			"x-wowi-id": "25019"
+		},
+		"updated-date": "2025-07-01T10:57:33Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 138131141,
 		"name": "XRP",
 		"full_name": "wow-rp-addons/XRP",
@@ -25135,6 +29674,26 @@
 		"updated-date": "2021-05-19T04:14:41Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 752923500,
+		"name": "exporter",
+		"full_name": "wowsims/exporter",
+		"html_url": "https://github.com/wowsims/exporter",
+		"description": "WoWSims Exporter addon repo",
+		"project-id-map": {
+			"x-curse-project-id": "590920",
+			"x-wago-id": "as3Dfg57",
+			"x-wowi-id": "26823"
+		},
+		"updated-date": "2025-07-03T17:14:58Z",
+		"flavor-list": [
+			"vanilla",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -25246,6 +29805,25 @@
 		"has-release-json": true
 	},
 	{
+		"id": 47797267,
+		"name": "LiteMount",
+		"full_name": "xod-wow/LiteMount",
+		"html_url": "https://github.com/xod-wow/LiteMount",
+		"description": "World of Warcraft addon LiteMount",
+		"project-id-map": {
+			"x-curse-project-id": "30359",
+			"x-wago-id": "b6mbPXKP",
+			"x-wowi-id": "26329"
+		},
+		"updated-date": "2025-06-19T03:06:20Z",
+		"flavor-list": [
+			"mainline",
+			"cata",
+			"mists"
+		],
+		"has-release-json": true
+	},
+	{
 		"id": 200544101,
 		"name": "NoLootFrame",
 		"full_name": "xod-wow/NoLootFrame",
@@ -25299,6 +29877,27 @@
 		"updated-date": "2024-08-12T23:20:05Z",
 		"flavor-list": [
 			"mainline"
+		],
+		"has-release-json": true
+	},
+	{
+		"id": 386942589,
+		"name": "WoWQuestTTS",
+		"full_name": "z0fa/WoWQuestTTS",
+		"html_url": "https://github.com/z0fa/WoWQuestTTS",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "504658",
+			"x-wago-id": "7nGv2eGx"
+		},
+		"updated-date": "2025-07-04T19:30:05Z",
+		"flavor-list": [
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath",
+			"cata",
+			"mists"
 		],
 		"has-release-json": true
 	},
@@ -25436,6 +30035,18 @@
 			"mainline"
 		],
 		"has-release-json": false
+	},
+	{
+		"id": 730249453,
+		"name": "Moldy",
+		"full_name": "zhirsch/Moldy",
+		"html_url": "https://github.com/zhirsch/Moldy",
+		"description": "",
+		"updated-date": "2025-07-03T07:44:13Z",
+		"flavor-list": [
+			"mists"
+		],
+		"has-release-json": true
 	},
 	{
 		"id": 739861580,

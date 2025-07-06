@@ -217,11 +217,12 @@ const (
 	TBCFlavor      Flavor = "tbc"
 	WrathFlavor    Flavor = "wrath"
 	CataFlavor     Flavor = "cata"
+	MistsFlavor    Flavor = "mists"
 )
 
 // all known flavours.
 var FLAVOR_LIST = []Flavor{
-	MainlineFlavor, VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor,
+	MainlineFlavor, VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor, MistsFlavor,
 }
 
 // mapping of alias => canonical flavour
@@ -239,6 +240,7 @@ var FLAVOR_WEIGHTS = map[Flavor]int{
 	TBCFlavor:      2,
 	WrathFlavor:    3,
 	CataFlavor:     4,
+	MistsFlavor:    5,
 }
 
 var INTERFACE_RANGES = map[int]Flavor{
@@ -246,7 +248,7 @@ var INTERFACE_RANGES = map[int]Flavor{
 	2_00_00:  TBCFlavor,
 	3_00_00:  WrathFlavor,
 	4_00_00:  CataFlavor,
-	5_00_00:  MainlineFlavor,
+	5_00_00:  MistsFlavor,
 	6_00_00:  MainlineFlavor,
 	7_00_00:  MainlineFlavor,
 	8_00_00:  MainlineFlavor,

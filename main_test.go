@@ -133,7 +133,7 @@ func Test_interface_number_to_flavor(t *testing.T) {
 		"30403":  WrathFlavor,
 		"40000":  CataFlavor,
 		"40400":  CataFlavor,
-		"50000":  MainlineFlavor,
+		"50000":  MistsFlavor,
 		"100206": MainlineFlavor,
 		"110000": MainlineFlavor,
 		//"120000": "",
@@ -156,12 +156,13 @@ func Test_interface_value_to_flavor_list(t *testing.T) {
 		"20000":  {TBCFlavor},
 		"30000":  {WrathFlavor},
 		"40000":  {CataFlavor},
-		"50000":  {MainlineFlavor},
+		"50000":  {MistsFlavor},
 		"110000": {MainlineFlavor},
 
-		"10000, 20000":               {VanillaFlavor, TBCFlavor},
-		"10000, 20000, 30000":        {VanillaFlavor, TBCFlavor, WrathFlavor},
-		"10000, 20000, 30000, 40000": {VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor},
+		"10000, 20000":                      {VanillaFlavor, TBCFlavor},
+		"10000, 20000, 30000":               {VanillaFlavor, TBCFlavor, WrathFlavor},
+		"10000, 20000, 30000, 40000":        {VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor},
+		"10000, 20000, 30000, 40000, 50000": {VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor, MistsFlavor},
 
 		// from the wiki
 		"100206, 40400, 11502": {MainlineFlavor, CataFlavor, VanillaFlavor},
