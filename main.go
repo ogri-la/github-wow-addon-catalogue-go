@@ -154,6 +154,7 @@ const (
 	FindDuplicatesSubCommand     SubCommand = "find-duplicates"
 	DumpReleaseDotJsonSubCommand SubCommand = "dump-release-dot-json"
 	CacheStatsSubCommand         SubCommand = "cache-stats"
+	CachePruneSubCommand         SubCommand = "cache-prune"
 )
 
 var KNOWN_SUBCOMMANDS = []SubCommand{
@@ -161,6 +162,7 @@ var KNOWN_SUBCOMMANDS = []SubCommand{
 	FindDuplicatesSubCommand,
 	DumpReleaseDotJsonSubCommand,
 	CacheStatsSubCommand,
+	CachePruneSubCommand,
 }
 
 type FindDuplicatesCommand struct {
@@ -176,11 +178,17 @@ type ScrapeCommand struct {
 	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
 }
 
+type CachePruneCommand struct {
+	Delete     bool   // actually delete files (default is dry-run)
+	DeleteFlag string // raw flag value for validation
+}
+
 type Flags struct {
 	SubCommand            SubCommand // cli subcommand, e.g. 'scrape'
 	LogLevel              slog.Level
 	ScrapeCommand         ScrapeCommand         // cli args for the 'scrape' command
 	FindDuplicatesCommand FindDuplicatesCommand // cli args for the 'find-duplicates' command
+	CachePruneCommand     CachePruneCommand     // cli args for the 'cache-prune' command
 }
 
 // global state, see `STATE`
@@ -1764,7 +1772,7 @@ func configure_validator() *jsonschema.Schema {
 }
 
 func usage() string {
-	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates|cache-stats>"
+	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates|cache-stats|cache-prune>"
 }
 
 func read_flags(arg_list []string) Flags {
@@ -1804,6 +1812,12 @@ func read_flags(arg_list []string) Flags {
 
 	//
 
+	cache_prune_cmd := CachePruneCommand{}
+	cache_prune_flagset := flag.NewFlagSet("cache-prune", flag.ExitOnError)
+	cache_prune_flagset.StringVar(&cache_prune_cmd.DeleteFlag, "delete", "", "actually delete files when set to 'true' (allowed values: true, false; default is dry-run)")
+
+	//
+
 	// first arg is always the name of the running app.
 	// second arg should be the subcommand but could be -h or -V
 	var subcommand string
@@ -1826,6 +1840,10 @@ func read_flags(arg_list []string) Flags {
 
 	case CacheStatsSubCommand:
 		flagset = cache_stats_flagset
+		flagset.AddFlagSet(defaults)
+
+	case CachePruneSubCommand:
+		flagset = cache_prune_flagset
 		flagset.AddFlagSet(defaults)
 
 	default:
@@ -1877,6 +1895,18 @@ func read_flags(arg_list []string) Flags {
 		scrape_cmd.FilterPatternRegexp = pattern
 	}
 
+	// Validate cache-prune --delete flag
+	if subcommand == CachePruneSubCommand && cache_prune_cmd.DeleteFlag != "" {
+		switch cache_prune_cmd.DeleteFlag {
+		case "true":
+			cache_prune_cmd.Delete = true
+		case "false":
+			cache_prune_cmd.Delete = false
+		default:
+			die(true, fmt.Sprintf("--delete flag requires explicit value 'true' or 'false', got: %s", cache_prune_cmd.DeleteFlag))
+		}
+	}
+
 	log_level_label_map := map[string]slog.Level{
 		"debug": slog.LevelDebug,
 		"info":  slog.LevelInfo,
@@ -1892,6 +1922,7 @@ func read_flags(arg_list []string) Flags {
 	app_flags.SubCommand = subcommand
 	app_flags.ScrapeCommand = scrape_cmd
 	app_flags.FindDuplicatesCommand = find_dupes_cmd
+	app_flags.CachePruneCommand = cache_prune_cmd
 
 	return app_flags
 }
@@ -2335,6 +2366,125 @@ func format_duration(d time.Duration) string {
 
 // ---
 
+// cache_prune removes expired cache files according to their type-specific expiration settings.
+// Cap -1 (never expire) to 365 days maximum. Delete 0-byte files regardless of expiry.
+func cache_prune() {
+	cache_entries := cache_entry_list()
+	if len(cache_entries) == 0 {
+		fmt.Println("Cache is empty")
+		return
+	}
+
+	dry_run := !STATE.Flags.CachePruneCommand.Delete
+	max_age_days := 365 // cap "never expire" to 365 days
+
+	if dry_run {
+		fmt.Println("DRY RUN - files that would be deleted:")
+		fmt.Println()
+	} else {
+		fmt.Println("Deleting expired cache files...")
+		fmt.Println()
+	}
+
+	removed_count := 0
+	removed_size := int64(0)
+	kept_count := 0
+
+	for _, cache_file := range cache_entries {
+		cache_file_path := cache_path(cache_file)
+		info, err := os.Stat(cache_file_path)
+		if err != nil {
+			slog.Warn("failed to stat cache file", "cache-file", cache_file, "error", err)
+			continue
+		}
+
+		size := info.Size()
+		age := STATE.RunStart.Sub(info.ModTime())
+
+		// Always remove 0-byte files
+		if size == 0 {
+			if dry_run {
+				fmt.Printf("  %s (0 bytes, %s old) - zero-byte file\n", cache_file, format_duration(age))
+			} else {
+				err := remove_cache_entry(cache_file)
+				if err != nil {
+					slog.Warn("failed to remove cache file", "cache-file", cache_file, "error", err)
+				} else {
+					slog.Debug("removed zero-byte cache file", "cache-file", cache_file)
+				}
+			}
+			removed_count++
+			removed_size += size
+			continue
+		}
+
+		// Determine cache type and expiration
+		var cache_type string
+		var expiry_hours int
+
+		bits := strings.Split(filepath.Base(cache_file_path), "-")
+		suffix := ""
+		if len(bits) == 2 {
+			suffix = bits[1]
+		}
+
+		switch suffix {
+		case "search":
+			cache_type = "search"
+			expiry_hours = CACHE_DURATION_SEARCH
+		case "zip":
+			cache_type = "zip"
+			expiry_hours = CACHE_DURATION_ZIP
+		case "release.json":
+			cache_type = "release.json"
+			expiry_hours = CACHE_DURATION_RELEASE_JSON
+		default:
+			cache_type = "other"
+			expiry_hours = CACHE_DURATION
+		}
+
+		// Cap "never expire" (-1) to max_age_days
+		if expiry_hours == -1 {
+			expiry_hours = max_age_days * 24
+		}
+
+		// Check if expired
+		age_hours := int(math.Floor(age.Hours()))
+		expired := age_hours >= expiry_hours
+
+		if expired {
+			if dry_run {
+				fmt.Printf("  %s (%s, %s old, type: %s, expires: %dh)\n",
+					cache_file, format_bytes(size), format_duration(age), cache_type, expiry_hours)
+			} else {
+				err := remove_cache_entry(cache_file)
+				if err != nil {
+					slog.Warn("failed to remove cache file", "cache-file", cache_file, "error", err)
+				} else {
+					slog.Debug("removed expired cache file", "cache-file", cache_file, "type", cache_type, "age", age)
+				}
+			}
+			removed_count++
+			removed_size += size
+		} else {
+			kept_count++
+		}
+	}
+
+	fmt.Println()
+	if dry_run {
+		fmt.Printf("Would remove: %d files (%s)\n", removed_count, format_bytes(removed_size))
+		fmt.Printf("Would keep:   %d files\n", kept_count)
+		fmt.Println()
+		fmt.Println("Run with --delete to actually delete these files")
+	} else {
+		fmt.Printf("Removed: %d files (%s)\n", removed_count, format_bytes(removed_size))
+		fmt.Printf("Kept:    %d files\n", kept_count)
+	}
+}
+
+// ---
+
 func init_state() *State {
 	state := &State{
 		RunStart: time.Now().UTC(),
@@ -2382,5 +2532,8 @@ func main() {
 
 	case CacheStatsSubCommand:
 		cache_stats()
+
+	case CachePruneSubCommand:
+		cache_prune()
 	}
 }
