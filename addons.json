@@ -941,6 +941,9 @@
 		"full_name": "AlexFolland/PrintTracer",
 		"html_url": "https://github.com/AlexFolland/PrintTracer",
 		"description": "World Of Warcraft addon for tracing the source of print calls",
+		"project-id-map": {
+			"x-curse-project-id": "272786"
+		},
 		"updated-date": "2021-07-05T05:19:11Z",
 		"flavor-list": [
 			"mainline",
@@ -7786,7 +7789,10 @@
 		"description": "Play WoW on 3 monitors. Enlarge you FoV! 🍆",
 		"updated-date": "2023-09-09T15:23:25Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"tbc",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -11452,9 +11458,9 @@
 		"html_url": "https://github.com/RealUI/RealUI",
 		"description": "A minimalistic UI for World of Warcraft designed to be functional, yet also efficient and elegant.",
 		"project-id-map": {
-			"x-curse-project-id": "13501",
-			"x-wago-id": "v63oVn6b",
-			"x-wowi-id": "11190"
+			"x-curse-project-id": "13592",
+			"x-wago-id": "kRNLgpGo",
+			"x-wowi-id": "12097"
 		},
 		"updated-date": "2025-10-22T23:51:51Z",
 		"flavor-list": [
@@ -12337,7 +12343,9 @@
 		"description": "Lua array functions",
 		"updated-date": "2023-04-09T13:16:03Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12349,7 +12357,9 @@
 		"description": "A library of functions for working with booleans that can help other add-on creators to save some work.",
 		"updated-date": "2023-04-09T16:10:08Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12361,7 +12371,9 @@
 		"description": "A library with functionality for creating functions with cached return values.",
 		"updated-date": "2023-04-09T16:40:57Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12373,7 +12385,9 @@
 		"description": "A library with functionality for conditionally running code.",
 		"updated-date": "2023-04-09T17:29:04Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12385,7 +12399,9 @@
 		"description": "A library for working with coroutines.",
 		"updated-date": "2023-04-09T18:58:32Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12397,7 +12413,9 @@
 		"description": "A library for working with events.",
 		"updated-date": "2023-04-09T19:23:58Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12409,7 +12427,9 @@
 		"description": "A library for working with floats.",
 		"updated-date": "2023-04-09T19:37:34Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12421,7 +12441,9 @@
 		"description": "A library for functional programming.",
 		"updated-date": "2023-04-09T19:53:22Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12433,7 +12455,9 @@
 		"description": "Lua mathematics functions",
 		"updated-date": "2023-04-10T16:54:06Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12445,7 +12469,9 @@
 		"description": "A library of functions for working with objects.",
 		"updated-date": "2023-04-10T17:25:36Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12457,7 +12483,9 @@
 		"description": "A library for working with resolvables. Resolvables are similar to promises or futures.",
 		"updated-date": "2023-04-10T22:30:17Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12469,7 +12497,9 @@
 		"description": "A library for scheduling.",
 		"updated-date": "2023-04-10T22:35:15Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12481,7 +12511,9 @@
 		"description": "A library for serialization.",
 		"updated-date": "2023-04-10T22:52:28Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12493,7 +12525,9 @@
 		"description": "A library for working with sets.",
 		"updated-date": "2023-04-10T23:17:28Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12505,7 +12539,9 @@
 		"description": "A library for working with stoppables.",
 		"updated-date": "2023-04-10T23:33:08Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12517,7 +12553,9 @@
 		"description": "A library for working with strings.",
 		"updated-date": "2023-04-10T23:43:29Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -12529,7 +12567,9 @@
 		"description": "A library for helping with yielding in long-running processes.",
 		"updated-date": "2023-04-10T23:53:58Z",
 		"flavor-list": [
-			"mainline"
+			"mainline",
+			"vanilla",
+			"wrath"
 		],
 		"has-release-json": false
 	},
@@ -24653,8 +24693,8 @@
 		"html_url": "https://github.com/medi8tor/Addons",
 		"description": "",
 		"project-id-map": {
-			"x-curse-project-id": "410191",
-			"x-wago-id": "QKywanN7"
+			"x-curse-project-id": "271528",
+			"x-wago-id": "96E71aGg"
 		},
 		"updated-date": "2025-11-03T18:32:45Z",
 		"flavor-list": [

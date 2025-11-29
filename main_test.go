@@ -1,11 +1,15 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
+	"sync"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_parse_toc_filename(t *testing.T) {
@@ -322,5 +326,146 @@ func Test_cache_stats_age_calculation(t *testing.T) {
 		// The float64 calculation should be positive and reasonable
 		assert.True(t, avgFloat64Duration > 0, "Float64-based calculation should be positive")
 		assert.True(t, avgFloat64Duration < 365*24*time.Hour, "Average should be less than a year")
+	}
+}
+
+// Test acquiring and releasing a lock
+func Test_lock_file(t *testing.T) {
+	tempDir := t.TempDir()
+	testFile := filepath.Join(tempDir, "test_lock")
+
+	fh, err := os.Create(testFile)
+	require.NoError(t, err)
+	defer fh.Close()
+
+	err = lock_file(fh)
+	assert.NoError(t, err, "should be able to acquire lock")
+
+	err = unlock_file(fh)
+	assert.NoError(t, err, "should be able to release lock")
+}
+
+// Test that file locking prevents concurrent writes from corrupting data
+func Test_file_locking_concurrent_writes(t *testing.T) {
+
+	tempDir := t.TempDir()
+	testFile := filepath.Join(tempDir, "concurrent_test")
+
+	var wg sync.WaitGroup
+	numGoroutines := 10
+	writeOrder := make([]int, 0, numGoroutines)
+	var orderMutex sync.Mutex
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			// Each goroutine tries to open and write to the file
+			fh, err := os.OpenFile(testFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+			require.NoError(t, err)
+			defer fh.Close()
+
+			// Acquire exclusive lock - this should serialize access
+			err = lock_file(fh)
+			require.NoError(t, err)
+			defer unlock_file(fh)
+
+			// Record the order in which locks were acquired
+			orderMutex.Lock()
+			writeOrder = append(writeOrder, id)
+			orderMutex.Unlock()
+
+			// Simulate some work while holding the lock
+			time.Sleep(10 * time.Millisecond)
+
+			// Write data
+			_, err = fh.Write([]byte{byte(id)})
+			require.NoError(t, err)
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify all goroutines completed
+	assert.Equal(t, numGoroutines, len(writeOrder), "all goroutines should have acquired the lock")
+
+	// Read the file and verify the data
+	data, err := os.ReadFile(testFile)
+	require.NoError(t, err)
+	assert.Equal(t, numGoroutines, len(data), "file should contain data from all goroutines")
+}
+
+func Test_write_zip_cache_entry_with_locking(t *testing.T) {
+	// Setup: initialize STATE with a temp directory
+	tempDir := t.TempDir()
+	originalState := STATE
+	STATE = &State{CWD: tempDir}
+	defer func() { STATE = originalState }()
+
+	// Create the cache directory
+	err := os.MkdirAll(cache_dir(), 0755)
+	require.NoError(t, err)
+
+	// Test data
+	cacheKey := "test_zip_cache"
+	zipContents := map[string][]byte{
+		"file1.txt": []byte("content1"),
+		"file2.txt": []byte("content2"),
+	}
+
+	// Write to cache
+	err = write_zip_cache_entry(cacheKey, zipContents)
+	assert.NoError(t, err, "should be able to write zip cache entry")
+
+	// Verify the file was created
+	cachePath := cache_path(cacheKey)
+	_, err = os.Stat(cachePath)
+	assert.NoError(t, err, "cache file should exist")
+
+	// Read back and verify
+	readContents, err := read_zip_cache_entry(cacheKey, func(s string) bool { return true })
+	assert.NoError(t, err, "should be able to read zip cache entry")
+	assert.Equal(t, zipContents, readContents, "read contents should match written contents")
+}
+
+func Test_write_zip_cache_entry_concurrent(t *testing.T) {
+	// Setup: initialize STATE with a temp directory
+	tempDir := t.TempDir()
+	originalState := STATE
+	STATE = &State{CWD: tempDir}
+	defer func() { STATE = originalState }()
+
+	// Create the cache directory
+	err := os.MkdirAll(cache_dir(), 0755)
+	require.NoError(t, err)
+
+	// Test concurrent writes to different cache keys
+	var wg sync.WaitGroup
+	numGoroutines := 5
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			cacheKey := "concurrent_zip_test_" + string(rune('a'+id))
+			zipContents := map[string][]byte{
+				"file.txt": []byte{byte(id)},
+			}
+
+			err := write_zip_cache_entry(cacheKey, zipContents)
+			assert.NoError(t, err)
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify all cache files were created correctly
+	for i := 0; i < numGoroutines; i++ {
+		cacheKey := "concurrent_zip_test_" + string(rune('a'+i))
+		cachePath := cache_path(cacheKey)
+		_, err := os.Stat(cachePath)
+		assert.NoError(t, err, "cache file %d should exist", i)
 	}
 }

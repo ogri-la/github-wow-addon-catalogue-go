@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
+	"syscall"
 
 	"fmt"
 	"io"
@@ -466,6 +467,17 @@ func cache_path(cache_key string) string {
 	return filepath.Join(cache_dir(), cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 }
 
+// acquires an exclusive lock on the given file descriptor.
+// blocks until the lock is acquired.
+func lock_file(file *os.File) error {
+	return syscall.Flock(int(file.Fd()), syscall.LOCK_EX)
+}
+
+// releases the lock on the given file descriptor.
+func unlock_file(file *os.File) error {
+	return syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
+}
+
 // returns a list of cache keys found in the cache directory.
 // each key in list can be read with `read_cache_key`.
 func cache_entry_list() []string {
@@ -558,7 +570,26 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 		return err
 	}
 
-	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
+	// Create file and acquire exclusive lock
+	cache_file_path := cache_path(zip_cache_key)
+	fh, err := os.Create(cache_file_path)
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+
+	err = lock_file(fh)
+	if err != nil {
+		return fmt.Errorf("failed to lock cache file %s: %w", cache_file_path, err)
+	}
+	defer unlock_file(fh)
+
+	_, err = fh.Write(json_data)
+	if err != nil {
+		return fmt.Errorf("failed to write to cache file %s: %w", cache_file_path, err)
+	}
+
+	return nil
 }
 
 // deletes a cache entry from the cache directory using the given `cache_key`.
@@ -679,6 +710,13 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		return resp, nil
 	}
 	defer fh.Close()
+
+	err = lock_file(fh)
+	if err != nil {
+		slog.Warn("failed to lock cache file for writing", "cache-path", cache_path, "error", err)
+		return resp, nil
+	}
+	defer unlock_file(fh)
 
 	dumped_bytes, err := httputil.DumpResponse(resp, true)
 	if err != nil {
