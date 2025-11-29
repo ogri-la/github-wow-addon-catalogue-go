@@ -15,6 +15,7 @@ if test ! "$cmd"; then
     echo "  clean               deletes all generated files"
     echo "  deps.update         update project dependencies"
     echo "  test                run project tests"
+    echo "  update              update addon catalogue from sources"
     exit 1
 fi
 
@@ -94,6 +95,20 @@ elif test "$cmd" = "deps.update"; then
 
 elif test "$cmd" = "test"; then
     go test
+    exit 0
+
+elif test "$cmd" = "update"; then
+    mkdir -p output
+    curl -s https://raw.githubusercontent.com/ogri-la/github-wow-addon-catalogue/develop/addons.csv > previous-addons.csv
+    curl -s https://raw.githubusercontent.com/layday/github-wow-addon-catalogue/main/addons.csv > layday-addons.csv
+    ADDONS_CATALOGUE_GITHUB_TOKEN=$(cat github-token) go run . \
+        scrape \
+        --in imports.json \
+        --in previous-addons.csv \
+        --in layday-addons.csv \
+        --out addons.csv \
+        --out addons.json \
+        $rest
     exit 0
 
 # ...

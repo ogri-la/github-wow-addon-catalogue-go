@@ -255,6 +255,7 @@ var INTERFACE_RANGES = map[int]Flavor{
 	9_00_00:  MainlineFlavor,
 	10_00_00: MainlineFlavor,
 	11_00_00: MainlineFlavor,
+	12_00_00: MainlineFlavor,
 }
 
 // returns a single list of unique, sorted, `Flavor` strings.

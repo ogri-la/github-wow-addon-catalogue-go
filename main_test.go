@@ -136,7 +136,8 @@ func Test_interface_number_to_flavor(t *testing.T) {
 		"50000":  MistsFlavor,
 		"100206": MainlineFlavor,
 		"110000": MainlineFlavor,
-		//"120000": "",
+		"120000": MainlineFlavor,
+		// "130000": ...
 
 		// whitespace is ignored
 
@@ -180,7 +181,7 @@ func Test_interface_value_to_flavor_list(t *testing.T) {
 func Test_interface_value_to_flavor_list__bad_cases(t *testing.T) {
 	cases := []string{
 		"",         // empty
-		"120000",   // outside known range
+		"990000",   // outside known range
 		"100206, ", // trailing comma
 	}
 	for _, given := range cases {
