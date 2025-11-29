@@ -153,12 +153,14 @@ const (
 	ScrapeSubCommand             SubCommand = "scrape"
 	FindDuplicatesSubCommand     SubCommand = "find-duplicates"
 	DumpReleaseDotJsonSubCommand SubCommand = "dump-release-dot-json"
+	CacheStatsSubCommand         SubCommand = "cache-stats"
 )
 
 var KNOWN_SUBCOMMANDS = []SubCommand{
 	ScrapeSubCommand,
 	FindDuplicatesSubCommand,
 	DumpReleaseDotJsonSubCommand,
+	CacheStatsSubCommand,
 }
 
 type FindDuplicatesCommand struct {
@@ -1762,7 +1764,7 @@ func configure_validator() *jsonschema.Schema {
 }
 
 func usage() string {
-	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates>"
+	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates|cache-stats>"
 }
 
 func read_flags(arg_list []string) Flags {
@@ -1798,6 +1800,10 @@ func read_flags(arg_list []string) Flags {
 
 	//
 
+	cache_stats_flagset := flag.NewFlagSet("cache-stats", flag.ExitOnError)
+
+	//
+
 	// first arg is always the name of the running app.
 	// second arg should be the subcommand but could be -h or -V
 	var subcommand string
@@ -1816,6 +1822,10 @@ func read_flags(arg_list []string) Flags {
 
 	case FindDuplicatesSubCommand:
 		flagset = dupes_flagset
+		flagset.AddFlagSet(defaults)
+
+	case CacheStatsSubCommand:
+		flagset = cache_stats_flagset
 		flagset.AddFlagSet(defaults)
 
 	default:
@@ -2118,6 +2128,213 @@ func find_duplicates() {
 
 // ---
 
+type CacheFileStats struct {
+	Count     int
+	TotalSize int64
+	MinSize   int64
+	MaxSize   int64
+	AvgSize   int64
+	P95Size   int64
+	MinAge    time.Duration
+	MaxAge    time.Duration
+	AvgAge    time.Duration
+	Sizes     []int64         // for percentile calculation
+	Ages      []time.Duration // for percentile calculation
+}
+
+func calculate_percentile(sorted_values []int64, percentile float64) int64 {
+	if len(sorted_values) == 0 {
+		return 0
+	}
+	index := int(float64(len(sorted_values)) * percentile)
+	if index >= len(sorted_values) {
+		index = len(sorted_values) - 1
+	}
+	return sorted_values[index]
+}
+
+func cache_stats() {
+	cache_entries := cache_entry_list()
+	if len(cache_entries) == 0 {
+		fmt.Println("Cache is empty")
+		return
+	}
+
+	// categorize cache entries by type
+	stats_map := map[string]*CacheFileStats{
+		"search":       {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"zip":          {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"release.json": {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"other":        {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+	}
+
+	overall_stats := &CacheFileStats{
+		MinSize: math.MaxInt64,
+		MinAge:  time.Duration(math.MaxInt64),
+		Sizes:   []int64{},
+		Ages:    []time.Duration{},
+	}
+
+	for _, cache_file := range cache_entries {
+		cache_file_path := cache_path(cache_file)
+		info, err := os.Stat(cache_file_path)
+		if err != nil {
+			slog.Warn("failed to stat cache file", "cache-file", cache_file, "error", err)
+			continue
+		}
+
+		// determine cache type
+		var cache_type string
+		if strings.HasSuffix(cache_file, "-search") {
+			cache_type = "search"
+		} else if strings.HasSuffix(cache_file, "-zip") {
+			cache_type = "zip"
+		} else if strings.HasSuffix(cache_file, "-release.json") {
+			cache_type = "release.json"
+		} else {
+			cache_type = "other"
+		}
+
+		size := info.Size()
+		age := STATE.RunStart.Sub(info.ModTime())
+
+		// update type-specific stats
+		stats := stats_map[cache_type]
+		stats.Count++
+		stats.TotalSize += size
+		if size < stats.MinSize {
+			stats.MinSize = size
+		}
+		if size > stats.MaxSize {
+			stats.MaxSize = size
+		}
+		stats.Sizes = append(stats.Sizes, size)
+		stats.Ages = append(stats.Ages, age)
+
+		// running average: avg_new = avg_old + (value - avg_old) / n
+		stats.AvgAge = stats.AvgAge + time.Duration((age.Nanoseconds()-stats.AvgAge.Nanoseconds())/int64(stats.Count))
+
+		if age < stats.MinAge {
+			stats.MinAge = age
+		}
+		if age > stats.MaxAge {
+			stats.MaxAge = age
+		}
+
+		// update overall stats
+		overall_stats.Count++
+		overall_stats.TotalSize += size
+		if size < overall_stats.MinSize {
+			overall_stats.MinSize = size
+		}
+		if size > overall_stats.MaxSize {
+			overall_stats.MaxSize = size
+		}
+		overall_stats.Sizes = append(overall_stats.Sizes, size)
+		overall_stats.Ages = append(overall_stats.Ages, age)
+
+		// running average: avg_new = avg_old + (value - avg_old) / n
+		overall_stats.AvgAge = overall_stats.AvgAge + time.Duration((age.Nanoseconds()-overall_stats.AvgAge.Nanoseconds())/int64(overall_stats.Count))
+
+		if age < overall_stats.MinAge {
+			overall_stats.MinAge = age
+		}
+		if age > overall_stats.MaxAge {
+			overall_stats.MaxAge = age
+		}
+	}
+
+	// calculate size averages and percentiles (age average computed incrementally)
+	for _, stats := range stats_map {
+		if stats.Count > 0 {
+			stats.AvgSize = stats.TotalSize / int64(stats.Count)
+
+			// sort for percentile calculation
+			slices.Sort(stats.Sizes)
+			stats.P95Size = calculate_percentile(stats.Sizes, 0.95)
+		} else {
+			stats.MinSize = 0
+		}
+	}
+
+	if overall_stats.Count > 0 {
+		overall_stats.AvgSize = overall_stats.TotalSize / int64(overall_stats.Count)
+
+		slices.Sort(overall_stats.Sizes)
+		overall_stats.P95Size = calculate_percentile(overall_stats.Sizes, 0.95)
+	}
+
+	// print results
+	fmt.Println("Cache Statistics")
+	fmt.Println("================")
+	fmt.Println()
+
+	// overall stats
+	fmt.Println("Overall:")
+	fmt.Printf("  Files:       %d\n", overall_stats.Count)
+	fmt.Printf("  Total Size:  %s (%d bytes)\n", format_bytes(overall_stats.TotalSize), overall_stats.TotalSize)
+	fmt.Printf("  Min Size:    %s\n", format_bytes(overall_stats.MinSize))
+	fmt.Printf("  Max Size:    %s\n", format_bytes(overall_stats.MaxSize))
+	fmt.Printf("  Avg Size:    %s\n", format_bytes(overall_stats.AvgSize))
+	fmt.Printf("  95th pct:    %s\n", format_bytes(overall_stats.P95Size))
+	fmt.Printf("  Min Age:     %s\n", format_duration(overall_stats.MinAge))
+	fmt.Printf("  Max Age:     %s\n", format_duration(overall_stats.MaxAge))
+	fmt.Printf("  Avg Age:     %s\n", format_duration(overall_stats.AvgAge))
+	fmt.Println()
+
+	// type-specific stats
+	type_order := []string{"search", "release.json", "zip", "other"}
+	for _, cache_type := range type_order {
+		stats := stats_map[cache_type]
+		if stats.Count == 0 {
+			continue
+		}
+
+		fmt.Printf("%s:\n", title_case(cache_type))
+		fmt.Printf("  Files:       %d\n", stats.Count)
+		fmt.Printf("  Total Size:  %s (%d bytes)\n", format_bytes(stats.TotalSize), stats.TotalSize)
+		fmt.Printf("  Min Size:    %s\n", format_bytes(stats.MinSize))
+		fmt.Printf("  Max Size:    %s\n", format_bytes(stats.MaxSize))
+		fmt.Printf("  Avg Size:    %s\n", format_bytes(stats.AvgSize))
+		fmt.Printf("  95th pct:    %s\n", format_bytes(stats.P95Size))
+		fmt.Printf("  Min Age:     %s\n", format_duration(stats.MinAge))
+		fmt.Printf("  Max Age:     %s\n", format_duration(stats.MaxAge))
+		fmt.Printf("  Avg Age:     %s\n", format_duration(stats.AvgAge))
+		fmt.Println()
+	}
+}
+
+func format_bytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
+func format_duration(d time.Duration) string {
+	if d < 0 {
+		return fmt.Sprintf("-%s", format_duration(-d))
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.0fs", d.Seconds())
+	}
+	if d < time.Hour {
+		return fmt.Sprintf("%.1fm", d.Minutes())
+	}
+	if d < 24*time.Hour {
+		return fmt.Sprintf("%.1fh", d.Hours())
+	}
+	return fmt.Sprintf("%.1fd", d.Hours()/24)
+}
+
+// ---
+
 func init_state() *State {
 	state := &State{
 		RunStart: time.Now().UTC(),
@@ -2162,5 +2379,8 @@ func main() {
 
 	case FindDuplicatesSubCommand:
 		find_duplicates()
+
+	case CacheStatsSubCommand:
+		cache_stats()
 	}
 }

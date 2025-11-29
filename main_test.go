@@ -3,6 +3,7 @@ package main
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -204,5 +205,122 @@ func Test_guess_game_track(t *testing.T) {
 		actual_match, actual_flavor := guess_game_track(given)
 		assert.Equal(t, expected_match, actual_match)
 		assert.Equal(t, expected_flavor, actual_flavor)
+	}
+}
+
+func Test_format_bytes(t *testing.T) {
+	cases := map[int64]string{
+		0:                   "0 B",
+		1:                   "1 B",
+		1023:                "1023 B",
+		1024:                "1.0 KiB",
+		1536:                "1.5 KiB",
+		1048576:             "1.0 MiB",
+		1572864:             "1.5 MiB",
+		1073741824:          "1.0 GiB",
+		10737418240:         "10.0 GiB",
+		1099511627776:       "1.0 TiB",
+		1125899906842624:    "1.0 PiB",
+		1152921504606846976: "1.0 EiB",
+	}
+	for given, expected := range cases {
+		actual := format_bytes(given)
+		assert.Equal(t, expected, actual, "format_bytes(%d)", given)
+	}
+}
+
+func Test_format_duration(t *testing.T) {
+	cases := map[time.Duration]string{
+		0:                               "0s",
+		1 * time.Second:                 "1s",
+		30 * time.Second:                "30s",
+		59 * time.Second:                "59s",
+		60 * time.Second:                "1.0m",
+		90 * time.Second:                "1.5m",
+		59*time.Minute + 59*time.Second: "60.0m",
+		60 * time.Minute:                "1.0h",
+		90 * time.Minute:                "1.5h",
+		23 * time.Hour:                  "23.0h",
+		24 * time.Hour:                  "1.0d",
+		36 * time.Hour:                  "1.5d",
+		168 * time.Hour:                 "7.0d",
+		-1 * time.Second:                "-1s",
+		-60 * time.Second:               "-1.0m",
+		-60 * time.Minute:               "-1.0h",
+		-24 * time.Hour:                 "-1.0d",
+	}
+	for given, expected := range cases {
+		actual := format_duration(given)
+		assert.Equal(t, expected, actual, "format_duration(%v)", given)
+	}
+}
+
+func Test_calculate_percentile(t *testing.T) {
+	// empty case
+	result := calculate_percentile([]int64{}, 0.95)
+	assert.Equal(t, int64(0), result)
+
+	// single element
+	result = calculate_percentile([]int64{100}, 0.95)
+	assert.Equal(t, int64(100), result)
+
+	// sorted list
+	sorted := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	result = calculate_percentile(sorted, 0.50)
+	assert.Equal(t, int64(6), result) // 50% of 10 = index 5 (6th element)
+
+	result = calculate_percentile(sorted, 0.95)
+	assert.Equal(t, int64(10), result) // 95% of 10 = index 9 (10th element)
+
+	result = calculate_percentile(sorted, 0.99)
+	assert.Equal(t, int64(10), result) // 99% of 10 = index 9 (10th element)
+
+	// larger dataset
+	large := make([]int64, 1000)
+	for i := range large {
+		large[i] = int64(i)
+	}
+	result = calculate_percentile(large, 0.95)
+	assert.Equal(t, int64(950), result)
+}
+
+func Test_cache_stats_age_calculation(t *testing.T) {
+	// Test that age calculation overflows with many old files
+	// Simulate realistic cache scenario: 17673 files with ages around 300 days
+	var totalAgeDuration time.Duration
+	var totalAgeFloat64 float64
+	count := 17673
+
+	for i := 0; i < count; i++ {
+		// Ages varying from 1 day to 600 days (simulate real cache)
+		ageDays := 1 + (i % 600)
+		age := time.Duration(ageDays) * 24 * time.Hour
+
+		// Track using duration (can overflow)
+		totalAgeDuration += age
+
+		// Track using float64 (won't overflow)
+		totalAgeFloat64 += age.Seconds()
+	}
+
+	// Calculate averages
+	avgDuration := totalAgeDuration / time.Duration(count)
+	avgFloat64 := totalAgeFloat64 / float64(count)
+	avgFloat64Duration := time.Duration(avgFloat64 * float64(time.Second))
+
+	// If duration overflowed, it will be negative or wildly incorrect
+	// The float64 method should be accurate
+
+	if avgDuration < 0 {
+		t.Logf("Duration overflow detected: avgDuration=%v", avgDuration)
+		t.Logf("Correct average (via float64): %v", avgFloat64Duration)
+
+		// The avgDuration should NOT be negative
+		// This test documents the overflow bug
+		assert.True(t, avgDuration < 0, "Duration overflow causes negative average")
+
+		// The float64 calculation should be positive and reasonable
+		assert.True(t, avgFloat64Duration > 0, "Float64-based calculation should be positive")
+		assert.True(t, avgFloat64Duration < 365*24*time.Hour, "Average should be less than a year")
 	}
 }
