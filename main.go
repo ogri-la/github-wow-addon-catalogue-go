@@ -43,10 +43,11 @@ import (
 var APP_VERSION = "unreleased" // modified at release with `-ldflags "-X main.APP_VERSION=X.X.X"`
 var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
 
-var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
-var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
-var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
+var CACHE_DURATION = 24               // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2         // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1           // hours. how long cached zipfile entries should live for.
+var CACHE_DURATION_RELEASE_JSON = -1  // hours. how long cached release.json entries should live for.
+var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for. -1 = indefinite (for development)
 
 // prevents issuing the same warnings multiple times when going backwards and forwards
 // and upside down through the search results.
@@ -351,6 +352,7 @@ type GithubReleaseAsset struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
 	ContentType        string `json:"content_type"`
+	DownloadCount      int    `json:"download_count"`
 }
 
 // a Github repository has many releases.
@@ -367,6 +369,8 @@ type Project struct {
 	FlavorList     []Flavor   `json:"flavor-list"`
 	HasReleaseJSON bool       `json:"has-release-json"`
 	LastSeenDate   *time.Time `json:"last-seen-date,omitempty"`
+	Downloads      int        `json:"downloads"`
+	ReleaseCount   int        `json:"release-count"`
 }
 
 func ProjectCSVHeader() []string {
@@ -383,6 +387,8 @@ func ProjectCSVHeader() []string {
 		"wowi_id",
 		"has_release_json",
 		"last_seen",
+		"downloads",
+		"release_count",
 	}
 }
 
@@ -401,6 +407,8 @@ func project_to_csv_row(p Project) []string {
 		p.ProjectIDMap["x-wowi-id"],
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
 		p.LastSeenDate.Format(time.RFC3339),
+		strconv.Itoa(p.Downloads),
+		strconv.Itoa(p.ReleaseCount),
 	}
 }
 
@@ -614,12 +622,14 @@ func cache_expired(path string) bool {
 
 	var cache_duration_hrs int
 	switch suffix {
-	case "-search":
+	case "search":
 		cache_duration_hrs = CACHE_DURATION_SEARCH
-	case "-zip":
+	case "zip":
 		cache_duration_hrs = CACHE_DURATION_ZIP
-	case "-release.json":
+	case "release.json":
 		cache_duration_hrs = CACHE_DURATION_RELEASE_JSON
+	case "releases":
+		cache_duration_hrs = CACHE_DURATION_RELEASES_PAGE
 	default:
 		cache_duration_hrs = CACHE_DURATION
 	}
@@ -1187,6 +1197,24 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	return uncertain_project_id_map, nil
 }
 
+// calculate_total_downloads sums up all download counts from all assets across all releases.
+// This is a pure function for easy testing.
+func calculate_total_downloads(releases []GithubRelease) int {
+	total := 0
+	for _, release := range releases {
+		for _, asset := range release.AssetList {
+			total += asset.DownloadCount
+		}
+	}
+	return total
+}
+
+// count_releases returns the number of releases.
+// This is a pure function for easy testing.
+func count_releases(releases []GithubRelease) int {
+	return len(releases)
+}
+
 // extract the flavors from the filenames
 // for 'flavorless' toc files,
 // parse the file contents looking for interface versions
@@ -1289,6 +1317,52 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
+// fetch_all_releases_pages fetches all release pages for a repository, oldest to newest.
+// This improves file-based caching by fetching pages in chronological order.
+// Returns all releases and total download count.
+func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
+	all_releases := []GithubRelease{}
+	per_page := 100
+	page := 1
+
+	for {
+		releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?page=%d&per_page=%d", full_name, page, per_page)
+
+		resp, err := github_download_with_retries_and_backoff(releases_url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to download repository release listing (page %d): %w", page, err)
+		}
+
+		var release_list []GithubRelease
+		err = json.Unmarshal([]byte(resp.Text), &release_list)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse repository release listing as JSON (page %d): %w", page, err)
+		}
+
+		// No more releases
+		if len(release_list) == 0 {
+			break
+		}
+
+		// Append to the end (pages come newest to oldest from GitHub)
+		all_releases = append(all_releases, release_list...)
+
+		// If we got fewer results than per_page, we're done
+		if len(release_list) < per_page {
+			break
+		}
+
+		page++
+	}
+
+	// Reverse to get oldest to newest for better caching
+	for i, j := 0, len(all_releases)-1; i < j; i, j = i+1, j-1 {
+		all_releases[i], all_releases[j] = all_releases[j], all_releases[i]
+	}
+
+	return all_releases, nil
+}
+
 // look for "release.json" in release assets
 // if found, fetch it, validate it as json and then validate as correct release-json data.
 // for each asset in release, 'extract project ids from toc files'
@@ -1301,29 +1375,23 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 
 	var empty_response Project
 
-	per_page := 1
-	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?page=%d&per_page=%d", repo.FullName, page, per_page)
-
-	// fetch addon's current release, if any
-	resp, err := github_download_with_retries_and_backoff(releases_url)
+	// Fetch all releases for download counting
+	all_releases, err := fetch_all_releases_pages(repo.FullName)
 	if err != nil {
-		return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
+		return empty_response, fmt.Errorf("failed to fetch releases: %w", err)
 	}
 
-	var release_list []GithubRelease
-	err = json.Unmarshal([]byte(resp.Text), &release_list)
-	if err != nil {
-		// Github response could not be parsed.
-		return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
-	}
-
-	if len(release_list) != 1 {
-		// we're fetching exactly one release, the most recent one.
-		// if one doesn't exist, skip repo.
+	if len(all_releases) == 0 {
 		return empty_response, ErrNoReleasesFound
 	}
 
-	latest_github_release := release_list[0]
+	// Calculate total downloads and release count
+	total_downloads := calculate_total_downloads(all_releases)
+	release_count := count_releases(all_releases)
+	slog.Debug("calculated statistics", "repo", repo.FullName, "downloads", total_downloads, "releases", release_count)
+
+	// Get the latest release (last in the slice since we reversed it to be oldest-to-newest)
+	latest_github_release := all_releases[len(all_releases)-1]
 	var release_dot_json *ReleaseDotJson
 	for _, asset := range latest_github_release.AssetList {
 		if asset.Name == "release.json" {
@@ -1377,7 +1445,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		// look for .zip assets instead and try our luck.
 		slog.Debug("no release.json found in latest release, looking for .zip file assets instead", "repo", repo.FullName)
 		zip_file_asset_list := []GithubReleaseAsset{}
-		for _, asset := range release_list[0].AssetList {
+		for _, asset := range latest_github_release.AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 				if strings.HasSuffix(asset.Name, ".zip") {
 					zip_file_asset_list = append(zip_file_asset_list, asset)
@@ -1417,6 +1485,8 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   &STATE.RunStart,
+		Downloads:      total_downloads,
+		ReleaseCount:   release_count,
 	}
 	return project, nil
 }
@@ -2234,6 +2304,7 @@ func cache_stats() {
 		"search":       {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"zip":          {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"release.json": {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"releases":     {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"other":        {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 	}
 
@@ -2260,6 +2331,8 @@ func cache_stats() {
 			cache_type = "zip"
 		} else if strings.HasSuffix(cache_file, "-release.json") {
 			cache_type = "release.json"
+		} else if strings.HasSuffix(cache_file, "-releases") {
+			cache_type = "releases"
 		} else {
 			cache_type = "other"
 		}
@@ -2352,7 +2425,7 @@ func cache_stats() {
 	fmt.Println()
 
 	// type-specific stats
-	type_order := []string{"search", "release.json", "zip", "other"}
+	type_order := []string{"search", "release.json", "releases", "zip", "other"}
 	for _, cache_type := range type_order {
 		stats := stats_map[cache_type]
 		if stats.Count == 0 {
@@ -2476,6 +2549,9 @@ func cache_prune() {
 		case "release.json":
 			cache_type = "release.json"
 			expiry_hours = CACHE_DURATION_RELEASE_JSON
+		case "releases":
+			cache_type = "releases"
+			expiry_hours = CACHE_DURATION_RELEASES_PAGE
 		default:
 			cache_type = "other"
 			expiry_hours = CACHE_DURATION
