@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -468,4 +469,99 @@ func Test_write_zip_cache_entry_concurrent(t *testing.T) {
 		_, err := os.Stat(cachePath)
 		assert.NoError(t, err, "cache file %d should exist", i)
 	}
+}
+
+func Test_calculate_total_downloads(t *testing.T) {
+	// Empty releases
+	assert.Equal(t, 0, calculate_total_downloads([]GithubRelease{}))
+
+	// Single release, single asset
+	releases := []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+			},
+		},
+	}
+	assert.Equal(t, 100, calculate_total_downloads(releases))
+
+	// Single release, multiple assets
+	releases = []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+				{Name: "addon-nolib.zip", DownloadCount: 50},
+				{Name: "release.json", DownloadCount: 5},
+			},
+		},
+	}
+	assert.Equal(t, 155, calculate_total_downloads(releases))
+
+	// Multiple releases, multiple assets
+	releases = []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+				{Name: "release.json", DownloadCount: 5},
+			},
+		},
+		{
+			Name: "v0.9.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 75},
+			},
+		},
+		{
+			Name: "v0.8.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 50},
+				{Name: "addon-nolib.zip", DownloadCount: 25},
+			},
+		},
+	}
+	assert.Equal(t, 255, calculate_total_downloads(releases))
+
+	// Release with no assets
+	releases = []GithubRelease{
+		{
+			Name:      "v1.0.0",
+			AssetList: []GithubReleaseAsset{},
+		},
+		{
+			Name: "v0.9.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+			},
+		},
+	}
+	assert.Equal(t, 100, calculate_total_downloads(releases))
+}
+
+func Test_count_releases(t *testing.T) {
+	// Empty releases
+	assert.Equal(t, 0, count_releases([]GithubRelease{}))
+
+	// Single release
+	releases := []GithubRelease{
+		{Name: "v1.0.0"},
+	}
+	assert.Equal(t, 1, count_releases(releases))
+
+	// Multiple releases
+	releases = []GithubRelease{
+		{Name: "v1.0.0"},
+		{Name: "v0.9.0"},
+		{Name: "v0.8.0"},
+	}
+	assert.Equal(t, 3, count_releases(releases))
+
+	// Many releases
+	releases = make([]GithubRelease, 100)
+	for i := range releases {
+		releases[i] = GithubRelease{Name: fmt.Sprintf("v%d.0.0", i)}
+	}
+	assert.Equal(t, 100, count_releases(releases))
 }
