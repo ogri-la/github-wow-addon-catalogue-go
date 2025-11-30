@@ -47,7 +47,7 @@ var CACHE_DURATION = 24               // hours. how long cached files should liv
 var CACHE_DURATION_SEARCH = 2         // hours. how long cached *search* files should live for.
 var CACHE_DURATION_ZIP = -1           // hours. how long cached zipfile entries should live for.
 var CACHE_DURATION_RELEASE_JSON = -1  // hours. how long cached release.json entries should live for.
-var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for. -1 = indefinite (for development)
+var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for.
 
 // prevents issuing the same warnings multiple times when going backwards and forwards
 // and upside down through the search results.
@@ -181,7 +181,7 @@ type ScrapeCommand struct {
 }
 
 type CachePruneCommand struct {
-	Delete     bool   // actually delete files (default is dry-run)
+	Delete     bool   // actually delete files when True
 	DeleteFlag string // raw flag value for validation
 }
 
@@ -475,7 +475,8 @@ func cache_path(cache_key string) string {
 	return filepath.Join(cache_dir(), cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
 }
 
-// acquires an exclusive lock on the given file descriptor.
+// acquires an exclusive lock on the given file descriptor,
+// preventing file from being read/written while we're writing to it.
 // blocks until the lock is acquired.
 func lock_file(file *os.File) error {
 	return syscall.Flock(int(file.Fd()), syscall.LOCK_EX)
@@ -1197,8 +1198,7 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	return uncertain_project_id_map, nil
 }
 
-// calculate_total_downloads sums up all download counts from all assets across all releases.
-// This is a pure function for easy testing.
+// sums up all download counts from all assets across all releases.
 func calculate_total_downloads(releases []GithubRelease) int {
 	total := 0
 	for _, release := range releases {
@@ -1209,8 +1209,7 @@ func calculate_total_downloads(releases []GithubRelease) int {
 	return total
 }
 
-// count_releases returns the number of releases.
-// This is a pure function for easy testing.
+// returns the number of releases.
 func count_releases(releases []GithubRelease) int {
 	return len(releases)
 }
@@ -1317,11 +1316,22 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
-// fetch_all_releases_pages fetches all release pages for a repository, oldest to newest.
-// This improves file-based caching by fetching pages in chronological order.
+// fetches all release pages for a repository.
 // Returns all releases and total download count.
 func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 	all_releases := []GithubRelease{}
+
+	// we can't affect the ordering but (at time of writing) of ~1890 addons:
+	// 150 addons > 100  releases
+	//  58 addons > 200  releases
+	//  32 addons > 300  releases
+	//  20 addons > 400  releases
+	//  12 addons > 500  releases
+	//   9 addons > 600  releases
+	//   8 addons > 700  releases
+	//   6 addons > 800  releases
+	//   3 addons > 900  releases
+	//   2 addons > 1000 releases
 	per_page := 100
 	page := 1
 
@@ -1344,7 +1354,6 @@ func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 			break
 		}
 
-		// Append to the end (pages come newest to oldest from GitHub)
 		all_releases = append(all_releases, release_list...)
 
 		// If we got fewer results than per_page, we're done
@@ -1352,12 +1361,13 @@ func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 			break
 		}
 
-		page++
-	}
+		if page == 100 {
+			// 100 * 100 = 10,000 releases
+			// max at time of writing is 1.5k
+			break
+		}
 
-	// Reverse to get oldest to newest for better caching
-	for i, j := 0, len(all_releases)-1; i < j; i, j = i+1, j-1 {
-		all_releases[i], all_releases[j] = all_releases[j], all_releases[i]
+		page++
 	}
 
 	return all_releases, nil
@@ -2477,7 +2487,7 @@ func format_duration(d time.Duration) string {
 
 // ---
 
-// cache_prune removes expired cache files according to their type-specific expiration settings.
+// removes expired cache files according to their type-specific expiration settings.
 // Cap -1 (never expire) to 365 days maximum. Delete 0-byte files regardless of expiry.
 func cache_prune() {
 	cache_entries := cache_entry_list()
