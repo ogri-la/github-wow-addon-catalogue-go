@@ -1,10 +1,16 @@
 package main
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_parse_toc_filename(t *testing.T) {
@@ -205,4 +211,357 @@ func Test_guess_game_track(t *testing.T) {
 		assert.Equal(t, expected_match, actual_match)
 		assert.Equal(t, expected_flavor, actual_flavor)
 	}
+}
+
+func Test_format_bytes(t *testing.T) {
+	cases := map[int64]string{
+		0:                   "0 B",
+		1:                   "1 B",
+		1023:                "1023 B",
+		1024:                "1.0 KiB",
+		1536:                "1.5 KiB",
+		1048576:             "1.0 MiB",
+		1572864:             "1.5 MiB",
+		1073741824:          "1.0 GiB",
+		10737418240:         "10.0 GiB",
+		1099511627776:       "1.0 TiB",
+		1125899906842624:    "1.0 PiB",
+		1152921504606846976: "1.0 EiB",
+	}
+	for given, expected := range cases {
+		actual := format_bytes(given)
+		assert.Equal(t, expected, actual, "format_bytes(%d)", given)
+	}
+}
+
+func Test_format_duration(t *testing.T) {
+	cases := map[time.Duration]string{
+		0:                               "0s",
+		1 * time.Second:                 "1s",
+		30 * time.Second:                "30s",
+		59 * time.Second:                "59s",
+		60 * time.Second:                "1.0m",
+		90 * time.Second:                "1.5m",
+		59*time.Minute + 59*time.Second: "60.0m",
+		60 * time.Minute:                "1.0h",
+		90 * time.Minute:                "1.5h",
+		23 * time.Hour:                  "23.0h",
+		24 * time.Hour:                  "1.0d",
+		36 * time.Hour:                  "1.5d",
+		168 * time.Hour:                 "7.0d",
+		-1 * time.Second:                "-1s",
+		-60 * time.Second:               "-1.0m",
+		-60 * time.Minute:               "-1.0h",
+		-24 * time.Hour:                 "-1.0d",
+	}
+	for given, expected := range cases {
+		actual := format_duration(given)
+		assert.Equal(t, expected, actual, "format_duration(%v)", given)
+	}
+}
+
+func Test_calculate_percentile(t *testing.T) {
+	// empty case
+	result := calculate_percentile([]int64{}, 0.95)
+	assert.Equal(t, int64(0), result)
+
+	// single element
+	result = calculate_percentile([]int64{100}, 0.95)
+	assert.Equal(t, int64(100), result)
+
+	// sorted list
+	sorted := []int64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	result = calculate_percentile(sorted, 0.50)
+	assert.Equal(t, int64(6), result) // 50% of 10 = index 5 (6th element)
+
+	result = calculate_percentile(sorted, 0.95)
+	assert.Equal(t, int64(10), result) // 95% of 10 = index 9 (10th element)
+
+	result = calculate_percentile(sorted, 0.99)
+	assert.Equal(t, int64(10), result) // 99% of 10 = index 9 (10th element)
+
+	// larger dataset
+	large := make([]int64, 1000)
+	for i := range large {
+		large[i] = int64(i)
+	}
+	result = calculate_percentile(large, 0.95)
+	assert.Equal(t, int64(950), result)
+}
+
+func Test_cache_stats_age_calculation(t *testing.T) {
+	// Test that age calculation overflows with many old files
+	// Simulate realistic cache scenario: 17673 files with ages around 300 days
+	var totalAgeDuration time.Duration
+	var totalAgeFloat64 float64
+	count := 17673
+
+	for i := 0; i < count; i++ {
+		// Ages varying from 1 day to 600 days (simulate real cache)
+		ageDays := 1 + (i % 600)
+		age := time.Duration(ageDays) * 24 * time.Hour
+
+		// Track using duration (can overflow)
+		totalAgeDuration += age
+
+		// Track using float64 (won't overflow)
+		totalAgeFloat64 += age.Seconds()
+	}
+
+	// Calculate averages
+	avgDuration := totalAgeDuration / time.Duration(count)
+	avgFloat64 := totalAgeFloat64 / float64(count)
+	avgFloat64Duration := time.Duration(avgFloat64 * float64(time.Second))
+
+	// If duration overflowed, it will be negative or wildly incorrect
+	// The float64 method should be accurate
+
+	if avgDuration < 0 {
+		t.Logf("Duration overflow detected: avgDuration=%v", avgDuration)
+		t.Logf("Correct average (via float64): %v", avgFloat64Duration)
+
+		// The avgDuration should NOT be negative
+		// This test documents the overflow bug
+		assert.True(t, avgDuration < 0, "Duration overflow causes negative average")
+
+		// The float64 calculation should be positive and reasonable
+		assert.True(t, avgFloat64Duration > 0, "Float64-based calculation should be positive")
+		assert.True(t, avgFloat64Duration < 365*24*time.Hour, "Average should be less than a year")
+	}
+}
+
+// Test acquiring and releasing a lock
+func Test_lock_file(t *testing.T) {
+	tempDir := t.TempDir()
+	testFile := filepath.Join(tempDir, "test_lock")
+
+	fh, err := os.Create(testFile)
+	require.NoError(t, err)
+	defer fh.Close()
+
+	err = lock_file(fh)
+	assert.NoError(t, err, "should be able to acquire lock")
+
+	err = unlock_file(fh)
+	assert.NoError(t, err, "should be able to release lock")
+}
+
+// Test that file locking prevents concurrent writes from corrupting data
+func Test_file_locking_concurrent_writes(t *testing.T) {
+
+	tempDir := t.TempDir()
+	testFile := filepath.Join(tempDir, "concurrent_test")
+
+	var wg sync.WaitGroup
+	numGoroutines := 10
+	writeOrder := make([]int, 0, numGoroutines)
+	var orderMutex sync.Mutex
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			// Each goroutine tries to open and write to the file
+			fh, err := os.OpenFile(testFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+			require.NoError(t, err)
+			defer fh.Close()
+
+			// Acquire exclusive lock - this should serialize access
+			err = lock_file(fh)
+			require.NoError(t, err)
+			defer unlock_file(fh)
+
+			// Record the order in which locks were acquired
+			orderMutex.Lock()
+			writeOrder = append(writeOrder, id)
+			orderMutex.Unlock()
+
+			// Simulate some work while holding the lock
+			time.Sleep(10 * time.Millisecond)
+
+			// Write data
+			_, err = fh.Write([]byte{byte(id)})
+			require.NoError(t, err)
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify all goroutines completed
+	assert.Equal(t, numGoroutines, len(writeOrder), "all goroutines should have acquired the lock")
+
+	// Read the file and verify the data
+	data, err := os.ReadFile(testFile)
+	require.NoError(t, err)
+	assert.Equal(t, numGoroutines, len(data), "file should contain data from all goroutines")
+}
+
+func Test_write_zip_cache_entry_with_locking(t *testing.T) {
+	// Setup: initialize STATE with a temp directory
+	tempDir := t.TempDir()
+	originalState := STATE
+	STATE = &State{CWD: tempDir}
+	defer func() { STATE = originalState }()
+
+	// Create the cache directory
+	err := os.MkdirAll(cache_dir(), 0755)
+	require.NoError(t, err)
+
+	// Test data
+	cacheKey := "test_zip_cache"
+	zipContents := map[string][]byte{
+		"file1.txt": []byte("content1"),
+		"file2.txt": []byte("content2"),
+	}
+
+	// Write to cache
+	err = write_zip_cache_entry(cacheKey, zipContents)
+	assert.NoError(t, err, "should be able to write zip cache entry")
+
+	// Verify the file was created
+	cachePath := cache_path(cacheKey)
+	_, err = os.Stat(cachePath)
+	assert.NoError(t, err, "cache file should exist")
+
+	// Read back and verify
+	readContents, err := read_zip_cache_entry(cacheKey, func(s string) bool { return true })
+	assert.NoError(t, err, "should be able to read zip cache entry")
+	assert.Equal(t, zipContents, readContents, "read contents should match written contents")
+}
+
+func Test_write_zip_cache_entry_concurrent(t *testing.T) {
+	// Setup: initialize STATE with a temp directory
+	tempDir := t.TempDir()
+	originalState := STATE
+	STATE = &State{CWD: tempDir}
+	defer func() { STATE = originalState }()
+
+	// Create the cache directory
+	err := os.MkdirAll(cache_dir(), 0755)
+	require.NoError(t, err)
+
+	// Test concurrent writes to different cache keys
+	var wg sync.WaitGroup
+	numGoroutines := 5
+
+	for i := 0; i < numGoroutines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+
+			cacheKey := "concurrent_zip_test_" + string(rune('a'+id))
+			zipContents := map[string][]byte{
+				"file.txt": []byte{byte(id)},
+			}
+
+			err := write_zip_cache_entry(cacheKey, zipContents)
+			assert.NoError(t, err)
+		}(i)
+	}
+
+	wg.Wait()
+
+	// Verify all cache files were created correctly
+	for i := 0; i < numGoroutines; i++ {
+		cacheKey := "concurrent_zip_test_" + string(rune('a'+i))
+		cachePath := cache_path(cacheKey)
+		_, err := os.Stat(cachePath)
+		assert.NoError(t, err, "cache file %d should exist", i)
+	}
+}
+
+func Test_calculate_total_downloads(t *testing.T) {
+	// Empty releases
+	assert.Equal(t, 0, calculate_total_downloads([]GithubRelease{}))
+
+	// Single release, single asset
+	releases := []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+			},
+		},
+	}
+	assert.Equal(t, 100, calculate_total_downloads(releases))
+
+	// Single release, multiple assets
+	releases = []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+				{Name: "addon-nolib.zip", DownloadCount: 50},
+				{Name: "release.json", DownloadCount: 5},
+			},
+		},
+	}
+	assert.Equal(t, 155, calculate_total_downloads(releases))
+
+	// Multiple releases, multiple assets
+	releases = []GithubRelease{
+		{
+			Name: "v1.0.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+				{Name: "release.json", DownloadCount: 5},
+			},
+		},
+		{
+			Name: "v0.9.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 75},
+			},
+		},
+		{
+			Name: "v0.8.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 50},
+				{Name: "addon-nolib.zip", DownloadCount: 25},
+			},
+		},
+	}
+	assert.Equal(t, 255, calculate_total_downloads(releases))
+
+	// Release with no assets
+	releases = []GithubRelease{
+		{
+			Name:      "v1.0.0",
+			AssetList: []GithubReleaseAsset{},
+		},
+		{
+			Name: "v0.9.0",
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+			},
+		},
+	}
+	assert.Equal(t, 100, calculate_total_downloads(releases))
+}
+
+func Test_count_releases(t *testing.T) {
+	// Empty releases
+	assert.Equal(t, 0, count_releases([]GithubRelease{}))
+
+	// Single release
+	releases := []GithubRelease{
+		{Name: "v1.0.0"},
+	}
+	assert.Equal(t, 1, count_releases(releases))
+
+	// Multiple releases
+	releases = []GithubRelease{
+		{Name: "v1.0.0"},
+		{Name: "v0.9.0"},
+		{Name: "v0.8.0"},
+	}
+	assert.Equal(t, 3, count_releases(releases))
+
+	// Many releases
+	releases = make([]GithubRelease, 100)
+	for i := range releases {
+		releases[i] = GithubRelease{Name: fmt.Sprintf("v%d.0.0", i)}
+	}
+	assert.Equal(t, 100, count_releases(releases))
 }

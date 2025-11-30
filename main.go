@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
+	"syscall"
 
 	"fmt"
 	"io"
@@ -42,10 +43,11 @@ import (
 var APP_VERSION = "unreleased" // modified at release with `-ldflags "-X main.APP_VERSION=X.X.X"`
 var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
 
-var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
-var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
-var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
+var CACHE_DURATION = 24               // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2         // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1           // hours. how long cached zipfile entries should live for.
+var CACHE_DURATION_RELEASE_JSON = -1  // hours. how long cached release.json entries should live for.
+var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for.
 
 // prevents issuing the same warnings multiple times when going backwards and forwards
 // and upside down through the search results.
@@ -153,12 +155,16 @@ const (
 	ScrapeSubCommand             SubCommand = "scrape"
 	FindDuplicatesSubCommand     SubCommand = "find-duplicates"
 	DumpReleaseDotJsonSubCommand SubCommand = "dump-release-dot-json"
+	CacheStatsSubCommand         SubCommand = "cache-stats"
+	CachePruneSubCommand         SubCommand = "cache-prune"
 )
 
 var KNOWN_SUBCOMMANDS = []SubCommand{
 	ScrapeSubCommand,
 	FindDuplicatesSubCommand,
 	DumpReleaseDotJsonSubCommand,
+	CacheStatsSubCommand,
+	CachePruneSubCommand,
 }
 
 type FindDuplicatesCommand struct {
@@ -174,11 +180,17 @@ type ScrapeCommand struct {
 	FilterPatternRegexp *regexp.Regexp // the compiled form of `FilterPattern`
 }
 
+type CachePruneCommand struct {
+	Delete     bool   // actually delete files when True
+	DeleteFlag string // raw flag value for validation
+}
+
 type Flags struct {
 	SubCommand            SubCommand // cli subcommand, e.g. 'scrape'
 	LogLevel              slog.Level
 	ScrapeCommand         ScrapeCommand         // cli args for the 'scrape' command
 	FindDuplicatesCommand FindDuplicatesCommand // cli args for the 'find-duplicates' command
+	CachePruneCommand     CachePruneCommand     // cli args for the 'cache-prune' command
 }
 
 // global state, see `STATE`
@@ -340,6 +352,7 @@ type GithubReleaseAsset struct {
 	Name               string `json:"name"`
 	BrowserDownloadURL string `json:"browser_download_url"`
 	ContentType        string `json:"content_type"`
+	DownloadCount      int    `json:"download_count"`
 }
 
 // a Github repository has many releases.
@@ -356,6 +369,8 @@ type Project struct {
 	FlavorList     []Flavor   `json:"flavor-list"`
 	HasReleaseJSON bool       `json:"has-release-json"`
 	LastSeenDate   *time.Time `json:"last-seen-date,omitempty"`
+	Downloads      int        `json:"downloads"`
+	ReleaseCount   int        `json:"release-count"`
 }
 
 func ProjectCSVHeader() []string {
@@ -372,6 +387,8 @@ func ProjectCSVHeader() []string {
 		"wowi_id",
 		"has_release_json",
 		"last_seen",
+		"downloads",
+		"release_count",
 	}
 }
 
@@ -390,6 +407,8 @@ func project_to_csv_row(p Project) []string {
 		p.ProjectIDMap["x-wowi-id"],
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
 		p.LastSeenDate.Format(time.RFC3339),
+		strconv.Itoa(p.Downloads),
+		strconv.Itoa(p.ReleaseCount),
 	}
 }
 
@@ -454,6 +473,18 @@ func cache_dir() string {
 // returns a path to the given `cache_key`.
 func cache_path(cache_key string) string {
 	return filepath.Join(cache_dir(), cache_key) // "/current/working/dir/output/711f20df1f76da140218e51445a6fc47"
+}
+
+// acquires an exclusive lock on the given file descriptor,
+// preventing file from being read/written while we're writing to it.
+// blocks until the lock is acquired.
+func lock_file(file *os.File) error {
+	return syscall.Flock(int(file.Fd()), syscall.LOCK_EX)
+}
+
+// releases the lock on the given file descriptor.
+func unlock_file(file *os.File) error {
+	return syscall.Flock(int(file.Fd()), syscall.LOCK_UN)
 }
 
 // returns a list of cache keys found in the cache directory.
@@ -548,7 +579,26 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 		return err
 	}
 
-	return os.WriteFile(cache_path(zip_cache_key), json_data, 0644)
+	// Create file and acquire exclusive lock
+	cache_file_path := cache_path(zip_cache_key)
+	fh, err := os.Create(cache_file_path)
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+
+	err = lock_file(fh)
+	if err != nil {
+		return fmt.Errorf("failed to lock cache file %s: %w", cache_file_path, err)
+	}
+	defer unlock_file(fh)
+
+	_, err = fh.Write(json_data)
+	if err != nil {
+		return fmt.Errorf("failed to write to cache file %s: %w", cache_file_path, err)
+	}
+
+	return nil
 }
 
 // deletes a cache entry from the cache directory using the given `cache_key`.
@@ -573,12 +623,14 @@ func cache_expired(path string) bool {
 
 	var cache_duration_hrs int
 	switch suffix {
-	case "-search":
+	case "search":
 		cache_duration_hrs = CACHE_DURATION_SEARCH
-	case "-zip":
+	case "zip":
 		cache_duration_hrs = CACHE_DURATION_ZIP
-	case "-release.json":
+	case "release.json":
 		cache_duration_hrs = CACHE_DURATION_RELEASE_JSON
+	case "releases":
+		cache_duration_hrs = CACHE_DURATION_RELEASES_PAGE
 	default:
 		cache_duration_hrs = CACHE_DURATION
 	}
@@ -669,6 +721,13 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		return resp, nil
 	}
 	defer fh.Close()
+
+	err = lock_file(fh)
+	if err != nil {
+		slog.Warn("failed to lock cache file for writing", "cache-path", cache_path, "error", err)
+		return resp, nil
+	}
+	defer unlock_file(fh)
 
 	dumped_bytes, err := httputil.DumpResponse(resp, true)
 	if err != nil {
@@ -1139,6 +1198,22 @@ func extract_project_ids_from_toc_files(asset_url string) (map[string]string, er
 	return uncertain_project_id_map, nil
 }
 
+// sums up all download counts from all assets across all releases.
+func calculate_total_downloads(releases []GithubRelease) int {
+	total := 0
+	for _, release := range releases {
+		for _, asset := range release.AssetList {
+			total += asset.DownloadCount
+		}
+	}
+	return total
+}
+
+// returns the number of releases.
+func count_releases(releases []GithubRelease) int {
+	return len(releases)
+}
+
 // extract the flavors from the filenames
 // for 'flavorless' toc files,
 // parse the file contents looking for interface versions
@@ -1241,6 +1316,63 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
+// fetches all release pages for a repository.
+// Returns all releases and total download count.
+func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
+	all_releases := []GithubRelease{}
+
+	// we can't affect the ordering but (at time of writing) of ~1890 addons:
+	// 150 addons > 100  releases
+	//  58 addons > 200  releases
+	//  32 addons > 300  releases
+	//  20 addons > 400  releases
+	//  12 addons > 500  releases
+	//   9 addons > 600  releases
+	//   8 addons > 700  releases
+	//   6 addons > 800  releases
+	//   3 addons > 900  releases
+	//   2 addons > 1000 releases
+	per_page := 100
+	page := 1
+
+	for {
+		releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?page=%d&per_page=%d", full_name, page, per_page)
+
+		resp, err := github_download_with_retries_and_backoff(releases_url)
+		if err != nil {
+			return nil, fmt.Errorf("failed to download repository release listing (page %d): %w", page, err)
+		}
+
+		var release_list []GithubRelease
+		err = json.Unmarshal([]byte(resp.Text), &release_list)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse repository release listing as JSON (page %d): %w", page, err)
+		}
+
+		// No more releases
+		if len(release_list) == 0 {
+			break
+		}
+
+		all_releases = append(all_releases, release_list...)
+
+		// If we got fewer results than per_page, we're done
+		if len(release_list) < per_page {
+			break
+		}
+
+		if page == 100 {
+			// 100 * 100 = 10,000 releases
+			// max at time of writing is 1.5k
+			break
+		}
+
+		page++
+	}
+
+	return all_releases, nil
+}
+
 // look for "release.json" in release assets
 // if found, fetch it, validate it as json and then validate as correct release-json data.
 // for each asset in release, 'extract project ids from toc files'
@@ -1253,29 +1385,23 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 
 	var empty_response Project
 
-	per_page := 1
-	releases_url := API_URL + fmt.Sprintf("/repos/%s/releases?page=%d&per_page=%d", repo.FullName, page, per_page)
-
-	// fetch addon's current release, if any
-	resp, err := github_download_with_retries_and_backoff(releases_url)
+	// Fetch all releases for download counting
+	all_releases, err := fetch_all_releases_pages(repo.FullName)
 	if err != nil {
-		return empty_response, fmt.Errorf("failed to download repository release listing: %w", err)
+		return empty_response, fmt.Errorf("failed to fetch releases: %w", err)
 	}
 
-	var release_list []GithubRelease
-	err = json.Unmarshal([]byte(resp.Text), &release_list)
-	if err != nil {
-		// Github response could not be parsed.
-		return empty_response, fmt.Errorf("failed to parse repository release listing as JSON: %w", err)
-	}
-
-	if len(release_list) != 1 {
-		// we're fetching exactly one release, the most recent one.
-		// if one doesn't exist, skip repo.
+	if len(all_releases) == 0 {
 		return empty_response, ErrNoReleasesFound
 	}
 
-	latest_github_release := release_list[0]
+	// Calculate total downloads and release count
+	total_downloads := calculate_total_downloads(all_releases)
+	release_count := count_releases(all_releases)
+	slog.Debug("calculated statistics", "repo", repo.FullName, "downloads", total_downloads, "releases", release_count)
+
+	// Get the latest release (last in the slice since we reversed it to be oldest-to-newest)
+	latest_github_release := all_releases[len(all_releases)-1]
 	var release_dot_json *ReleaseDotJson
 	for _, asset := range latest_github_release.AssetList {
 		if asset.Name == "release.json" {
@@ -1329,7 +1455,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		// look for .zip assets instead and try our luck.
 		slog.Debug("no release.json found in latest release, looking for .zip file assets instead", "repo", repo.FullName)
 		zip_file_asset_list := []GithubReleaseAsset{}
-		for _, asset := range release_list[0].AssetList {
+		for _, asset := range latest_github_release.AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 				if strings.HasSuffix(asset.Name, ".zip") {
 					zip_file_asset_list = append(zip_file_asset_list, asset)
@@ -1369,6 +1495,8 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   &STATE.RunStart,
+		Downloads:      total_downloads,
+		ReleaseCount:   release_count,
 	}
 	return project, nil
 }
@@ -1762,7 +1890,7 @@ func configure_validator() *jsonschema.Schema {
 }
 
 func usage() string {
-	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates>"
+	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates|cache-stats|cache-prune>"
 }
 
 func read_flags(arg_list []string) Flags {
@@ -1798,6 +1926,16 @@ func read_flags(arg_list []string) Flags {
 
 	//
 
+	cache_stats_flagset := flag.NewFlagSet("cache-stats", flag.ExitOnError)
+
+	//
+
+	cache_prune_cmd := CachePruneCommand{}
+	cache_prune_flagset := flag.NewFlagSet("cache-prune", flag.ExitOnError)
+	cache_prune_flagset.StringVar(&cache_prune_cmd.DeleteFlag, "delete", "", "actually delete files when set to 'true' (allowed values: true, false; default is dry-run)")
+
+	//
+
 	// first arg is always the name of the running app.
 	// second arg should be the subcommand but could be -h or -V
 	var subcommand string
@@ -1816,6 +1954,14 @@ func read_flags(arg_list []string) Flags {
 
 	case FindDuplicatesSubCommand:
 		flagset = dupes_flagset
+		flagset.AddFlagSet(defaults)
+
+	case CacheStatsSubCommand:
+		flagset = cache_stats_flagset
+		flagset.AddFlagSet(defaults)
+
+	case CachePruneSubCommand:
+		flagset = cache_prune_flagset
 		flagset.AddFlagSet(defaults)
 
 	default:
@@ -1867,6 +2013,18 @@ func read_flags(arg_list []string) Flags {
 		scrape_cmd.FilterPatternRegexp = pattern
 	}
 
+	// Validate cache-prune --delete flag
+	if subcommand == CachePruneSubCommand && cache_prune_cmd.DeleteFlag != "" {
+		switch cache_prune_cmd.DeleteFlag {
+		case "true":
+			cache_prune_cmd.Delete = true
+		case "false":
+			cache_prune_cmd.Delete = false
+		default:
+			die(true, fmt.Sprintf("--delete flag requires explicit value 'true' or 'false', got: %s", cache_prune_cmd.DeleteFlag))
+		}
+	}
+
 	log_level_label_map := map[string]slog.Level{
 		"debug": slog.LevelDebug,
 		"info":  slog.LevelInfo,
@@ -1882,6 +2040,7 @@ func read_flags(arg_list []string) Flags {
 	app_flags.SubCommand = subcommand
 	app_flags.ScrapeCommand = scrape_cmd
 	app_flags.FindDuplicatesCommand = find_dupes_cmd
+	app_flags.CachePruneCommand = cache_prune_cmd
 
 	return app_flags
 }
@@ -2118,6 +2277,338 @@ func find_duplicates() {
 
 // ---
 
+type CacheFileStats struct {
+	Count     int
+	TotalSize int64
+	MinSize   int64
+	MaxSize   int64
+	AvgSize   int64
+	P95Size   int64
+	MinAge    time.Duration
+	MaxAge    time.Duration
+	AvgAge    time.Duration
+	Sizes     []int64         // for percentile calculation
+	Ages      []time.Duration // for percentile calculation
+}
+
+func calculate_percentile(sorted_values []int64, percentile float64) int64 {
+	if len(sorted_values) == 0 {
+		return 0
+	}
+	index := int(float64(len(sorted_values)) * percentile)
+	if index >= len(sorted_values) {
+		index = len(sorted_values) - 1
+	}
+	return sorted_values[index]
+}
+
+func cache_stats() {
+	cache_entries := cache_entry_list()
+	if len(cache_entries) == 0 {
+		fmt.Println("Cache is empty")
+		return
+	}
+
+	// categorize cache entries by type
+	stats_map := map[string]*CacheFileStats{
+		"search":       {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"zip":          {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"release.json": {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"releases":     {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+		"other":        {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
+	}
+
+	overall_stats := &CacheFileStats{
+		MinSize: math.MaxInt64,
+		MinAge:  time.Duration(math.MaxInt64),
+		Sizes:   []int64{},
+		Ages:    []time.Duration{},
+	}
+
+	for _, cache_file := range cache_entries {
+		cache_file_path := cache_path(cache_file)
+		info, err := os.Stat(cache_file_path)
+		if err != nil {
+			slog.Warn("failed to stat cache file", "cache-file", cache_file, "error", err)
+			continue
+		}
+
+		// determine cache type
+		var cache_type string
+		if strings.HasSuffix(cache_file, "-search") {
+			cache_type = "search"
+		} else if strings.HasSuffix(cache_file, "-zip") {
+			cache_type = "zip"
+		} else if strings.HasSuffix(cache_file, "-release.json") {
+			cache_type = "release.json"
+		} else if strings.HasSuffix(cache_file, "-releases") {
+			cache_type = "releases"
+		} else {
+			cache_type = "other"
+		}
+
+		size := info.Size()
+		age := STATE.RunStart.Sub(info.ModTime())
+
+		// update type-specific stats
+		stats := stats_map[cache_type]
+		stats.Count++
+		stats.TotalSize += size
+		if size < stats.MinSize {
+			stats.MinSize = size
+		}
+		if size > stats.MaxSize {
+			stats.MaxSize = size
+		}
+		stats.Sizes = append(stats.Sizes, size)
+		stats.Ages = append(stats.Ages, age)
+
+		// running average: avg_new = avg_old + (value - avg_old) / n
+		stats.AvgAge = stats.AvgAge + time.Duration((age.Nanoseconds()-stats.AvgAge.Nanoseconds())/int64(stats.Count))
+
+		if age < stats.MinAge {
+			stats.MinAge = age
+		}
+		if age > stats.MaxAge {
+			stats.MaxAge = age
+		}
+
+		// update overall stats
+		overall_stats.Count++
+		overall_stats.TotalSize += size
+		if size < overall_stats.MinSize {
+			overall_stats.MinSize = size
+		}
+		if size > overall_stats.MaxSize {
+			overall_stats.MaxSize = size
+		}
+		overall_stats.Sizes = append(overall_stats.Sizes, size)
+		overall_stats.Ages = append(overall_stats.Ages, age)
+
+		// running average: avg_new = avg_old + (value - avg_old) / n
+		overall_stats.AvgAge = overall_stats.AvgAge + time.Duration((age.Nanoseconds()-overall_stats.AvgAge.Nanoseconds())/int64(overall_stats.Count))
+
+		if age < overall_stats.MinAge {
+			overall_stats.MinAge = age
+		}
+		if age > overall_stats.MaxAge {
+			overall_stats.MaxAge = age
+		}
+	}
+
+	// calculate size averages and percentiles (age average computed incrementally)
+	for _, stats := range stats_map {
+		if stats.Count > 0 {
+			stats.AvgSize = stats.TotalSize / int64(stats.Count)
+
+			// sort for percentile calculation
+			slices.Sort(stats.Sizes)
+			stats.P95Size = calculate_percentile(stats.Sizes, 0.95)
+		} else {
+			stats.MinSize = 0
+		}
+	}
+
+	if overall_stats.Count > 0 {
+		overall_stats.AvgSize = overall_stats.TotalSize / int64(overall_stats.Count)
+
+		slices.Sort(overall_stats.Sizes)
+		overall_stats.P95Size = calculate_percentile(overall_stats.Sizes, 0.95)
+	}
+
+	// print results
+	fmt.Println("Cache Statistics")
+	fmt.Println("================")
+	fmt.Println()
+
+	// overall stats
+	fmt.Println("Overall:")
+	fmt.Printf("  Files:       %d\n", overall_stats.Count)
+	fmt.Printf("  Total Size:  %s (%d bytes)\n", format_bytes(overall_stats.TotalSize), overall_stats.TotalSize)
+	fmt.Printf("  Min Size:    %s\n", format_bytes(overall_stats.MinSize))
+	fmt.Printf("  Max Size:    %s\n", format_bytes(overall_stats.MaxSize))
+	fmt.Printf("  Avg Size:    %s\n", format_bytes(overall_stats.AvgSize))
+	fmt.Printf("  95th pct:    %s\n", format_bytes(overall_stats.P95Size))
+	fmt.Printf("  Min Age:     %s\n", format_duration(overall_stats.MinAge))
+	fmt.Printf("  Max Age:     %s\n", format_duration(overall_stats.MaxAge))
+	fmt.Printf("  Avg Age:     %s\n", format_duration(overall_stats.AvgAge))
+	fmt.Println()
+
+	// type-specific stats
+	type_order := []string{"search", "release.json", "releases", "zip", "other"}
+	for _, cache_type := range type_order {
+		stats := stats_map[cache_type]
+		if stats.Count == 0 {
+			continue
+		}
+
+		fmt.Printf("%s:\n", title_case(cache_type))
+		fmt.Printf("  Files:       %d\n", stats.Count)
+		fmt.Printf("  Total Size:  %s (%d bytes)\n", format_bytes(stats.TotalSize), stats.TotalSize)
+		fmt.Printf("  Min Size:    %s\n", format_bytes(stats.MinSize))
+		fmt.Printf("  Max Size:    %s\n", format_bytes(stats.MaxSize))
+		fmt.Printf("  Avg Size:    %s\n", format_bytes(stats.AvgSize))
+		fmt.Printf("  95th pct:    %s\n", format_bytes(stats.P95Size))
+		fmt.Printf("  Min Age:     %s\n", format_duration(stats.MinAge))
+		fmt.Printf("  Max Age:     %s\n", format_duration(stats.MaxAge))
+		fmt.Printf("  Avg Age:     %s\n", format_duration(stats.AvgAge))
+		fmt.Println()
+	}
+}
+
+func format_bytes(bytes int64) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
+func format_duration(d time.Duration) string {
+	if d < 0 {
+		return fmt.Sprintf("-%s", format_duration(-d))
+	}
+	if d < time.Minute {
+		return fmt.Sprintf("%.0fs", d.Seconds())
+	}
+	if d < time.Hour {
+		return fmt.Sprintf("%.1fm", d.Minutes())
+	}
+	if d < 24*time.Hour {
+		return fmt.Sprintf("%.1fh", d.Hours())
+	}
+	return fmt.Sprintf("%.1fd", d.Hours()/24)
+}
+
+// ---
+
+// removes expired cache files according to their type-specific expiration settings.
+// Cap -1 (never expire) to 365 days maximum. Delete 0-byte files regardless of expiry.
+func cache_prune() {
+	cache_entries := cache_entry_list()
+	if len(cache_entries) == 0 {
+		fmt.Println("Cache is empty")
+		return
+	}
+
+	dry_run := !STATE.Flags.CachePruneCommand.Delete
+	max_age_days := 365 // cap "never expire" to 365 days
+
+	if dry_run {
+		fmt.Println("DRY RUN - files that would be deleted:")
+		fmt.Println()
+	} else {
+		fmt.Println("Deleting expired cache files...")
+		fmt.Println()
+	}
+
+	removed_count := 0
+	removed_size := int64(0)
+	kept_count := 0
+
+	for _, cache_file := range cache_entries {
+		cache_file_path := cache_path(cache_file)
+		info, err := os.Stat(cache_file_path)
+		if err != nil {
+			slog.Warn("failed to stat cache file", "cache-file", cache_file, "error", err)
+			continue
+		}
+
+		size := info.Size()
+		age := STATE.RunStart.Sub(info.ModTime())
+
+		// Always remove 0-byte files
+		if size == 0 {
+			if dry_run {
+				fmt.Printf("  %s (0 bytes, %s old) - zero-byte file\n", cache_file, format_duration(age))
+			} else {
+				err := remove_cache_entry(cache_file)
+				if err != nil {
+					slog.Warn("failed to remove cache file", "cache-file", cache_file, "error", err)
+				} else {
+					slog.Debug("removed zero-byte cache file", "cache-file", cache_file)
+				}
+			}
+			removed_count++
+			removed_size += size
+			continue
+		}
+
+		// Determine cache type and expiration
+		var cache_type string
+		var expiry_hours int
+
+		bits := strings.Split(filepath.Base(cache_file_path), "-")
+		suffix := ""
+		if len(bits) == 2 {
+			suffix = bits[1]
+		}
+
+		switch suffix {
+		case "search":
+			cache_type = "search"
+			expiry_hours = CACHE_DURATION_SEARCH
+		case "zip":
+			cache_type = "zip"
+			expiry_hours = CACHE_DURATION_ZIP
+		case "release.json":
+			cache_type = "release.json"
+			expiry_hours = CACHE_DURATION_RELEASE_JSON
+		case "releases":
+			cache_type = "releases"
+			expiry_hours = CACHE_DURATION_RELEASES_PAGE
+		default:
+			cache_type = "other"
+			expiry_hours = CACHE_DURATION
+		}
+
+		// Cap "never expire" (-1) to max_age_days
+		if expiry_hours == -1 {
+			expiry_hours = max_age_days * 24
+		}
+
+		// Check if expired
+		age_hours := int(math.Floor(age.Hours()))
+		expired := age_hours >= expiry_hours
+
+		if expired {
+			if dry_run {
+				fmt.Printf("  %s (%s, %s old, type: %s, expires: %dh)\n",
+					cache_file, format_bytes(size), format_duration(age), cache_type, expiry_hours)
+			} else {
+				err := remove_cache_entry(cache_file)
+				if err != nil {
+					slog.Warn("failed to remove cache file", "cache-file", cache_file, "error", err)
+				} else {
+					slog.Debug("removed expired cache file", "cache-file", cache_file, "type", cache_type, "age", age)
+				}
+			}
+			removed_count++
+			removed_size += size
+		} else {
+			kept_count++
+		}
+	}
+
+	fmt.Println()
+	if dry_run {
+		fmt.Printf("Would remove: %d files (%s)\n", removed_count, format_bytes(removed_size))
+		fmt.Printf("Would keep:   %d files\n", kept_count)
+		fmt.Println()
+		fmt.Println("Run with --delete to actually delete these files")
+	} else {
+		fmt.Printf("Removed: %d files (%s)\n", removed_count, format_bytes(removed_size))
+		fmt.Printf("Kept:    %d files\n", kept_count)
+	}
+}
+
+// ---
+
 func init_state() *State {
 	state := &State{
 		RunStart: time.Now().UTC(),
@@ -2162,5 +2653,11 @@ func main() {
 
 	case FindDuplicatesSubCommand:
 		find_duplicates()
+
+	case CacheStatsSubCommand:
+		cache_stats()
+
+	case CachePruneSubCommand:
+		cache_prune()
 	}
 }
