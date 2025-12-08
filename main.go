@@ -1400,8 +1400,8 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 	release_count := count_releases(all_releases)
 	slog.Debug("calculated statistics", "repo", repo.FullName, "downloads", total_downloads, "releases", release_count)
 
-	// Get the latest release (last in the slice since we reversed it to be oldest-to-newest)
-	latest_github_release := all_releases[len(all_releases)-1]
+	// Get the latest release (first in the slice since GitHub returns newest-to-oldest)
+	latest_github_release := all_releases[0]
 	var release_dot_json *ReleaseDotJson
 	for _, asset := range latest_github_release.AssetList {
 		if asset.Name == "release.json" {

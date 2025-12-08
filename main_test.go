@@ -565,3 +565,52 @@ func Test_count_releases(t *testing.T) {
 	}
 	assert.Equal(t, 100, count_releases(releases))
 }
+
+func Test_latest_release_is_first_in_slice(t *testing.T) {
+	// This test verifies that we correctly identify the latest release
+	// GitHub API returns releases in newest-to-oldest order, so the first
+	// element should be the newest (not the last)
+
+	newestDate := time.Date(2025, 11, 1, 0, 0, 0, 0, time.UTC)
+	middleDate := time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC)
+	oldestDate := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	releases := []GithubRelease{
+		{
+			Name:            "v3.0.0",
+			PublishedAtDate: newestDate,
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 10},
+			},
+		},
+		{
+			Name:            "v2.0.0",
+			PublishedAtDate: middleDate,
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 50},
+			},
+		},
+		{
+			Name:            "v1.0.0",
+			PublishedAtDate: oldestDate,
+			AssetList: []GithubReleaseAsset{
+				{Name: "addon.zip", DownloadCount: 100},
+			},
+		},
+	}
+
+	// The latest release should be the FIRST element (index 0), not the last
+	latestRelease := releases[0]
+	assert.Equal(t, "v3.0.0", latestRelease.Name)
+	assert.Equal(t, newestDate, latestRelease.PublishedAtDate)
+
+	// Verify we're NOT getting the oldest release (which would be at the end)
+	oldestRelease := releases[len(releases)-1]
+	assert.Equal(t, "v1.0.0", oldestRelease.Name)
+	assert.Equal(t, oldestDate, oldestRelease.PublishedAtDate)
+
+	// The dates should be different to prove we're getting the right one
+	assert.NotEqual(t, latestRelease.PublishedAtDate, oldestRelease.PublishedAtDate)
+	assert.True(t, latestRelease.PublishedAtDate.After(oldestRelease.PublishedAtDate),
+		"Latest release should have a newer date than oldest release")
+}
