@@ -87,6 +87,11 @@ elif test "$cmd" = "clean"; then
     exit 0
 
 elif test "$cmd" = "deps.update"; then
+    # download latest release.json schema specification
+    echo "downloading latest release.json schema specification..."
+    curl -sL https://github.com/ogri-la/release.json-specification/releases/latest/download/schema.json \
+        -o resources/release-json-schema.json
+    echo "downloaded schema to resources/release-json-schema.json"
     # -u 'update modules [...] to use newer minor or patch releases when available'
     go get -u
     go mod tidy
