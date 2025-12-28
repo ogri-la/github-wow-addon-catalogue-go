@@ -10,7 +10,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 34122,
+		"downloads": 34127,
 		"release-count": 30
 	},
 	{
@@ -25,7 +25,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 545180,
+		"downloads": 545589,
 		"release-count": 134
 	},
 	{
@@ -39,7 +39,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 40686,
+		"downloads": 40694,
 		"release-count": 22
 	},
 	{
@@ -53,7 +53,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 525,
+		"downloads": 528,
 		"release-count": 2
 	},
 	{
@@ -90,7 +90,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 15874,
+		"downloads": 15889,
 		"release-count": 142
 	},
 	{
@@ -107,7 +107,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 781686,
+		"downloads": 782503,
 		"release-count": 54
 	},
 	{
@@ -126,7 +126,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 118926,
+		"downloads": 119010,
 		"release-count": 28
 	},
 	{
@@ -213,7 +213,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 625,
+		"downloads": 626,
 		"release-count": 8
 	},
 	{
@@ -234,7 +234,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 654148,
+		"downloads": 655847,
 		"release-count": 353
 	},
 	{
@@ -250,7 +250,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20573,
+		"downloads": 20596,
 		"release-count": 20
 	},
 	{
@@ -268,7 +268,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 88543,
+		"downloads": 88545,
 		"release-count": 34
 	},
 	{
@@ -288,7 +288,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 28431,
+		"downloads": 28491,
 		"release-count": 24
 	},
 	{
@@ -323,7 +323,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 37465,
+		"downloads": 37469,
 		"release-count": 29
 	},
 	{
@@ -341,7 +341,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10127,
+		"downloads": 10128,
 		"release-count": 50
 	},
 	{
@@ -359,7 +359,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 96721,
+		"downloads": 96739,
 		"release-count": 62
 	},
 	{
@@ -377,7 +377,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6561,
+		"downloads": 6576,
 		"release-count": 41
 	},
 	{
@@ -395,7 +395,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 20351,
+		"downloads": 20366,
 		"release-count": 77
 	},
 	{
@@ -413,7 +413,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 52155,
+		"downloads": 52160,
 		"release-count": 59
 	},
 	{
@@ -431,7 +431,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 42097,
+		"downloads": 42106,
 		"release-count": 33
 	},
 	{
@@ -473,7 +473,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 14044,
+		"downloads": 14101,
 		"release-count": 28
 	},
 	{
@@ -519,7 +519,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6551,
+		"downloads": 6553,
 		"release-count": 20
 	},
 	{
@@ -730,7 +730,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 38122,
+		"downloads": 38172,
 		"release-count": 26
 	},
 	{
@@ -747,7 +747,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 1088616,
+		"downloads": 1089514,
 		"release-count": 56
 	},
 	{
@@ -764,7 +764,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 35468,
+		"downloads": 35487,
 		"release-count": 24
 	},
 	{
@@ -901,7 +901,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3425,
+		"downloads": 3500,
 		"release-count": 5
 	},
 	{
@@ -946,7 +946,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 22504,
+		"downloads": 22555,
 		"release-count": 99
 	},
 	{
@@ -1063,7 +1063,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 5006,
+		"downloads": 5010,
 		"release-count": 2
 	},
 	{
@@ -1099,7 +1099,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 11642,
+		"downloads": 11661,
 		"release-count": 38
 	},
 	{
@@ -1136,7 +1136,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6666,
+		"downloads": 6675,
 		"release-count": 39
 	},
 	{
@@ -1204,7 +1204,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 393,
+		"downloads": 396,
 		"release-count": 19
 	},
 	{
@@ -1270,13 +1270,13 @@
 			"x-curse-project-id": "88503",
 			"x-wowi-id": "26378"
 		},
-		"updated-date": "2025-08-09T15:12:40Z",
+		"updated-date": "2025-12-26T11:12:07Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 344,
-		"release-count": 15
+		"downloads": 346,
+		"release-count": 16
 	},
 	{
 		"id": 520660030,
@@ -1287,13 +1287,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "88028"
 		},
-		"updated-date": "2025-08-09T14:52:26Z",
+		"updated-date": "2025-12-26T11:16:19Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
 		"downloads": 2290,
-		"release-count": 12
+		"release-count": 13
 	},
 	{
 		"id": 520158461,
@@ -1304,13 +1304,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "94079"
 		},
-		"updated-date": "2025-08-09T15:14:04Z",
+		"updated-date": "2025-12-26T11:17:22Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 211,
-		"release-count": 9
+		"downloads": 213,
+		"release-count": 10
 	},
 	{
 		"id": 520597142,
@@ -1321,13 +1321,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "91222"
 		},
-		"updated-date": "2025-08-09T15:16:02Z",
+		"updated-date": "2025-12-26T11:18:20Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 86,
-		"release-count": 3
+		"downloads": 88,
+		"release-count": 4
 	},
 	{
 		"id": 520665036,
@@ -1338,13 +1338,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "91544"
 		},
-		"updated-date": "2025-08-09T15:17:26Z",
+		"updated-date": "2025-12-26T11:20:38Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 86,
-		"release-count": 3
+		"downloads": 88,
+		"release-count": 4
 	},
 	{
 		"id": 520653524,
@@ -1355,16 +1355,17 @@
 		"project-id-map": {
 			"x-curse-project-id": "101201"
 		},
-		"updated-date": "2025-08-09T15:28:14Z",
+		"updated-date": "2025-12-26T13:15:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"tbc",
-			"wrath"
+			"wrath",
+			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 9847,
-		"release-count": 11
+		"downloads": 9855,
+		"release-count": 14
 	},
 	{
 		"id": 471844726,
@@ -1403,7 +1404,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 71415,
+		"downloads": 71462,
 		"release-count": 80
 	},
 	{
@@ -1490,7 +1491,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3343,
+		"downloads": 3346,
 		"release-count": 14
 	},
 	{
@@ -1504,7 +1505,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2291,
+		"downloads": 2294,
 		"release-count": 17
 	},
 	{
@@ -1518,7 +1519,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1421,
+		"downloads": 1424,
 		"release-count": 12
 	},
 	{
@@ -1532,7 +1533,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 941,
+		"downloads": 944,
 		"release-count": 13
 	},
 	{
@@ -1576,7 +1577,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 311,
+		"downloads": 312,
 		"release-count": 17
 	},
 	{
@@ -1721,7 +1722,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20342,
+		"downloads": 20432,
 		"release-count": 39
 	},
 	{
@@ -1739,7 +1740,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1248,
+		"downloads": 1249,
 		"release-count": 9
 	},
 	{
@@ -1757,7 +1758,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5368,
+		"downloads": 5369,
 		"release-count": 16
 	},
 	{
@@ -1775,7 +1776,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2770,
+		"downloads": 2774,
 		"release-count": 15
 	},
 	{
@@ -1793,7 +1794,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5926,
+		"downloads": 5930,
 		"release-count": 34
 	},
 	{
@@ -1829,7 +1830,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 648,
+		"downloads": 650,
 		"release-count": 35
 	},
 	{
@@ -1867,7 +1868,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 705182,
+		"downloads": 705372,
 		"release-count": 21
 	},
 	{
@@ -1907,7 +1908,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 50516,
+		"downloads": 50766,
 		"release-count": 16
 	},
 	{
@@ -1927,7 +1928,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 243182,
+		"downloads": 243983,
 		"release-count": 22
 	},
 	{
@@ -1946,7 +1947,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 857910,
+		"downloads": 858968,
 		"release-count": 38
 	},
 	{
@@ -1967,7 +1968,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 142091,
+		"downloads": 142094,
 		"release-count": 223
 	},
 	{
@@ -2053,17 +2054,18 @@
 			"x-wago-id": "nQN5bd6B",
 			"x-wowi-id": "26332"
 		},
-		"updated-date": "2025-10-10T20:16:12Z",
+		"updated-date": "2025-12-26T13:43:42Z",
 		"flavor-list": [
 			"mainline",
+			"vanilla",
 			"tbc",
 			"wrath",
 			"cata",
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 15777,
-		"release-count": 6
+		"downloads": 15780,
+		"release-count": 7
 	},
 	{
 		"id": 345136337,
@@ -2115,17 +2117,21 @@
 		"description": "Add guild name and rank to character tooltips",
 		"project-id-map": {
 			"x-curse-project-id": "350206",
+			"x-wago-id": "EGPX34G1",
 			"x-wowi-id": "25905"
 		},
-		"updated-date": "2022-04-08T19:13:47Z",
+		"updated-date": "2025-12-24T21:10:51Z",
 		"flavor-list": [
+			"titan",
 			"mainline",
 			"vanilla",
-			"tbc"
+			"tbc",
+			"wrath",
+			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 206,
-		"release-count": 5
+		"downloads": 208,
+		"release-count": 6
 	},
 	{
 		"id": 227688940,
@@ -2137,14 +2143,15 @@
 			"x-wago-id": "baNDgrGo",
 			"x-wowi-id": "25998"
 		},
-		"updated-date": "2023-08-19T18:19:50Z",
+		"updated-date": "2025-12-25T07:45:13Z",
 		"flavor-list": [
 			"vanilla",
+			"tbc",
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 90233,
-		"release-count": 16
+		"downloads": 90488,
+		"release-count": 17
 	},
 	{
 		"id": 319046613,
@@ -2164,7 +2171,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 730,
+		"downloads": 733,
 		"release-count": 6
 	},
 	{
@@ -2176,15 +2183,17 @@
 		"project-id-map": {
 			"x-wowi-id": "25996"
 		},
-		"updated-date": "2023-08-11T13:13:49Z",
+		"updated-date": "2025-12-25T07:49:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
-			"wrath"
+			"tbc",
+			"wrath",
+			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2931,
-		"release-count": 11
+		"downloads": 2934,
+		"release-count": 12
 	},
 	{
 		"id": 211677068,
@@ -2262,7 +2271,7 @@
 			"x-wago-id": "anKWWqKE",
 			"x-wowi-id": "26443"
 		},
-		"updated-date": "2025-08-22T19:23:32Z",
+		"updated-date": "2025-12-28T10:30:02Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2272,8 +2281,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1050,
-		"release-count": 9
+		"downloads": 1053,
+		"release-count": 10
 	},
 	{
 		"id": 169875236,
@@ -2286,7 +2295,7 @@
 			"x-wago-id": "qv63zZNb",
 			"x-wowi-id": "25895"
 		},
-		"updated-date": "2025-11-01T11:42:37Z",
+		"updated-date": "2025-12-28T08:48:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -2296,8 +2305,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2523,
-		"release-count": 10
+		"downloads": 2526,
+		"release-count": 11
 	},
 	{
 		"id": 229809326,
@@ -2365,7 +2374,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 541,
+		"downloads": 542,
 		"release-count": 3
 	},
 	{
@@ -2404,7 +2413,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 3058,
+		"downloads": 3077,
 		"release-count": 97
 	},
 	{
@@ -2483,7 +2492,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2522924,
+		"downloads": 2524485,
 		"release-count": 1009
 	},
 	{
@@ -2502,7 +2511,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 351431,
+		"downloads": 351735,
 		"release-count": 23
 	},
 	{
@@ -2526,7 +2535,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 476004,
+		"downloads": 476818,
 		"release-count": 53
 	},
 	{
@@ -2547,7 +2556,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 453767,
+		"downloads": 454525,
 		"release-count": 83
 	},
 	{
@@ -2572,7 +2581,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 382504,
+		"downloads": 382861,
 		"release-count": 207
 	},
 	{
@@ -2591,7 +2600,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 408699,
+		"downloads": 409348,
 		"release-count": 52
 	},
 	{
@@ -2615,7 +2624,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 109060,
+		"downloads": 109250,
 		"release-count": 30
 	},
 	{
@@ -2639,7 +2648,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 86338,
+		"downloads": 86430,
 		"release-count": 34
 	},
 	{
@@ -2657,7 +2666,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 61629,
+		"downloads": 62025,
 		"release-count": 8
 	},
 	{
@@ -2676,7 +2685,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 352216,
+		"downloads": 352742,
 		"release-count": 31
 	},
 	{
@@ -2696,7 +2705,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 997277,
+		"downloads": 1002957,
 		"release-count": 57
 	},
 	{
@@ -2714,7 +2723,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 190352,
+		"downloads": 190787,
 		"release-count": 13
 	},
 	{
@@ -2737,7 +2746,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 66450,
+		"downloads": 66466,
 		"release-count": 54
 	},
 	{
@@ -2755,7 +2764,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 534102,
+		"downloads": 534778,
 		"release-count": 91
 	},
 	{
@@ -2774,7 +2783,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 316099,
+		"downloads": 316512,
 		"release-count": 34
 	},
 	{
@@ -2797,7 +2806,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 481229,
+		"downloads": 482035,
 		"release-count": 87
 	},
 	{
@@ -2821,7 +2830,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 537890,
+		"downloads": 538258,
 		"release-count": 142
 	},
 	{
@@ -2863,7 +2872,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2003524,
+		"downloads": 2004872,
 		"release-count": 574
 	},
 	{
@@ -2887,7 +2896,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 72425,
+		"downloads": 72443,
 		"release-count": 151
 	},
 	{
@@ -2905,7 +2914,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 419329,
+		"downloads": 420476,
 		"release-count": 129
 	},
 	{
@@ -2984,7 +2993,7 @@
 			"x-curse-project-id": "940950",
 			"x-wago-id": "qGZR02Gd"
 		},
-		"updated-date": "2025-12-22T03:34:49Z",
+		"updated-date": "2025-12-24T22:07:48Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -2995,8 +3004,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 59,
-		"release-count": 7
+		"downloads": 98,
+		"release-count": 8
 	},
 	{
 		"id": 693380572,
@@ -3008,41 +3017,19 @@
 			"x-curse-project-id": "913377",
 			"x-wago-id": "b6mb47KP"
 		},
-		"updated-date": "2025-12-08T13:26:41Z",
-		"flavor-list": [
-			"titan",
-			"mainline",
-			"vanilla",
-			"wrath",
-			"cata",
-			"mists"
-		],
-		"has-release-json": true,
-		"downloads": 16,
-		"release-count": 2
-	},
-	{
-		"id": 1061950484,
-		"name": "sArena_Reloaded",
-		"full_name": "Bodify/sArena_Reloaded",
-		"html_url": "https://github.com/Bodify/sArena_Reloaded",
-		"description": "",
-		"project-id-map": {
-			"x-curse-project-id": "1351104",
-			"x-wago-id": "5NRebvG3"
-		},
-		"updated-date": "2025-12-21T23:00:41Z",
+		"updated-date": "2025-12-25T07:42:56Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
 			"vanilla",
 			"tbc",
 			"wrath",
+			"cata",
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 21,
-		"release-count": 13
+		"downloads": 26,
+		"release-count": 4
 	},
 	{
 		"id": 565355821,
@@ -3080,7 +3067,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1764,
+		"downloads": 1807,
 		"release-count": 27
 	},
 	{
@@ -3100,7 +3087,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 157424,
+		"downloads": 157482,
 		"release-count": 103
 	},
 	{
@@ -3119,7 +3106,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16636,
+		"downloads": 16637,
 		"release-count": 98
 	},
 	{
@@ -3138,7 +3125,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 17371,
+		"downloads": 17378,
 		"release-count": 40
 	},
 	{
@@ -3176,7 +3163,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1872,
+		"downloads": 1876,
 		"release-count": 14
 	},
 	{
@@ -3195,7 +3182,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2149,
+		"downloads": 2150,
 		"release-count": 21
 	},
 	{
@@ -3275,14 +3262,14 @@
 			"x-curse-project-id": "871533",
 			"x-wowi-id": "26587"
 		},
-		"updated-date": "2025-10-25T13:44:48Z",
+		"updated-date": "2025-12-27T13:05:18Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 48,
+		"downloads": 13,
 		"release-count": 3
 	},
 	{
@@ -3295,15 +3282,15 @@
 			"x-curse-project-id": "884986",
 			"x-wowi-id": "26603"
 		},
-		"updated-date": "2025-10-25T13:43:48Z",
+		"updated-date": "2025-12-28T10:27:58Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 11,
-		"release-count": 3
+		"downloads": 13,
+		"release-count": 4
 	},
 	{
 		"id": 768183228,
@@ -3315,13 +3302,13 @@
 			"x-curse-project-id": "983613",
 			"x-wowi-id": "26887"
 		},
-		"updated-date": "2025-10-25T18:19:49Z",
+		"updated-date": "2025-12-27T08:30:24Z",
 		"flavor-list": [
 			"vanilla"
 		],
-		"has-release-json": true,
-		"downloads": 219,
-		"release-count": 11
+		"has-release-json": false,
+		"downloads": 259,
+		"release-count": 12
 	},
 	{
 		"id": 491688326,
@@ -3362,7 +3349,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 112884,
+		"downloads": 112936,
 		"release-count": 145
 	},
 	{
@@ -3486,7 +3473,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 42550,
+		"downloads": 42564,
 		"release-count": 410
 	},
 	{
@@ -3572,7 +3559,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 14645,
+		"downloads": 14660,
 		"release-count": 19
 	},
 	{
@@ -3592,7 +3579,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 28577,
+		"downloads": 28580,
 		"release-count": 34
 	},
 	{
@@ -3651,7 +3638,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 28769,
+		"downloads": 28825,
 		"release-count": 146
 	},
 	{
@@ -3722,7 +3709,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 9215,
+		"downloads": 9274,
 		"release-count": 28
 	},
 	{
@@ -3741,7 +3728,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 8895,
+		"downloads": 8902,
 		"release-count": 96
 	},
 	{
@@ -3804,13 +3791,13 @@
 		"full_name": "Chalsean/XFaction",
 		"html_url": "https://github.com/Chalsean/XFaction",
 		"description": "Enable cross faction roster visibility and communication between guilds of a confederate",
-		"updated-date": "2025-12-03T05:17:37Z",
+		"updated-date": "2025-12-26T18:03:45Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 153,
-		"release-count": 11
+		"downloads": 155,
+		"release-count": 12
 	},
 	{
 		"id": 841064634,
@@ -3865,7 +3852,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 6,
+		"downloads": 7,
 		"release-count": 7
 	},
 	{
@@ -3948,7 +3935,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 682,
+		"downloads": 683,
 		"release-count": 20
 	},
 	{
@@ -4130,7 +4117,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 171066,
+		"downloads": 171863,
 		"release-count": 243
 	},
 	{
@@ -4149,7 +4136,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5813,
+		"downloads": 5876,
 		"release-count": 2
 	},
 	{
@@ -4265,7 +4252,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5872,
+		"downloads": 5874,
 		"release-count": 15
 	},
 	{
@@ -4285,7 +4272,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2208,
+		"downloads": 2215,
 		"release-count": 44
 	},
 	{
@@ -4375,7 +4362,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 56153,
+		"downloads": 56163,
 		"release-count": 34
 	},
 	{
@@ -4394,7 +4381,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 255999,
+		"downloads": 256195,
 		"release-count": 44
 	},
 	{
@@ -4417,7 +4404,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 21610,
+		"downloads": 21816,
 		"release-count": 13
 	},
 	{
@@ -4438,7 +4425,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 222878,
+		"downloads": 223108,
 		"release-count": 59
 	},
 	{
@@ -4457,7 +4444,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 316749,
+		"downloads": 317010,
 		"release-count": 66
 	},
 	{
@@ -4479,7 +4466,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 28131,
+		"downloads": 28133,
 		"release-count": 44
 	},
 	{
@@ -4501,7 +4488,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 27635,
+		"downloads": 27646,
 		"release-count": 45
 	},
 	{
@@ -4519,7 +4506,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 14244,
+		"downloads": 14386,
 		"release-count": 5
 	},
 	{
@@ -4544,7 +4531,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 628216,
+		"downloads": 628724,
 		"release-count": 210
 	},
 	{
@@ -4563,7 +4550,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 242240,
+		"downloads": 242455,
 		"release-count": 52
 	},
 	{
@@ -4583,7 +4570,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 292102,
+		"downloads": 293541,
 		"release-count": 57
 	},
 	{
@@ -4606,7 +4593,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 319085,
+		"downloads": 319285,
 		"release-count": 114
 	},
 	{
@@ -4663,7 +4650,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 28594,
+		"downloads": 28699,
 		"release-count": 26
 	},
 	{
@@ -4685,7 +4672,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 72105,
+		"downloads": 72145,
 		"release-count": 43
 	},
 	{
@@ -4706,7 +4693,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 111414,
+		"downloads": 111515,
 		"release-count": 44
 	},
 	{
@@ -4724,7 +4711,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 25244,
+		"downloads": 25445,
 		"release-count": 13
 	},
 	{
@@ -4749,7 +4736,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 245328,
+		"downloads": 245584,
 		"release-count": 151
 	},
 	{
@@ -4787,7 +4774,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 213617,
+		"downloads": 213808,
 		"release-count": 52
 	},
 	{
@@ -4810,7 +4797,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 365660,
+		"downloads": 365901,
 		"release-count": 61
 	},
 	{
@@ -4834,7 +4821,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1131185,
+		"downloads": 1131919,
 		"release-count": 380
 	},
 	{
@@ -4853,7 +4840,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3887,
+		"downloads": 3893,
 		"release-count": 37
 	},
 	{
@@ -4872,7 +4859,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 20546,
+		"downloads": 20599,
 		"release-count": 16
 	},
 	{
@@ -4889,7 +4876,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 1018,
+		"downloads": 1020,
 		"release-count": 20
 	},
 	{
@@ -4932,30 +4919,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 328,
+		"downloads": 330,
 		"release-count": 47
-	},
-	{
-		"id": 471271321,
-		"name": "FFLU",
-		"full_name": "DonnieDice/FFLU",
-		"html_url": "https://github.com/DonnieDice/FFLU",
-		"description": "FFLU - Final Fantasy Level Up!",
-		"project-id-map": {
-			"x-curse-project-id": "305470",
-			"x-wago-id": "Xb6XE0Kp",
-			"x-wowi-id": "26252"
-		},
-		"updated-date": "2025-12-11T04:08:31Z",
-		"flavor-list": [
-			"mainline",
-			"vanilla",
-			"cata",
-			"mists"
-		],
-		"has-release-json": true,
-		"downloads": 182,
-		"release-count": 37
 	},
 	{
 		"id": 481781971,
@@ -5094,7 +5059,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 100746,
+		"downloads": 100937,
 		"release-count": 182
 	},
 	{
@@ -5126,20 +5091,6 @@
 		"release-count": 7
 	},
 	{
-		"id": 881432890,
-		"name": "MoonMedia",
-		"full_name": "Dreamlogic22/MoonMedia",
-		"html_url": "https://github.com/Dreamlogic22/MoonMedia",
-		"description": "Boop beep boop.",
-		"updated-date": "2025-10-07T23:48:49Z",
-		"flavor-list": [
-			"mainline"
-		],
-		"has-release-json": true,
-		"downloads": 4837,
-		"release-count": 7
-	},
-	{
 		"id": 836456437,
 		"name": "PetLeash",
 		"full_name": "Dreamlogic22/PetLeash",
@@ -5150,22 +5101,8 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7225,
+		"downloads": 7288,
 		"release-count": 11
-	},
-	{
-		"id": 922672162,
-		"name": "RedCenter",
-		"full_name": "Dreamlogic22/RedCenter",
-		"html_url": "https://github.com/Dreamlogic22/RedCenter",
-		"description": "Center of the universe!",
-		"updated-date": "2025-10-07T23:49:14Z",
-		"flavor-list": [
-			"mainline"
-		],
-		"has-release-json": true,
-		"downloads": 3162,
-		"release-count": 7
 	},
 	{
 		"id": 613118178,
@@ -5312,7 +5249,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 966,
+		"downloads": 968,
 		"release-count": 25
 	},
 	{
@@ -5354,7 +5291,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 674,
+		"downloads": 675,
 		"release-count": 18
 	},
 	{
@@ -5398,7 +5335,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 267,
+		"downloads": 268,
 		"release-count": 1
 	},
 	{
@@ -5454,7 +5391,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 537,
+		"downloads": 538,
 		"release-count": 3
 	},
 	{
@@ -5558,7 +5495,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 9146,
+		"downloads": 9149,
 		"release-count": 21
 	},
 	{
@@ -5618,7 +5555,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 33427,
+		"downloads": 33443,
 		"release-count": 55
 	},
 	{
@@ -5915,7 +5852,7 @@
 			"cata"
 		],
 		"has-release-json": false,
-		"downloads": 1419,
+		"downloads": 1422,
 		"release-count": 12
 	},
 	{
@@ -5935,7 +5872,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 5773,
+		"downloads": 5775,
 		"release-count": 48
 	},
 	{
@@ -6072,7 +6009,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 1601,
+		"downloads": 1627,
 		"release-count": 8
 	},
 	{
@@ -6356,7 +6293,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 77,
+		"downloads": 80,
 		"release-count": 22
 	},
 	{
@@ -6374,7 +6311,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 69797,
+		"downloads": 69801,
 		"release-count": 9
 	},
 	{
@@ -6409,7 +6346,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 38507,
+		"downloads": 38508,
 		"release-count": 20
 	},
 	{
@@ -6427,7 +6364,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 114,
+		"downloads": 117,
 		"release-count": 58
 	},
 	{
@@ -6445,7 +6382,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 832,
+		"downloads": 835,
 		"release-count": 49
 	},
 	{
@@ -6465,7 +6402,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 150,
+		"downloads": 153,
 		"release-count": 28
 	},
 	{
@@ -6564,7 +6501,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 8847,
+		"downloads": 8848,
 		"release-count": 66
 	},
 	{
@@ -6644,7 +6581,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 3669,
+		"downloads": 3683,
 		"release-count": 37
 	},
 	{
@@ -6707,7 +6644,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 2928,
+		"downloads": 2940,
 		"release-count": 61
 	},
 	{
@@ -6726,7 +6663,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 13567,
+		"downloads": 13572,
 		"release-count": 33
 	},
 	{
@@ -6993,7 +6930,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 227,
+		"downloads": 229,
 		"release-count": 7
 	},
 	{
@@ -7142,7 +7079,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 626903,
+		"downloads": 627706,
 		"release-count": 1428
 	},
 	{
@@ -7161,7 +7098,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 821,
+		"downloads": 825,
 		"release-count": 10
 	},
 	{
@@ -7252,7 +7189,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 85918,
+		"downloads": 86102,
 		"release-count": 101
 	},
 	{
@@ -7290,7 +7227,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 178407,
+		"downloads": 178630,
 		"release-count": 47
 	},
 	{
@@ -7431,7 +7368,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 418,
+		"downloads": 420,
 		"release-count": 32
 	},
 	{
@@ -7469,7 +7406,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 2053,
+		"downloads": 2057,
 		"release-count": 16
 	},
 	{
@@ -7505,7 +7442,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 47147,
+		"downloads": 47236,
 		"release-count": 30
 	},
 	{
@@ -7526,7 +7463,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 723396,
+		"downloads": 723466,
 		"release-count": 93
 	},
 	{
@@ -7543,7 +7480,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 219,
+		"downloads": 220,
 		"release-count": 1
 	},
 	{
@@ -7557,7 +7494,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 2944,
+		"downloads": 2948,
 		"release-count": 30
 	},
 	{
@@ -7573,7 +7510,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 28405,
+		"downloads": 28440,
 		"release-count": 86
 	},
 	{
@@ -7587,7 +7524,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16352,
+		"downloads": 16355,
 		"release-count": 1
 	},
 	{
@@ -7687,7 +7624,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 12997,
+		"downloads": 13009,
 		"release-count": 114
 	},
 	{
@@ -7773,13 +7710,13 @@
 		"project-id-map": {
 			"x-wago-id": "mNwQzXKo"
 		},
-		"updated-date": "2025-08-06T21:35:23Z",
+		"updated-date": "2025-12-25T17:04:02Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 83,
-		"release-count": 6
+		"downloads": 85,
+		"release-count": 7
 	},
 	{
 		"id": 583691094,
@@ -7847,7 +7784,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 189565,
+		"downloads": 189580,
 		"release-count": 49
 	},
 	{
@@ -8115,7 +8052,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10120,
+		"downloads": 10125,
 		"release-count": 131
 	},
 	{
@@ -8133,7 +8070,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 19395,
+		"downloads": 19495,
 		"release-count": 53
 	},
 	{
@@ -8212,7 +8149,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 255638,
+		"downloads": 255718,
 		"release-count": 30
 	},
 	{
@@ -8229,7 +8166,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 36035,
+		"downloads": 36449,
 		"release-count": 23
 	},
 	{
@@ -8262,7 +8199,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10954,
+		"downloads": 10984,
 		"release-count": 9
 	},
 	{
@@ -8300,7 +8237,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 58206,
+		"downloads": 58470,
 		"release-count": 13
 	},
 	{
@@ -8321,7 +8258,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 30621,
+		"downloads": 30772,
 		"release-count": 192
 	},
 	{
@@ -8353,7 +8290,7 @@
 			"x-curse-project-id": "17809",
 			"x-wowi-id": "23875"
 		},
-		"updated-date": "2025-12-13T13:46:21Z",
+		"updated-date": "2025-12-25T14:34:20Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -8363,8 +8300,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 257902,
-		"release-count": 201
+		"downloads": 258604,
+		"release-count": 202
 	},
 	{
 		"id": 1010716711,
@@ -8382,7 +8319,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 99,
+		"downloads": 102,
 		"release-count": 13
 	},
 	{
@@ -8401,7 +8338,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 39,
+		"downloads": 42,
 		"release-count": 8
 	},
 	{
@@ -8415,7 +8352,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1437,
+		"downloads": 1440,
 		"release-count": 14
 	},
 	{
@@ -8481,7 +8418,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 14686,
+		"downloads": 14689,
 		"release-count": 63
 	},
 	{
@@ -8530,7 +8467,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 11092,
+		"downloads": 11094,
 		"release-count": 27
 	},
 	{
@@ -8552,7 +8489,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 29679,
+		"downloads": 29729,
 		"release-count": 15
 	},
 	{
@@ -8609,7 +8546,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 20689,
+		"downloads": 20898,
 		"release-count": 99
 	},
 	{
@@ -8695,7 +8632,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 23112,
+		"downloads": 23124,
 		"release-count": 197
 	},
 	{
@@ -8861,7 +8798,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 81549,
+		"downloads": 81554,
 		"release-count": 70
 	},
 	{
@@ -8902,7 +8839,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 13991,
+		"downloads": 14013,
 		"release-count": 125
 	},
 	{
@@ -8937,7 +8874,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 26304,
+		"downloads": 27001,
 		"release-count": 27
 	},
 	{
@@ -8955,7 +8892,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 9974,
+		"downloads": 9975,
 		"release-count": 15
 	},
 	{
@@ -8967,7 +8904,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "893895"
 		},
-		"updated-date": "2025-12-23T08:00:19Z",
+		"updated-date": "2025-12-25T18:25:29Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -8975,8 +8912,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5741,
-		"release-count": 38
+		"downloads": 5766,
+		"release-count": 40
 	},
 	{
 		"id": 287608644,
@@ -8991,7 +8928,7 @@
 			"cata"
 		],
 		"has-release-json": false,
-		"downloads": 5004,
+		"downloads": 5010,
 		"release-count": 13
 	},
 	{
@@ -9007,7 +8944,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 27901,
+		"downloads": 27923,
 		"release-count": 78
 	},
 	{
@@ -9023,7 +8960,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 12137,
+		"downloads": 12151,
 		"release-count": 47
 	},
 	{
@@ -9039,7 +8976,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 4428,
+		"downloads": 4434,
 		"release-count": 43
 	},
 	{
@@ -9055,7 +8992,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 8032,
+		"downloads": 8048,
 		"release-count": 32
 	},
 	{
@@ -9072,7 +9009,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 1087,
+		"downloads": 1088,
 		"release-count": 9
 	},
 	{
@@ -9088,7 +9025,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 4258,
+		"downloads": 4264,
 		"release-count": 17
 	},
 	{
@@ -9102,7 +9039,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 64319,
+		"downloads": 64320,
 		"release-count": 12
 	},
 	{
@@ -9187,7 +9124,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2152,
+		"downloads": 2153,
 		"release-count": 50
 	},
 	{
@@ -9206,7 +9143,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7253,
+		"downloads": 7256,
 		"release-count": 28
 	},
 	{
@@ -9239,7 +9176,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 389,
+		"downloads": 392,
 		"release-count": 105
 	},
 	{
@@ -9309,7 +9246,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 93579,
+		"downloads": 93580,
 		"release-count": 12
 	},
 	{
@@ -9523,7 +9460,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 50,
+		"downloads": 53,
 		"release-count": 12
 	},
 	{
@@ -9547,7 +9484,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 70,
+		"downloads": 73,
 		"release-count": 20
 	},
 	{
@@ -9566,7 +9503,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 113151,
+		"downloads": 113408,
 		"release-count": 490
 	},
 	{
@@ -9603,7 +9540,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 68107,
+		"downloads": 68318,
 		"release-count": 54
 	},
 	{
@@ -9659,7 +9596,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 600,
+		"downloads": 613,
 		"release-count": 28
 	},
 	{
@@ -9706,13 +9643,13 @@
 			"x-curse-project-id": "1405495",
 			"x-wago-id": "4N2mBVGL"
 		},
-		"updated-date": "2025-12-24T06:36:16Z",
+		"updated-date": "2025-12-28T11:14:38Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8,
-		"release-count": 20
+		"downloads": 17,
+		"release-count": 23
 	},
 	{
 		"id": 539106195,
@@ -9744,7 +9681,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 13,
+		"downloads": 16,
 		"release-count": 3
 	},
 	{
@@ -9785,7 +9722,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1446,
+		"downloads": 1452,
 		"release-count": 146
 	},
 	{
@@ -9802,7 +9739,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 222,
+		"downloads": 225,
 		"release-count": 9
 	},
 	{
@@ -9814,7 +9751,7 @@
 		"updated-date": "2025-12-18T20:20:16Z",
 		"flavor-list": null,
 		"has-release-json": false,
-		"downloads": 191,
+		"downloads": 203,
 		"release-count": 62
 	},
 	{
@@ -9933,7 +9870,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 112302,
+		"downloads": 112606,
 		"release-count": 211
 	},
 	{
@@ -10008,7 +9945,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 183153,
+		"downloads": 183311,
 		"release-count": 571
 	},
 	{
@@ -10024,7 +9961,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 3591,
+		"downloads": 3597,
 		"release-count": 72
 	},
 	{
@@ -10068,7 +10005,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 174,
+		"downloads": 177,
 		"release-count": 143
 	},
 	{
@@ -10081,13 +10018,13 @@
 			"x-curse-project-id": "1295509",
 			"x-wago-id": "4N2mZ4GL"
 		},
-		"updated-date": "2025-12-24T00:00:20Z",
+		"updated-date": "2025-12-28T06:00:21Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 537,
-		"release-count": 609
+		"downloads": 572,
+		"release-count": 625
 	},
 	{
 		"id": 997681881,
@@ -10106,7 +10043,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 75,
+		"downloads": 78,
 		"release-count": 23
 	},
 	{
@@ -10140,7 +10077,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 19391,
+		"downloads": 19432,
 		"release-count": 124
 	},
 	{
@@ -10183,7 +10120,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6755,
+		"downloads": 6779,
 		"release-count": 76
 	},
 	{
@@ -10304,7 +10241,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 69687,
+		"downloads": 69691,
 		"release-count": 40
 	},
 	{
@@ -10324,7 +10261,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 715,
+		"downloads": 716,
 		"release-count": 9
 	},
 	{
@@ -10345,7 +10282,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1772,
+		"downloads": 1773,
 		"release-count": 23
 	},
 	{
@@ -10364,7 +10301,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1823,
+		"downloads": 1824,
 		"release-count": 15
 	},
 	{
@@ -10424,7 +10361,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1813,
+		"downloads": 1815,
 		"release-count": 39
 	},
 	{
@@ -10508,7 +10445,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3433,
+		"downloads": 3443,
 		"release-count": 48
 	},
 	{
@@ -10528,7 +10465,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 4373,
+		"downloads": 4375,
 		"release-count": 48
 	},
 	{
@@ -10544,7 +10481,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 51705,
+		"downloads": 51940,
 		"release-count": 26
 	},
 	{
@@ -10760,7 +10697,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 9227,
+		"downloads": 9228,
 		"release-count": 57
 	},
 	{
@@ -11071,7 +11008,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 15447,
+		"downloads": 15569,
 		"release-count": 43
 	},
 	{
@@ -11085,7 +11022,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2636,
+		"downloads": 2666,
 		"release-count": 6
 	},
 	{
@@ -11106,7 +11043,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 431054,
+		"downloads": 431601,
 		"release-count": 79
 	},
 	{
@@ -11124,7 +11061,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1119382,
+		"downloads": 1122144,
 		"release-count": 56
 	},
 	{
@@ -11141,7 +11078,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 279840,
+		"downloads": 280308,
 		"release-count": 6
 	},
 	{
@@ -11162,7 +11099,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 603617,
+		"downloads": 604060,
 		"release-count": 34
 	},
 	{
@@ -11181,7 +11118,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 22171,
+		"downloads": 22175,
 		"release-count": 17
 	},
 	{
@@ -11198,7 +11135,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 87460,
+		"downloads": 87488,
 		"release-count": 47
 	},
 	{
@@ -11216,7 +11153,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 90117,
+		"downloads": 90310,
 		"release-count": 28
 	},
 	{
@@ -11236,7 +11173,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 317147,
+		"downloads": 317599,
 		"release-count": 37
 	},
 	{
@@ -11253,7 +11190,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 21307,
+		"downloads": 21324,
 		"release-count": 21
 	},
 	{
@@ -11272,7 +11209,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 196080,
+		"downloads": 196531,
 		"release-count": 11
 	},
 	{
@@ -11291,7 +11228,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 39875,
+		"downloads": 39885,
 		"release-count": 83
 	},
 	{
@@ -11305,7 +11242,7 @@
 			"x-wago-id": "n6VPMLGd",
 			"x-wowi-id": "26459"
 		},
-		"updated-date": "2025-12-20T22:30:53Z",
+		"updated-date": "2025-12-27T00:12:36Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -11314,8 +11251,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4107,
-		"release-count": 70
+		"downloads": 4119,
+		"release-count": 73
 	},
 	{
 		"id": 835471221,
@@ -11359,7 +11296,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3541,
+		"downloads": 3570,
 		"release-count": 38
 	},
 	{
@@ -11404,7 +11341,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5417,
+		"downloads": 5420,
 		"release-count": 54
 	},
 	{
@@ -11440,7 +11377,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 670,
+		"downloads": 673,
 		"release-count": 209
 	},
 	{
@@ -11499,7 +11436,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 121633,
+		"downloads": 121714,
 		"release-count": 123
 	},
 	{
@@ -11535,7 +11472,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6446,
+		"downloads": 6508,
 		"release-count": 17
 	},
 	{
@@ -11554,7 +11491,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 564194,
+		"downloads": 564595,
 		"release-count": 466
 	},
 	{
@@ -11572,7 +11509,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 777,
+		"downloads": 778,
 		"release-count": 15
 	},
 	{
@@ -11593,7 +11530,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 868,
+		"downloads": 909,
 		"release-count": 22
 	},
 	{
@@ -11636,7 +11573,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 1000,
+		"downloads": 1002,
 		"release-count": 5
 	},
 	{
@@ -11658,7 +11595,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 62654,
+		"downloads": 62883,
 		"release-count": 121
 	},
 	{
@@ -11697,7 +11634,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 16021,
+		"downloads": 16223,
 		"release-count": 52
 	},
 	{
@@ -11775,7 +11712,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4021,
+		"downloads": 4023,
 		"release-count": 68
 	},
 	{
@@ -11862,7 +11799,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2276,
+		"downloads": 2278,
 		"release-count": 26
 	},
 	{
@@ -11885,7 +11822,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 14574,
+		"downloads": 14783,
 		"release-count": 42
 	},
 	{
@@ -11939,7 +11876,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1393,
+		"downloads": 1396,
 		"release-count": 14
 	},
 	{
@@ -11980,7 +11917,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 31941,
+		"downloads": 32038,
 		"release-count": 64
 	},
 	{
@@ -12020,7 +11957,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 127749,
+		"downloads": 127948,
 		"release-count": 65
 	},
 	{
@@ -12038,7 +11975,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 19799,
+		"downloads": 19896,
 		"release-count": 83
 	},
 	{
@@ -12056,7 +11993,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 18113,
+		"downloads": 18115,
 		"release-count": 89
 	},
 	{
@@ -12079,7 +12016,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 38916,
+		"downloads": 38987,
 		"release-count": 67
 	},
 	{
@@ -12138,7 +12075,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6183,
+		"downloads": 6188,
 		"release-count": 46
 	},
 	{
@@ -12156,7 +12093,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 11233,
+		"downloads": 11236,
 		"release-count": 42
 	},
 	{
@@ -12174,7 +12111,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 60951,
+		"downloads": 60965,
 		"release-count": 90
 	},
 	{
@@ -12192,7 +12129,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1219154,
+		"downloads": 1220017,
 		"release-count": 149
 	},
 	{
@@ -12210,7 +12147,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 94365,
+		"downloads": 94506,
 		"release-count": 102
 	},
 	{
@@ -12228,7 +12165,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5517,
+		"downloads": 5622,
 		"release-count": 45
 	},
 	{
@@ -12251,7 +12188,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5448,
+		"downloads": 5453,
 		"release-count": 24
 	},
 	{
@@ -12270,7 +12207,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 65493,
+		"downloads": 65586,
 		"release-count": 72
 	},
 	{
@@ -12474,7 +12411,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 6262,
+		"downloads": 6267,
 		"release-count": 8
 	},
 	{
@@ -12511,7 +12448,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2263,
+		"downloads": 2266,
 		"release-count": 61
 	},
 	{
@@ -12543,7 +12480,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 23315,
+		"downloads": 23319,
 		"release-count": 118
 	},
 	{
@@ -12688,7 +12625,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 289,
+		"downloads": 291,
 		"release-count": 20
 	},
 	{
@@ -12840,7 +12777,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16465,
+		"downloads": 16588,
 		"release-count": 11
 	},
 	{
@@ -12930,7 +12867,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6550059,
+		"downloads": 6559080,
 		"release-count": 430
 	},
 	{
@@ -12944,13 +12881,13 @@
 			"x-wago-id": "aN0Ykv6j",
 			"x-wowi-id": "26888"
 		},
-		"updated-date": "2025-12-23T12:46:35Z",
+		"updated-date": "2025-12-28T08:29:01Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 112,
-		"release-count": 41
+		"downloads": 132,
+		"release-count": 47
 	},
 	{
 		"id": 1107165115,
@@ -12966,7 +12903,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 109,
+		"downloads": 118,
 		"release-count": 14
 	},
 	{
@@ -12998,13 +12935,13 @@
 			"x-curse-project-id": "279257",
 			"x-wago-id": "b6mb0XKP"
 		},
-		"updated-date": "2025-12-24T09:39:34Z",
+		"updated-date": "2025-12-28T09:22:19Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8687290,
-		"release-count": 1393
+		"downloads": 8706412,
+		"release-count": 1397
 	},
 	{
 		"id": 13998254,
@@ -13099,7 +13036,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 24437,
+		"downloads": 24529,
 		"release-count": 29
 	},
 	{
@@ -13196,7 +13133,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 4797,
+		"downloads": 4798,
 		"release-count": 13
 	},
 	{
@@ -13231,7 +13168,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 54212,
+		"downloads": 54242,
 		"release-count": 5
 	},
 	{
@@ -13267,7 +13204,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 42151,
+		"downloads": 42162,
 		"release-count": 5
 	},
 	{
@@ -13318,14 +13255,14 @@
 		"project-id-map": {
 			"x-curse-project-id": "15226",
 			"x-wago-id": "vEGPyeN1",
-			"x-wowi-id": "8736"
+			"x-wowi-id": "12097"
 		},
 		"updated-date": "2025-12-04T00:07:33Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 25092,
+		"downloads": 25128,
 		"release-count": 125
 	},
 	{
@@ -13343,7 +13280,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6794,
+		"downloads": 6837,
 		"release-count": 13
 	},
 	{
@@ -13375,7 +13312,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 45,
+		"downloads": 48,
 		"release-count": 15
 	},
 	{
@@ -13393,7 +13330,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 21324,
+		"downloads": 22494,
 		"release-count": 68
 	},
 	{
@@ -13412,7 +13349,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 321,
+		"downloads": 324,
 		"release-count": 20
 	},
 	{
@@ -13445,7 +13382,7 @@
 			"x-curse-project-id": "486246",
 			"x-wago-id": "ZKbebq61"
 		},
-		"updated-date": "2025-12-09T21:51:50Z",
+		"updated-date": "2025-12-26T23:28:48Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -13453,8 +13390,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1532105,
-		"release-count": 263
+		"downloads": 1536173,
+		"release-count": 266
 	},
 	{
 		"id": 588756560,
@@ -13483,7 +13420,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 3438,
+		"downloads": 3446,
 		"release-count": 16
 	},
 	{
@@ -13704,7 +13641,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 510,
+		"downloads": 512,
 		"release-count": 18
 	},
 	{
@@ -13724,7 +13661,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 557039,
+		"downloads": 557491,
 		"release-count": 20
 	},
 	{
@@ -13798,7 +13735,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1328,
+		"downloads": 1940,
 		"release-count": 2
 	},
 	{
@@ -13812,7 +13749,7 @@
 			"x-wago-id": "kRNLgpGo",
 			"x-wowi-id": "12097"
 		},
-		"updated-date": "2025-12-14T23:31:47Z",
+		"updated-date": "2025-12-24T15:44:22Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13823,8 +13760,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20602,
-		"release-count": 2
+		"downloads": 25926,
+		"release-count": 3
 	},
 	{
 		"id": 44074171,
@@ -13837,7 +13774,7 @@
 			"x-wago-id": "PANzJ5N4",
 			"x-wowi-id": "8870"
 		},
-		"updated-date": "2025-12-02T21:39:45Z",
+		"updated-date": "2025-12-24T15:28:31Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13848,7 +13785,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2779,
+		"downloads": 2231,
 		"release-count": 2
 	},
 	{
@@ -13862,7 +13799,7 @@
 			"x-wago-id": "RXKqjoGy",
 			"x-wowi-id": "8869"
 		},
-		"updated-date": "2025-12-01T21:59:02Z",
+		"updated-date": "2025-12-24T15:28:05Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13873,7 +13810,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5050,
+		"downloads": 4090,
 		"release-count": 2
 	},
 	{
@@ -13887,7 +13824,7 @@
 			"x-wago-id": "lQNljxKe",
 			"x-wowi-id": "24410"
 		},
-		"updated-date": "2025-12-01T18:56:05Z",
+		"updated-date": "2025-12-24T15:27:55Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13898,7 +13835,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2710,
+		"downloads": 2200,
 		"release-count": 2
 	},
 	{
@@ -13912,7 +13849,7 @@
 			"x-wago-id": "YK9E3XKL",
 			"x-wowi-id": "26992"
 		},
-		"updated-date": "2025-12-01T18:03:28Z",
+		"updated-date": "2025-12-24T15:27:06Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13923,7 +13860,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11,
+		"downloads": 8,
 		"release-count": 2
 	},
 	{
@@ -13937,7 +13874,7 @@
 			"x-wago-id": "WL6JYRNv",
 			"x-wowi-id": "26455"
 		},
-		"updated-date": "2025-12-01T17:22:56Z",
+		"updated-date": "2025-12-24T15:26:47Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13948,7 +13885,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 235,
+		"downloads": 237,
 		"release-count": 2
 	},
 	{
@@ -13962,7 +13899,7 @@
 			"x-wago-id": "25NRZvN3",
 			"x-wowi-id": "8873"
 		},
-		"updated-date": "2025-12-01T16:05:00Z",
+		"updated-date": "2025-12-24T15:26:23Z",
 		"flavor-list": [
 			"titan",
 			"mainline",
@@ -13973,8 +13910,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4277,
-		"release-count": 3
+		"downloads": 2081,
+		"release-count": 2
 	},
 	{
 		"id": 419084165,
@@ -13998,8 +13935,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 17,
-		"release-count": 3
+		"downloads": 10,
+		"release-count": 2
 	},
 	{
 		"id": 44074713,
@@ -14023,8 +13960,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1999,
-		"release-count": 3
+		"downloads": 1441,
+		"release-count": 2
 	},
 	{
 		"id": 44074613,
@@ -14048,8 +13985,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2625,
-		"release-count": 3
+		"downloads": 1936,
+		"release-count": 2
 	},
 	{
 		"id": 44074685,
@@ -14073,8 +14010,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2677,
-		"release-count": 3
+		"downloads": 2021,
+		"release-count": 2
 	},
 	{
 		"id": 44074799,
@@ -14098,7 +14035,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4121,
+		"downloads": 4371,
 		"release-count": 2
 	},
 	{
@@ -14123,7 +14060,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6,
+		"downloads": 9,
 		"release-count": 2
 	},
 	{
@@ -14158,7 +14095,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 409,
+		"downloads": 535,
 		"release-count": 5
 	},
 	{
@@ -14176,7 +14113,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 157036,
+		"downloads": 157322,
 		"release-count": 96
 	},
 	{
@@ -14212,7 +14149,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 18834,
+		"downloads": 18884,
 		"release-count": 6
 	},
 	{
@@ -14268,21 +14205,22 @@
 		"release-count": 37
 	},
 	{
-		"id": 973427666,
-		"name": "LightskyUniversal",
-		"full_name": "Saaappi/LightskyUniversal",
-		"html_url": "https://github.com/Saaappi/LightskyUniversal",
-		"description": "A collection of tools I use to play the game.",
+		"id": 937370654,
+		"name": "SLUI",
+		"full_name": "Sacred-Lotus-Guild/SLUI",
+		"html_url": "https://github.com/Sacred-Lotus-Guild/SLUI",
+		"description": "Sacred Lotus UI Utilities",
 		"project-id-map": {
-			"x-curse-project-id": "1289001"
+			"x-curse-project-id": "1207905",
+			"x-wago-id": "QNlq986e"
 		},
-		"updated-date": "2025-08-03T21:41:55Z",
+		"updated-date": "2025-10-23T18:29:35Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7,
-		"release-count": 11
+		"downloads": 8753,
+		"release-count": 21
 	},
 	{
 		"id": 394932065,
@@ -14345,7 +14283,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 6678,
+		"downloads": 6692,
 		"release-count": 16
 	},
 	{
@@ -14697,7 +14635,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 431492,
+		"downloads": 432218,
 		"release-count": 63
 	},
 	{
@@ -14778,7 +14716,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 12252,
+		"downloads": 12257,
 		"release-count": 13
 	},
 	{
@@ -14799,7 +14737,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 145694,
+		"downloads": 145924,
 		"release-count": 22
 	},
 	{
@@ -14813,7 +14751,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 268,
+		"downloads": 269,
 		"release-count": 22
 	},
 	{
@@ -14983,7 +14921,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5774,
+		"downloads": 5779,
 		"release-count": 131
 	},
 	{
@@ -15024,7 +14962,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 419,
+		"downloads": 423,
 		"release-count": 23
 	},
 	{
@@ -15042,7 +14980,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 646,
+		"downloads": 655,
 		"release-count": 44
 	},
 	{
@@ -15060,7 +14998,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 39747,
+		"downloads": 39874,
 		"release-count": 176
 	},
 	{
@@ -15078,7 +15016,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3603,
+		"downloads": 3697,
 		"release-count": 68
 	},
 	{
@@ -15111,7 +15049,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 3402,
+		"downloads": 3406,
 		"release-count": 51
 	},
 	{
@@ -15128,7 +15066,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 11005,
+		"downloads": 11052,
 		"release-count": 159
 	},
 	{
@@ -15147,7 +15085,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1146,
+		"downloads": 1208,
 		"release-count": 18
 	},
 	{
@@ -15180,7 +15118,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 36424,
+		"downloads": 36441,
 		"release-count": 153
 	},
 	{
@@ -15383,7 +15321,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 281184,
+		"downloads": 281713,
 		"release-count": 38
 	},
 	{
@@ -15436,7 +15374,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 28725,
+		"downloads": 28759,
 		"release-count": 10
 	},
 	{
@@ -15455,7 +15393,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5064,
+		"downloads": 5067,
 		"release-count": 47
 	},
 	{
@@ -15472,7 +15410,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1552,
+		"downloads": 1555,
 		"release-count": 51
 	},
 	{
@@ -15490,7 +15428,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 14031,
+		"downloads": 14041,
 		"release-count": 136
 	},
 	{
@@ -15507,7 +15445,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 54786,
+		"downloads": 54961,
 		"release-count": 96
 	},
 	{
@@ -15524,7 +15462,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 138883,
+		"downloads": 139147,
 		"release-count": 77
 	},
 	{
@@ -15563,7 +15501,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 385,
+		"downloads": 388,
 		"release-count": 23
 	},
 	{
@@ -15604,7 +15542,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 18623,
+		"downloads": 18724,
 		"release-count": 37
 	},
 	{
@@ -15628,7 +15566,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 78732,
+		"downloads": 78840,
 		"release-count": 64
 	},
 	{
@@ -15649,7 +15587,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1153,
+		"downloads": 1156,
 		"release-count": 20
 	},
 	{
@@ -15672,7 +15610,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 36576,
+		"downloads": 36748,
 		"release-count": 44
 	},
 	{
@@ -15695,7 +15633,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 556,
+		"downloads": 559,
 		"release-count": 17
 	},
 	{
@@ -15718,7 +15656,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 1827,
+		"downloads": 1830,
 		"release-count": 23
 	},
 	{
@@ -15742,7 +15680,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1451,
+		"downloads": 1454,
 		"release-count": 21
 	},
 	{
@@ -15813,7 +15751,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 864223,
+		"downloads": 864679,
 		"release-count": 217
 	},
 	{
@@ -15840,14 +15778,14 @@
 			"x-curse-project-id": "413582",
 			"x-wago-id": "XrNkx46a"
 		},
-		"updated-date": "2025-12-08T19:11:16Z",
+		"updated-date": "2025-12-27T10:15:27Z",
 		"flavor-list": [
 			"mainline",
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 5127,
-		"release-count": 242
+		"downloads": 5140,
+		"release-count": 243
 	},
 	{
 		"id": 667554963,
@@ -15859,15 +15797,15 @@
 			"x-curse-project-id": "872787",
 			"x-wago-id": "mNwQwWKo"
 		},
-		"updated-date": "2025-12-23T17:25:12Z",
+		"updated-date": "2025-12-27T10:38:08Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 399,
-		"release-count": 49
+		"downloads": 415,
+		"release-count": 52
 	},
 	{
 		"id": 1096258800,
@@ -15981,7 +15919,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 87702,
+		"downloads": 87963,
 		"release-count": 453
 	},
 	{
@@ -16100,7 +16038,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 390,
+		"downloads": 392,
 		"release-count": 7
 	},
 	{
@@ -16119,7 +16057,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 38595,
+		"downloads": 38615,
 		"release-count": 42
 	},
 	{
@@ -16172,7 +16110,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4388,
+		"downloads": 4391,
 		"release-count": 1
 	},
 	{
@@ -16209,7 +16147,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6542,
+		"downloads": 6548,
 		"release-count": 71
 	},
 	{
@@ -16228,7 +16166,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 94339,
+		"downloads": 94366,
 		"release-count": 188
 	},
 	{
@@ -16247,7 +16185,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 31118,
+		"downloads": 31138,
 		"release-count": 63
 	},
 	{
@@ -16268,7 +16206,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 34402,
+		"downloads": 34410,
 		"release-count": 266
 	},
 	{
@@ -16307,7 +16245,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1048,
+		"downloads": 1052,
 		"release-count": 24
 	},
 	{
@@ -16321,7 +16259,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 77457,
+		"downloads": 77916,
 		"release-count": 69
 	},
 	{
@@ -16408,7 +16346,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 67722,
+		"downloads": 67770,
 		"release-count": 156
 	},
 	{
@@ -16469,17 +16407,18 @@
 		"project-id-map": {
 			"x-wago-id": "vEGPeON1"
 		},
-		"updated-date": "2025-05-26T15:34:52Z",
+		"updated-date": "2025-12-26T17:56:05Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"tbc",
 			"wrath",
-			"cata"
+			"cata",
+			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 3443,
-		"release-count": 22
+		"downloads": 3483,
+		"release-count": 23
 	},
 	{
 		"id": 286133946,
@@ -16500,7 +16439,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 1784895,
+		"downloads": 1786379,
 		"release-count": 148
 	},
 	{
@@ -16582,7 +16521,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 60931,
+		"downloads": 60989,
 		"release-count": 32
 	},
 	{
@@ -16603,7 +16542,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 16840,
+		"downloads": 16842,
 		"release-count": 22
 	},
 	{
@@ -16645,7 +16584,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20221,
+		"downloads": 20224,
 		"release-count": 28
 	},
 	{
@@ -16666,7 +16605,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 8655,
+		"downloads": 8660,
 		"release-count": 53
 	},
 	{
@@ -16737,15 +16676,15 @@
 			"x-wago-id": "0mKOQQNx",
 			"x-wowi-id": "19598"
 		},
-		"updated-date": "2025-08-08T22:09:28Z",
+		"updated-date": "2025-12-27T12:14:57Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1909,
-		"release-count": 12
+		"downloads": 1911,
+		"release-count": 13
 	},
 	{
 		"id": 27310557,
@@ -16786,7 +16725,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 1840,
+		"downloads": 1857,
 		"release-count": 10
 	},
 	{
@@ -16812,6 +16751,20 @@
 		"release-count": 5
 	},
 	{
+		"id": 1124030304,
+		"name": "WarbandIO-Addon",
+		"full_name": "Warband-IO/WarbandIO-Addon",
+		"html_url": "https://github.com/Warband-IO/WarbandIO-Addon",
+		"description": "WoW addon for Warband.io - Import raid rosters and manage invites in-game",
+		"updated-date": "2025-12-28T07:04:15Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": false,
+		"downloads": 2,
+		"release-count": 1
+	},
+	{
 		"id": 448389331,
 		"name": "SocketHelper",
 		"full_name": "WatchThemFall/SocketHelper",
@@ -16825,7 +16778,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 27016,
+		"downloads": 27018,
 		"release-count": 43
 	},
 	{
@@ -16844,7 +16797,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 1461,
+		"downloads": 1465,
 		"release-count": 15
 	},
 	{
@@ -16868,7 +16821,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6130997,
+		"downloads": 6134539,
 		"release-count": 310
 	},
 	{
@@ -16923,7 +16876,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16518,
+		"downloads": 16519,
 		"release-count": 6
 	},
 	{
@@ -16975,7 +16928,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 41245,
+		"downloads": 41284,
 		"release-count": 13
 	},
 	{
@@ -16991,7 +16944,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 15494,
+		"downloads": 15528,
 		"release-count": 20
 	},
 	{
@@ -17009,7 +16962,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7036,
+		"downloads": 7039,
 		"release-count": 268
 	},
 	{
@@ -17041,7 +16994,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 63808,
+		"downloads": 64188,
 		"release-count": 19
 	},
 	{
@@ -17058,7 +17011,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 44854,
+		"downloads": 45083,
 		"release-count": 10
 	},
 	{
@@ -17075,7 +17028,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 56370,
+		"downloads": 56654,
 		"release-count": 17
 	},
 	{
@@ -17092,7 +17045,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16363,
+		"downloads": 16384,
 		"release-count": 7
 	},
 	{
@@ -17111,7 +17064,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 724935,
+		"downloads": 725430,
 		"release-count": 97
 	},
 	{
@@ -17147,7 +17100,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 52781,
+		"downloads": 53261,
 		"release-count": 18
 	},
 	{
@@ -17222,7 +17175,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3062,
+		"downloads": 3063,
 		"release-count": 232
 	},
 	{
@@ -17334,7 +17287,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 49029,
+		"downloads": 49030,
 		"release-count": 123
 	},
 	{
@@ -17379,7 +17332,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 604,
+		"downloads": 612,
 		"release-count": 1
 	},
 	{
@@ -17393,7 +17346,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 1710,
+		"downloads": 1712,
 		"release-count": 8
 	},
 	{
@@ -17413,7 +17366,7 @@
 			"cata"
 		],
 		"has-release-json": false,
-		"downloads": 2575,
+		"downloads": 2580,
 		"release-count": 33
 	},
 	{
@@ -17586,7 +17539,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 147838,
+		"downloads": 148053,
 		"release-count": 125
 	},
 	{
@@ -17611,7 +17564,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 448,
+		"downloads": 451,
 		"release-count": 19
 	},
 	{
@@ -17636,7 +17589,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 372,
+		"downloads": 375,
 		"release-count": 16
 	},
 	{
@@ -17661,7 +17614,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11130,
+		"downloads": 11140,
 		"release-count": 26
 	},
 	{
@@ -17686,7 +17639,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11578,
+		"downloads": 11581,
 		"release-count": 22
 	},
 	{
@@ -17711,7 +17664,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1571,
+		"downloads": 1576,
 		"release-count": 19
 	},
 	{
@@ -17736,7 +17689,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 904,
+		"downloads": 907,
 		"release-count": 30
 	},
 	{
@@ -17761,7 +17714,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 347,
+		"downloads": 350,
 		"release-count": 17
 	},
 	{
@@ -17784,7 +17737,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1132,
+		"downloads": 1135,
 		"release-count": 19
 	},
 	{
@@ -17809,7 +17762,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 518,
+		"downloads": 521,
 		"release-count": 22
 	},
 	{
@@ -17834,7 +17787,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 513,
+		"downloads": 516,
 		"release-count": 22
 	},
 	{
@@ -17859,7 +17812,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3720,
+		"downloads": 3723,
 		"release-count": 23
 	},
 	{
@@ -17884,7 +17837,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 612,
+		"downloads": 620,
 		"release-count": 21
 	},
 	{
@@ -17909,7 +17862,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 434,
+		"downloads": 437,
 		"release-count": 18
 	},
 	{
@@ -17934,7 +17887,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 849,
+		"downloads": 857,
 		"release-count": 20
 	},
 	{
@@ -17979,7 +17932,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1007,
+		"downloads": 1015,
 		"release-count": 21
 	},
 	{
@@ -18004,7 +17957,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 466,
+		"downloads": 469,
 		"release-count": 18
 	},
 	{
@@ -18021,7 +17974,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 22,
+		"downloads": 26,
 		"release-count": 42
 	},
 	{
@@ -18072,7 +18025,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 769,
+		"downloads": 770,
 		"release-count": 19
 	},
 	{
@@ -18089,7 +18042,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 735,
+		"downloads": 736,
 		"release-count": 21
 	},
 	{
@@ -18191,7 +18144,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5860,
+		"downloads": 5872,
 		"release-count": 61
 	},
 	{
@@ -18263,7 +18216,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 718,
+		"downloads": 719,
 		"release-count": 10
 	},
 	{
@@ -18336,7 +18289,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 51411,
+		"downloads": 51634,
 		"release-count": 43
 	},
 	{
@@ -18407,7 +18360,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 860,
+		"downloads": 913,
 		"release-count": 11
 	},
 	{
@@ -18662,7 +18615,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6842,
+		"downloads": 6892,
 		"release-count": 1
 	},
 	{
@@ -18681,7 +18634,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 60613,
+		"downloads": 60749,
 		"release-count": 68
 	},
 	{
@@ -18725,7 +18678,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 19643,
+		"downloads": 19660,
 		"release-count": 52
 	},
 	{
@@ -18761,7 +18714,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4171,
+		"downloads": 4179,
 		"release-count": 49
 	},
 	{
@@ -18887,7 +18840,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 34532,
+		"downloads": 34543,
 		"release-count": 29
 	},
 	{
@@ -18925,7 +18878,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4405,
+		"downloads": 4415,
 		"release-count": 9
 	},
 	{
@@ -18943,7 +18896,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4833,
+		"downloads": 4846,
 		"release-count": 12
 	},
 	{
@@ -18997,7 +18950,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4392,
+		"downloads": 4449,
 		"release-count": 14
 	},
 	{
@@ -19032,7 +18985,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 12604,
+		"downloads": 12699,
 		"release-count": 7
 	},
 	{
@@ -19078,7 +19031,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 2399,
+		"downloads": 2405,
 		"release-count": 11
 	},
 	{
@@ -19146,7 +19099,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 809,
+		"downloads": 814,
 		"release-count": 142
 	},
 	{
@@ -19187,7 +19140,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 333843,
+		"downloads": 334192,
 		"release-count": 87
 	},
 	{
@@ -19241,7 +19194,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 361699,
+		"downloads": 361862,
 		"release-count": 108
 	},
 	{
@@ -19360,7 +19313,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 200553,
+		"downloads": 200800,
 		"release-count": 34
 	},
 	{
@@ -19379,7 +19332,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 48787,
+		"downloads": 48797,
 		"release-count": 192
 	},
 	{
@@ -19399,7 +19352,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 68028,
+		"downloads": 68042,
 		"release-count": 284
 	},
 	{
@@ -19520,7 +19473,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 22767,
+		"downloads": 22811,
 		"release-count": 19
 	},
 	{
@@ -19559,7 +19512,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 59837,
+		"downloads": 60031,
 		"release-count": 7
 	},
 	{
@@ -19628,7 +19581,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11291,
+		"downloads": 11353,
 		"release-count": 17
 	},
 	{
@@ -19710,7 +19663,7 @@
 		"updated-date": "2025-09-29T04:32:24Z",
 		"flavor-list": null,
 		"has-release-json": false,
-		"downloads": 76,
+		"downloads": 77,
 		"release-count": 3
 	},
 	{
@@ -19730,7 +19683,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 84878,
+		"downloads": 85151,
 		"release-count": 39
 	},
 	{
@@ -19750,7 +19703,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 31600,
+		"downloads": 31611,
 		"release-count": 167
 	},
 	{
@@ -19806,7 +19759,7 @@
 			"cata"
 		],
 		"has-release-json": false,
-		"downloads": 285,
+		"downloads": 289,
 		"release-count": 3
 	},
 	{
@@ -19880,7 +19833,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 46883,
+		"downloads": 46884,
 		"release-count": 11
 	},
 	{
@@ -19984,7 +19937,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 171302,
+		"downloads": 171985,
 		"release-count": 21
 	},
 	{
@@ -20002,7 +19955,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 33303,
+		"downloads": 33305,
 		"release-count": 235
 	},
 	{
@@ -20020,7 +19973,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 59148,
+		"downloads": 59183,
 		"release-count": 210
 	},
 	{
@@ -20037,7 +19990,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 122890,
+		"downloads": 123100,
 		"release-count": 30
 	},
 	{
@@ -20124,7 +20077,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 254701,
+		"downloads": 254986,
 		"release-count": 21
 	},
 	{
@@ -20148,7 +20101,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4002,
+		"downloads": 4005,
 		"release-count": 126
 	},
 	{
@@ -20162,7 +20115,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8382,
+		"downloads": 8427,
 		"release-count": 9
 	},
 	{
@@ -20203,7 +20156,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 5551,
+		"downloads": 5562,
 		"release-count": 46
 	},
 	{
@@ -20291,7 +20244,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 556,
+		"downloads": 557,
 		"release-count": 2
 	},
 	{
@@ -20397,7 +20350,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 145,
+		"downloads": 148,
 		"release-count": 11
 	},
 	{
@@ -20431,7 +20384,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 21726,
+		"downloads": 21727,
 		"release-count": 21
 	},
 	{
@@ -20449,7 +20402,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1407,
+		"downloads": 1408,
 		"release-count": 32
 	},
 	{
@@ -20468,7 +20421,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 314,
+		"downloads": 315,
 		"release-count": 43
 	},
 	{
@@ -20482,7 +20435,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 125,
+		"downloads": 129,
 		"release-count": 1
 	},
 	{
@@ -20495,7 +20448,7 @@
 			"x-curse-project-id": "909920",
 			"x-wago-id": "EGPXajG1"
 		},
-		"updated-date": "2025-12-18T15:34:16Z",
+		"updated-date": "2025-12-27T21:02:09Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -20505,8 +20458,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1260,
-		"release-count": 106
+		"downloads": 1277,
+		"release-count": 108
 	},
 	{
 		"id": 530076033,
@@ -20618,7 +20571,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2776,
+		"downloads": 2780,
 		"release-count": 371
 	},
 	{
@@ -20664,7 +20617,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2181,
+		"downloads": 2182,
 		"release-count": 150
 	},
 	{
@@ -20687,7 +20640,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2683,
+		"downloads": 2684,
 		"release-count": 93
 	},
 	{
@@ -20779,7 +20732,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 52815,
+		"downloads": 52829,
 		"release-count": 907
 	},
 	{
@@ -21068,7 +21021,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7432,
+		"downloads": 7435,
 		"release-count": 56
 	},
 	{
@@ -21146,7 +21099,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1267,
+		"downloads": 1269,
 		"release-count": 32
 	},
 	{
@@ -21184,7 +21137,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 145760,
+		"downloads": 145979,
 		"release-count": 315
 	},
 	{
@@ -21242,7 +21195,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 133103,
+		"downloads": 133369,
 		"release-count": 60
 	},
 	{
@@ -21343,7 +21296,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 322,
+		"downloads": 325,
 		"release-count": 5
 	},
 	{
@@ -21482,7 +21435,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 32326,
+		"downloads": 32328,
 		"release-count": 396
 	},
 	{
@@ -22046,7 +21999,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 739,
+		"downloads": 742,
 		"release-count": 5
 	},
 	{
@@ -22078,7 +22031,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 123051,
+		"downloads": 123149,
 		"release-count": 18
 	},
 	{
@@ -22145,7 +22098,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 97213,
+		"downloads": 97228,
 		"release-count": 34
 	},
 	{
@@ -22181,7 +22134,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 22013,
+		"downloads": 22071,
 		"release-count": 215
 	},
 	{
@@ -22198,7 +22151,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 15534,
+		"downloads": 15539,
 		"release-count": 14
 	},
 	{
@@ -22283,7 +22236,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 796,
+		"downloads": 803,
 		"release-count": 3
 	},
 	{
@@ -22306,7 +22259,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 64199,
+		"downloads": 64661,
 		"release-count": 272
 	},
 	{
@@ -22341,7 +22294,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4071,
+		"downloads": 4073,
 		"release-count": 35
 	},
 	{
@@ -22414,7 +22367,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 21316,
+		"downloads": 21338,
 		"release-count": 28
 	},
 	{
@@ -22452,7 +22405,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5897,
+		"downloads": 5954,
 		"release-count": 26
 	},
 	{
@@ -22516,7 +22469,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1017760,
+		"downloads": 1019126,
 		"release-count": 103
 	},
 	{
@@ -22535,7 +22488,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 524732,
+		"downloads": 525450,
 		"release-count": 87
 	},
 	{
@@ -22588,7 +22541,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2554,
+		"downloads": 2558,
 		"release-count": 11
 	},
 	{
@@ -22665,7 +22618,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 111460,
+		"downloads": 111604,
 		"release-count": 108
 	},
 	{
@@ -22704,7 +22657,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 811,
+		"downloads": 824,
 		"release-count": 23
 	},
 	{
@@ -22723,7 +22676,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 44917,
+		"downloads": 44961,
 		"release-count": 61
 	},
 	{
@@ -22779,7 +22732,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1833,
+		"downloads": 1835,
 		"release-count": 17
 	},
 	{
@@ -22862,7 +22815,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 751,
+		"downloads": 753,
 		"release-count": 12
 	},
 	{
@@ -22876,7 +22829,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 80,
+		"downloads": 81,
 		"release-count": 6
 	},
 	{
@@ -22904,7 +22857,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 39,
+		"downloads": 40,
 		"release-count": 1
 	},
 	{
@@ -22932,7 +22885,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 1144,
+		"downloads": 1151,
 		"release-count": 5
 	},
 	{
@@ -23005,7 +22958,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 122,
+		"downloads": 126,
 		"release-count": 2
 	},
 	{
@@ -23061,7 +23014,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 249000,
+		"downloads": 249290,
 		"release-count": 40
 	},
 	{
@@ -23161,7 +23114,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 9209,
+		"downloads": 9212,
 		"release-count": 30
 	},
 	{
@@ -23178,7 +23131,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 19859,
+		"downloads": 19863,
 		"release-count": 40
 	},
 	{
@@ -23199,7 +23152,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 35082,
+		"downloads": 35117,
 		"release-count": 24
 	},
 	{
@@ -23320,7 +23273,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 328787,
+		"downloads": 329010,
 		"release-count": 619
 	},
 	{
@@ -23344,7 +23297,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 161032,
+		"downloads": 161171,
 		"release-count": 34
 	},
 	{
@@ -23368,7 +23321,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 67470,
+		"downloads": 67473,
 		"release-count": 40
 	},
 	{
@@ -23392,7 +23345,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 85423,
+		"downloads": 85483,
 		"release-count": 32
 	},
 	{
@@ -23416,7 +23369,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 66897,
+		"downloads": 66900,
 		"release-count": 33
 	},
 	{
@@ -23440,7 +23393,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 59795,
+		"downloads": 59796,
 		"release-count": 44
 	},
 	{
@@ -23488,7 +23441,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 10807,
+		"downloads": 10904,
 		"release-count": 41
 	},
 	{
@@ -23512,7 +23465,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 88482,
+		"downloads": 88514,
 		"release-count": 90
 	},
 	{
@@ -23561,7 +23514,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 98920,
+		"downloads": 99229,
 		"release-count": 101
 	},
 	{
@@ -23586,7 +23539,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 767924,
+		"downloads": 768539,
 		"release-count": 64
 	},
 	{
@@ -23610,7 +23563,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20751,
+		"downloads": 20752,
 		"release-count": 38
 	},
 	{
@@ -23653,7 +23606,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 61742,
+		"downloads": 61751,
 		"release-count": 54
 	},
 	{
@@ -23678,7 +23631,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 410585,
+		"downloads": 411042,
 		"release-count": 112
 	},
 	{
@@ -23702,7 +23655,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 28429,
+		"downloads": 28455,
 		"release-count": 35
 	},
 	{
@@ -23796,13 +23749,14 @@
 			"x-curse-project-id": "324903",
 			"x-wowi-id": "25029"
 		},
-		"updated-date": "2025-04-10T13:30:57Z",
+		"updated-date": "2025-12-27T20:16:57Z",
 		"flavor-list": [
-			"vanilla"
+			"vanilla",
+			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 17256,
-		"release-count": 17
+		"downloads": 17368,
+		"release-count": 20
 	},
 	{
 		"id": 192247238,
@@ -23820,7 +23774,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 856,
+		"downloads": 857,
 		"release-count": 11
 	},
 	{
@@ -23857,7 +23811,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 129083,
+		"downloads": 129587,
 		"release-count": 55
 	},
 	{
@@ -23871,7 +23825,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1852,
+		"downloads": 1860,
 		"release-count": 6
 	},
 	{
@@ -23940,7 +23894,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20667,
+		"downloads": 20746,
 		"release-count": 59
 	},
 	{
@@ -23988,7 +23942,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 41240,
+		"downloads": 41339,
 		"release-count": 9
 	},
 	{
@@ -24021,7 +23975,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 631,
+		"downloads": 636,
 		"release-count": 9
 	},
 	{
@@ -24095,7 +24049,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4478,
+		"downloads": 4544,
 		"release-count": 3
 	},
 	{
@@ -24109,7 +24063,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3967,
+		"downloads": 4033,
 		"release-count": 2
 	},
 	{
@@ -24178,7 +24132,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 574,
+		"downloads": 577,
 		"release-count": 7
 	},
 	{
@@ -24262,7 +24216,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 301105,
+		"downloads": 301233,
 		"release-count": 86
 	},
 	{
@@ -24280,7 +24234,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 44835,
+		"downloads": 44932,
 		"release-count": 40
 	},
 	{
@@ -24392,6 +24346,25 @@
 		"release-count": 722
 	},
 	{
+		"id": 1102555491,
+		"name": "Hekili_Titan_zhCN",
+		"full_name": "huchang47/Hekili_Titan_zhCN",
+		"html_url": "https://github.com/huchang47/Hekili_Titan_zhCN",
+		"description": "Hekili的泰坦时光服版本。仅简体中文。",
+		"project-id-map": {
+			"x-curse-project-id": "69254",
+			"x-wago-id": "WYK9WXNL",
+			"x-wowi-id": "24608"
+		},
+		"updated-date": "2025-12-26T20:01:27Z",
+		"flavor-list": [
+			"wrath"
+		],
+		"has-release-json": false,
+		"downloads": 59,
+		"release-count": 11
+	},
+	{
 		"id": 535546458,
 		"name": "WoWTools",
 		"full_name": "husandro/WoWTools",
@@ -24401,13 +24374,13 @@
 			"x-curse-project-id": "715192",
 			"x-wago-id": "baND1J6o"
 		},
-		"updated-date": "2025-12-23T17:28:58Z",
+		"updated-date": "2025-12-24T20:50:47Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 7750,
-		"release-count": 873
+		"downloads": 7761,
+		"release-count": 875
 	},
 	{
 		"id": 818229942,
@@ -24424,7 +24397,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 565,
+		"downloads": 568,
 		"release-count": 103
 	},
 	{
@@ -24441,7 +24414,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 903346,
+		"downloads": 905043,
 		"release-count": 8
 	},
 	{
@@ -24461,7 +24434,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 207639,
+		"downloads": 207692,
 		"release-count": 862
 	},
 	{
@@ -24480,7 +24453,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 67325,
+		"downloads": 67815,
 		"release-count": 15
 	},
 	{
@@ -24508,7 +24481,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 12459,
+		"downloads": 12460,
 		"release-count": 10
 	},
 	{
@@ -24556,7 +24529,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 749,
+		"downloads": 752,
 		"release-count": 66
 	},
 	{
@@ -24606,7 +24579,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4460,
+		"downloads": 4521,
 		"release-count": 13
 	},
 	{
@@ -24733,7 +24706,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4552,
+		"downloads": 4650,
 		"release-count": 5
 	},
 	{
@@ -24822,6 +24795,24 @@
 		"release-count": 23
 	},
 	{
+		"id": 1070931857,
+		"name": "alt-configurator",
+		"full_name": "jbolduan/alt-configurator",
+		"html_url": "https://github.com/jbolduan/alt-configurator",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1360155",
+			"x-wago-id": "96doW4NO"
+		},
+		"updated-date": "2025-10-07T12:21:55Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true,
+		"downloads": 14,
+		"release-count": 4
+	},
+	{
 		"id": 529237606,
 		"name": "retail-ui",
 		"full_name": "jelenv/retail-ui",
@@ -24851,7 +24842,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 28005,
+		"downloads": 28104,
 		"release-count": 39
 	},
 	{
@@ -25162,7 +25153,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4799,
+		"downloads": 4804,
 		"release-count": 61
 	},
 	{
@@ -25204,7 +25195,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 82109,
+		"downloads": 82189,
 		"release-count": 111
 	},
 	{
@@ -25228,7 +25219,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 53172,
+		"downloads": 53214,
 		"release-count": 73
 	},
 	{
@@ -25301,7 +25292,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 286,
+		"downloads": 288,
 		"release-count": 27
 	},
 	{
@@ -25320,7 +25311,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8828,
+		"downloads": 8830,
 		"release-count": 15
 	},
 	{
@@ -25362,7 +25353,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 12906,
+		"downloads": 12912,
 		"release-count": 332
 	},
 	{
@@ -25383,7 +25374,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11277,
+		"downloads": 11278,
 		"release-count": 138
 	},
 	{
@@ -25402,7 +25393,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 13407,
+		"downloads": 13408,
 		"release-count": 73
 	},
 	{
@@ -25443,7 +25434,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 11907,
+		"downloads": 11908,
 		"release-count": 29
 	},
 	{
@@ -25465,7 +25456,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 10599,
+		"downloads": 10600,
 		"release-count": 96
 	},
 	{
@@ -25507,7 +25498,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 12182,
+		"downloads": 12183,
 		"release-count": 53
 	},
 	{
@@ -25595,7 +25586,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 11722,
+		"downloads": 11725,
 		"release-count": 99
 	},
 	{
@@ -25609,7 +25600,7 @@
 			"x-wago-id": "qGYM9RGg",
 			"x-wowi-id": "24639"
 		},
-		"updated-date": "2025-12-05T07:27:57Z",
+		"updated-date": "2025-12-24T13:42:57Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25617,8 +25608,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 17509,
-		"release-count": 144
+		"downloads": 17525,
+		"release-count": 147
 	},
 	{
 		"id": 142795478,
@@ -25639,7 +25630,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 10820,
+		"downloads": 10824,
 		"release-count": 98
 	},
 	{
@@ -25716,7 +25707,7 @@
 			"x-curse-project-id": "566626",
 			"x-wowi-id": "26522"
 		},
-		"updated-date": "2025-12-11T05:38:24Z",
+		"updated-date": "2025-12-27T23:03:44Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25726,8 +25717,8 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 2087,
-		"release-count": 160
+		"downloads": 2089,
+		"release-count": 161
 	},
 	{
 		"id": 448090612,
@@ -25738,7 +25729,7 @@
 		"project-id-map": {
 			"x-curse-project-id": "566626"
 		},
-		"updated-date": "2025-12-10T02:26:53Z",
+		"updated-date": "2025-12-27T23:53:43Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -25748,8 +25739,8 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 284,
-		"release-count": 29
+		"downloads": 286,
+		"release-count": 30
 	},
 	{
 		"id": 566566126,
@@ -25870,7 +25861,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 24101,
+		"downloads": 24105,
 		"release-count": 51
 	},
 	{
@@ -25891,7 +25882,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 43620,
+		"downloads": 43635,
 		"release-count": 23
 	},
 	{
@@ -25909,7 +25900,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1403,
+		"downloads": 1415,
 		"release-count": 10
 	},
 	{
@@ -25926,7 +25917,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 6087,
+		"downloads": 6092,
 		"release-count": 6
 	},
 	{
@@ -25966,7 +25957,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 7457,
+		"downloads": 7480,
 		"release-count": 8
 	},
 	{
@@ -25984,7 +25975,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 106355,
+		"downloads": 106473,
 		"release-count": 30
 	},
 	{
@@ -26004,7 +25995,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 19385,
+		"downloads": 19389,
 		"release-count": 15
 	},
 	{
@@ -26024,7 +26015,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3624,
+		"downloads": 3626,
 		"release-count": 7
 	},
 	{
@@ -26042,7 +26033,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 190328,
+		"downloads": 190472,
 		"release-count": 71
 	},
 	{
@@ -26060,7 +26051,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 105228,
+		"downloads": 105359,
 		"release-count": 32
 	},
 	{
@@ -26077,7 +26068,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 40884,
+		"downloads": 40888,
 		"release-count": 6
 	},
 	{
@@ -26094,7 +26085,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 27526,
+		"downloads": 27527,
 		"release-count": 5
 	},
 	{
@@ -26113,7 +26104,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 178214,
+		"downloads": 178607,
 		"release-count": 33
 	},
 	{
@@ -26130,7 +26121,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 27179,
+		"downloads": 27220,
 		"release-count": 7
 	},
 	{
@@ -26148,7 +26139,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 194843,
+		"downloads": 194983,
 		"release-count": 94
 	},
 	{
@@ -26165,7 +26156,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 79526,
+		"downloads": 79527,
 		"release-count": 11
 	},
 	{
@@ -26183,7 +26174,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 113007,
+		"downloads": 113127,
 		"release-count": 26
 	},
 	{
@@ -26201,7 +26192,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 48285,
+		"downloads": 48333,
 		"release-count": 100
 	},
 	{
@@ -26221,7 +26212,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 31490,
+		"downloads": 31494,
 		"release-count": 25
 	},
 	{
@@ -26238,7 +26229,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1123,
+		"downloads": 1126,
 		"release-count": 3
 	},
 	{
@@ -26273,7 +26264,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 23909,
+		"downloads": 23912,
 		"release-count": 12
 	},
 	{
@@ -26307,7 +26298,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 70,
+		"downloads": 73,
 		"release-count": 4
 	},
 	{
@@ -26326,7 +26317,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 306,
+		"downloads": 314,
 		"release-count": 5
 	},
 	{
@@ -26345,7 +26336,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3159,
+		"downloads": 3167,
 		"release-count": 20
 	},
 	{
@@ -26364,7 +26355,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 16547,
+		"downloads": 16558,
 		"release-count": 17
 	},
 	{
@@ -26403,7 +26394,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 204159,
+		"downloads": 204256,
 		"release-count": 171
 	},
 	{
@@ -26424,7 +26415,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 127140,
+		"downloads": 127466,
 		"release-count": 66
 	},
 	{
@@ -26442,7 +26433,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8878,
+		"downloads": 8881,
 		"release-count": 13
 	},
 	{
@@ -26463,7 +26454,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 277180,
+		"downloads": 277345,
 		"release-count": 83
 	},
 	{
@@ -26524,7 +26515,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 12130,
+		"downloads": 12132,
 		"release-count": 12
 	},
 	{
@@ -26540,7 +26531,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 158756,
+		"downloads": 158764,
 		"release-count": 38
 	},
 	{
@@ -26639,7 +26630,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 345,
+		"downloads": 346,
 		"release-count": 3
 	},
 	{
@@ -26747,7 +26738,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 17241,
+		"downloads": 17246,
 		"release-count": 6
 	},
 	{
@@ -26766,7 +26757,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1296,
+		"downloads": 1297,
 		"release-count": 15
 	},
 	{
@@ -26844,7 +26835,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 78023,
+		"downloads": 78032,
 		"release-count": 34
 	},
 	{
@@ -27015,7 +27006,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 16563,
+		"downloads": 16569,
 		"release-count": 13
 	},
 	{
@@ -27131,7 +27122,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 19566,
+		"downloads": 19580,
 		"release-count": 44
 	},
 	{
@@ -27206,7 +27197,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8615,
+		"downloads": 8677,
 		"release-count": 72
 	},
 	{
@@ -27265,7 +27256,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 22244,
+		"downloads": 22305,
 		"release-count": 17
 	},
 	{
@@ -27284,7 +27275,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 495,
+		"downloads": 496,
 		"release-count": 17
 	},
 	{
@@ -27303,7 +27294,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 525,
+		"downloads": 526,
 		"release-count": 20
 	},
 	{
@@ -27343,7 +27334,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10825,
+		"downloads": 10850,
 		"release-count": 38
 	},
 	{
@@ -27593,7 +27584,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 332,
+		"downloads": 335,
 		"release-count": 17
 	},
 	{
@@ -27688,7 +27679,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 144810,
+		"downloads": 145113,
 		"release-count": 27
 	},
 	{
@@ -27723,7 +27714,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 5637,
+		"downloads": 5662,
 		"release-count": 36
 	},
 	{
@@ -27927,7 +27918,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 17308,
+		"downloads": 17311,
 		"release-count": 31
 	},
 	{
@@ -27949,7 +27940,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3982,
+		"downloads": 3983,
 		"release-count": 49
 	},
 	{
@@ -27972,7 +27963,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 37811,
+		"downloads": 37815,
 		"release-count": 135
 	},
 	{
@@ -28082,7 +28073,7 @@
 			"tbc"
 		],
 		"has-release-json": false,
-		"downloads": 563,
+		"downloads": 564,
 		"release-count": 8
 	},
 	{
@@ -28100,7 +28091,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10383,
+		"downloads": 10391,
 		"release-count": 92
 	},
 	{
@@ -28121,7 +28112,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 3830,
+		"downloads": 3834,
 		"release-count": 11
 	},
 	{
@@ -28146,13 +28137,13 @@
 			"x-curse-project-id": "1390466",
 			"x-wago-id": "BKpqdyGE"
 		},
-		"updated-date": "2025-11-30T21:08:29Z",
+		"updated-date": "2025-12-27T17:55:14Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 15,
-		"release-count": 3
+		"downloads": 17,
+		"release-count": 4
 	},
 	{
 		"id": 1034706610,
@@ -28230,7 +28221,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 37726,
+		"downloads": 37837,
 		"release-count": 108
 	},
 	{
@@ -28244,7 +28235,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 3464,
+		"downloads": 3469,
 		"release-count": 151
 	},
 	{
@@ -28324,7 +28315,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 67440,
+		"downloads": 67446,
 		"release-count": 46
 	},
 	{
@@ -28358,7 +28349,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8936,
+		"downloads": 8944,
 		"release-count": 20
 	},
 	{
@@ -28440,7 +28431,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 236,
+		"downloads": 237,
 		"release-count": 44
 	},
 	{
@@ -28493,7 +28484,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 7530,
+		"downloads": 7531,
 		"release-count": 44
 	},
 	{
@@ -28566,7 +28557,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4166,
+		"downloads": 4168,
 		"release-count": 122
 	},
 	{
@@ -28648,7 +28639,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3024,
+		"downloads": 3027,
 		"release-count": 32
 	},
 	{
@@ -28669,7 +28660,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 328065,
+		"downloads": 328713,
 		"release-count": 306
 	},
 	{
@@ -28689,7 +28680,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 23465,
+		"downloads": 23468,
 		"release-count": 105
 	},
 	{
@@ -28712,7 +28703,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4958,
+		"downloads": 4967,
 		"release-count": 68
 	},
 	{
@@ -28735,7 +28726,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 210,
+		"downloads": 213,
 		"release-count": 28
 	},
 	{
@@ -28765,7 +28756,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3813,
+		"downloads": 3817,
 		"release-count": 64
 	},
 	{
@@ -28837,7 +28828,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1098,
+		"downloads": 1099,
 		"release-count": 41
 	},
 	{
@@ -28908,7 +28899,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5833,
+		"downloads": 5854,
 		"release-count": 13
 	},
 	{
@@ -28955,7 +28946,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 25801,
+		"downloads": 25826,
 		"release-count": 44
 	},
 	{
@@ -29006,7 +28997,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 166676,
+		"downloads": 166815,
 		"release-count": 63
 	},
 	{
@@ -29049,7 +29040,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 786102,
+		"downloads": 787014,
 		"release-count": 71
 	},
 	{
@@ -29071,7 +29062,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 18961,
+		"downloads": 18967,
 		"release-count": 143
 	},
 	{
@@ -29093,7 +29084,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 13845,
+		"downloads": 13851,
 		"release-count": 78
 	},
 	{
@@ -29114,7 +29105,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 130071,
+		"downloads": 130180,
 		"release-count": 46
 	},
 	{
@@ -29135,7 +29126,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 78749,
+		"downloads": 78790,
 		"release-count": 62
 	},
 	{
@@ -29466,6 +29457,25 @@
 		"release-count": 6
 	},
 	{
+		"id": 576779288,
+		"name": "muleyoUI",
+		"full_name": "muleyo/muleyoUI",
+		"html_url": "https://github.com/muleyo/muleyoUI",
+		"description": "Unleash your real potential",
+		"project-id-map": {
+			"x-curse-project-id": "737373",
+			"x-wago-id": "5bGowYG0"
+		},
+		"updated-date": "2025-12-03T11:44:40Z",
+		"flavor-list": [
+			"mainline",
+			"mists"
+		],
+		"has-release-json": true,
+		"downloads": 1886,
+		"release-count": 112
+	},
+	{
 		"id": 752290526,
 		"name": "Debounce",
 		"full_name": "mundi4/Debounce",
@@ -29594,7 +29604,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2043,
+		"downloads": 2046,
 		"release-count": 6
 	},
 	{
@@ -29613,7 +29623,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6970,
+		"downloads": 7089,
 		"release-count": 39
 	},
 	{
@@ -29630,7 +29640,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5210,
+		"downloads": 5216,
 		"release-count": 51
 	},
 	{
@@ -29655,7 +29665,7 @@
 			"x-curse-project-id": "86704",
 			"x-wago-id": "j6jzLO6R"
 		},
-		"updated-date": "2025-08-10T03:20:36Z",
+		"updated-date": "2025-12-28T07:57:31Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -29663,8 +29673,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 9631,
-		"release-count": 16
+		"downloads": 9733,
+		"release-count": 17
 	},
 	{
 		"id": 108910876,
@@ -29687,7 +29697,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 544,
+		"downloads": 546,
 		"release-count": 7
 	},
 	{
@@ -29708,7 +29718,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 249972,
+		"downloads": 250679,
 		"release-count": 40
 	},
 	{
@@ -29729,7 +29739,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 20982,
+		"downloads": 20992,
 		"release-count": 81
 	},
 	{
@@ -29757,7 +29767,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 186,
+		"downloads": 204,
 		"release-count": 1
 	},
 	{
@@ -29775,7 +29785,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 44152,
+		"downloads": 44203,
 		"release-count": 30
 	},
 	{
@@ -29883,7 +29893,7 @@
 			"wrath"
 		],
 		"has-release-json": true,
-		"downloads": 12792,
+		"downloads": 12796,
 		"release-count": 24
 	},
 	{
@@ -30028,7 +30038,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 34194,
+		"downloads": 34399,
 		"release-count": 36
 	},
 	{
@@ -30082,7 +30092,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 887,
+		"downloads": 889,
 		"release-count": 11
 	},
 	{
@@ -30097,7 +30107,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 4502,
+		"downloads": 4504,
 		"release-count": 70
 	},
 	{
@@ -30126,7 +30136,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 2827,
+		"downloads": 2831,
 		"release-count": 1
 	},
 	{
@@ -30139,7 +30149,7 @@
 			"x-curse-project-id": "312940",
 			"x-wago-id": "yQKybBG7"
 		},
-		"updated-date": "2025-12-21T10:57:47Z",
+		"updated-date": "2025-12-28T06:08:14Z",
 		"flavor-list": [
 			"mainline",
 			"vanilla",
@@ -30149,8 +30159,8 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 23627,
-		"release-count": 119
+		"downloads": 23733,
+		"release-count": 120
 	},
 	{
 		"id": 552714363,
@@ -30197,7 +30207,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 77542,
+		"downloads": 77608,
 		"release-count": 28
 	},
 	{
@@ -30216,7 +30226,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 20313,
+		"downloads": 20318,
 		"release-count": 34
 	},
 	{
@@ -30236,7 +30246,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 175,
+		"downloads": 180,
 		"release-count": 3
 	},
 	{
@@ -30255,7 +30265,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 19001,
+		"downloads": 19007,
 		"release-count": 49
 	},
 	{
@@ -30274,7 +30284,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 22963,
+		"downloads": 22969,
 		"release-count": 50
 	},
 	{
@@ -30293,7 +30303,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 284,
+		"downloads": 289,
 		"release-count": 10
 	},
 	{
@@ -30335,7 +30345,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 49987,
+		"downloads": 50189,
 		"release-count": 71
 	},
 	{
@@ -30373,7 +30383,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16161,
+		"downloads": 16167,
 		"release-count": 47
 	},
 	{
@@ -30573,7 +30583,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 134299,
+		"downloads": 134561,
 		"release-count": 485
 	},
 	{
@@ -30639,7 +30649,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 29832,
+		"downloads": 29853,
 		"release-count": 41
 	},
 	{
@@ -30663,7 +30673,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 4517,
+		"downloads": 4524,
 		"release-count": 59
 	},
 	{
@@ -30687,7 +30697,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 23668,
+		"downloads": 23673,
 		"release-count": 122
 	},
 	{
@@ -30707,7 +30717,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 273,
+		"downloads": 276,
 		"release-count": 41
 	},
 	{
@@ -30741,7 +30751,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2016,
+		"downloads": 2043,
 		"release-count": 59
 	},
 	{
@@ -30775,7 +30785,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3736,
+		"downloads": 3740,
 		"release-count": 38
 	},
 	{
@@ -30792,7 +30802,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 114,
+		"downloads": 215,
 		"release-count": 1
 	},
 	{
@@ -31267,13 +31277,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "937058"
 		},
-		"updated-date": "2025-12-24T05:37:16Z",
+		"updated-date": "2025-12-28T05:37:10Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 12779,
-		"release-count": 746
+		"downloads": 12790,
+		"release-count": 750
 	},
 	{
 		"id": 890610609,
@@ -31395,7 +31405,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 4136,
+		"downloads": 4166,
 		"release-count": 30
 	},
 	{
@@ -31451,7 +31461,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 942612,
+		"downloads": 943070,
 		"release-count": 167
 	},
 	{
@@ -31609,7 +31619,7 @@
 			"tbc"
 		],
 		"has-release-json": true,
-		"downloads": 82323,
+		"downloads": 82342,
 		"release-count": 62
 	},
 	{
@@ -31723,7 +31733,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 12341,
+		"downloads": 12443,
 		"release-count": 59
 	},
 	{
@@ -31746,7 +31756,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 37778,
+		"downloads": 37888,
 		"release-count": 66
 	},
 	{
@@ -31866,7 +31876,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 17380,
+		"downloads": 17484,
 		"release-count": 112
 	},
 	{
@@ -31960,7 +31970,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 16,
+		"downloads": 17,
 		"release-count": 2
 	},
 	{
@@ -31977,7 +31987,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 3834629,
+		"downloads": 3944938,
 		"release-count": 8
 	},
 	{
@@ -32017,7 +32027,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 5243,
+		"downloads": 5264,
 		"release-count": 1
 	},
 	{
@@ -32083,7 +32093,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 37602,
+		"downloads": 37702,
 		"release-count": 75
 	},
 	{
@@ -32243,8 +32253,44 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 861,
+		"downloads": 1131,
 		"release-count": 43
+	},
+	{
+		"id": 1103653407,
+		"name": "ReadyCheckMemes",
+		"full_name": "scrublegionscripts/ReadyCheckMemes",
+		"html_url": "https://github.com/scrublegionscripts/ReadyCheckMemes",
+		"description": "",
+		"project-id-map": {
+			"x-curse-project-id": "1391579",
+			"x-wago-id": "qGYMYzGg"
+		},
+		"updated-date": "2025-11-27T05:57:38Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true,
+		"downloads": 18,
+		"release-count": 3
+	},
+	{
+		"id": 1003439030,
+		"name": "rostermanager",
+		"full_name": "scrublegionscripts/rostermanager",
+		"html_url": "https://github.com/scrublegionscripts/rostermanager",
+		"description": "Scrub Legion Roster Manager",
+		"project-id-map": {
+			"x-curse-project-id": "1289625",
+			"x-wago-id": "as3Dfg57"
+		},
+		"updated-date": "2025-10-01T04:04:53Z",
+		"flavor-list": [
+			"mainline"
+		],
+		"has-release-json": true,
+		"downloads": 696,
+		"release-count": 23
 	},
 	{
 		"id": 30387608,
@@ -32265,7 +32311,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 66443,
+		"downloads": 66506,
 		"release-count": 313
 	},
 	{
@@ -32286,7 +32332,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 133451,
+		"downloads": 133555,
 		"release-count": 48
 	},
 	{
@@ -32320,7 +32366,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4632,
+		"downloads": 4655,
 		"release-count": 4
 	},
 	{
@@ -32348,7 +32394,7 @@
 			"mists"
 		],
 		"has-release-json": false,
-		"downloads": 52,
+		"downloads": 54,
 		"release-count": 38
 	},
 	{
@@ -32362,7 +32408,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 584,
+		"downloads": 586,
 		"release-count": 108
 	},
 	{
@@ -32420,13 +32466,13 @@
 		"full_name": "sfmict/MountsJournal",
 		"html_url": "https://github.com/sfmict/MountsJournal",
 		"description": "Addon makes it possible to sort mounts on waterfowl, flying, ground and allows to use in suitable conditions (random mount summoning).",
-		"updated-date": "2025-12-17T14:58:01Z",
+		"updated-date": "2025-12-24T18:43:37Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 1513,
-		"release-count": 318
+		"downloads": 1516,
+		"release-count": 319
 	},
 	{
 		"id": 510666594,
@@ -32468,7 +32514,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 455,
+		"downloads": 470,
 		"release-count": 3
 	},
 	{
@@ -32480,13 +32526,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "918022"
 		},
-		"updated-date": "2025-12-21T01:59:50Z",
+		"updated-date": "2025-12-28T02:05:11Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2533,
-		"release-count": 242
+		"downloads": 2546,
+		"release-count": 244
 	},
 	{
 		"id": 687734033,
@@ -32515,7 +32561,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 1048651,
+		"downloads": 1049826,
 		"release-count": 153
 	},
 	{
@@ -32551,7 +32597,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 111047,
+		"downloads": 111208,
 		"release-count": 66
 	},
 	{
@@ -32569,7 +32615,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4469928,
+		"downloads": 4475928,
 		"release-count": 92
 	},
 	{
@@ -32586,7 +32632,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 693,
+		"downloads": 694,
 		"release-count": 100
 	},
 	{
@@ -32596,17 +32642,17 @@
 		"html_url": "https://github.com/siweia/NDui",
 		"description": "NDui for World of Warcraft",
 		"project-id-map": {
-			"x-curse-project-id": "338794",
+			"x-curse-project-id": "324377",
 			"x-wago-id": "Xb6X4j6p",
-			"x-wowi-id": "26043"
+			"x-wowi-id": "24846"
 		},
-		"updated-date": "2025-12-20T16:59:41Z",
+		"updated-date": "2025-12-24T17:23:31Z",
 		"flavor-list": [
-			"vanilla"
+			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 16247,
-		"release-count": 516
+		"downloads": 16262,
+		"release-count": 517
 	},
 	{
 		"id": 80255350,
@@ -32654,7 +32700,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 653196,
+		"downloads": 655772,
 		"release-count": 34
 	},
 	{
@@ -32752,7 +32798,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1313,
+		"downloads": 1315,
 		"release-count": 35
 	},
 	{
@@ -32790,7 +32836,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 722,
+		"downloads": 723,
 		"release-count": 12
 	},
 	{
@@ -32876,7 +32922,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 21717,
+		"downloads": 21722,
 		"release-count": 1
 	},
 	{
@@ -32895,7 +32941,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5097,
+		"downloads": 5109,
 		"release-count": 75
 	},
 	{
@@ -33033,7 +33079,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8911,
+		"downloads": 8961,
 		"release-count": 31
 	},
 	{
@@ -33056,7 +33102,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 7903,
+		"downloads": 8001,
 		"release-count": 40
 	},
 	{
@@ -33080,7 +33126,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 9226,
+		"downloads": 9233,
 		"release-count": 101
 	},
 	{
@@ -33097,7 +33143,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 4187,
+		"downloads": 4193,
 		"release-count": 33
 	},
 	{
@@ -33138,7 +33184,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 148999,
+		"downloads": 149050,
 		"release-count": 89
 	},
 	{
@@ -33153,7 +33199,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 1802,
+		"downloads": 1804,
 		"release-count": 293
 	},
 	{
@@ -33194,13 +33240,13 @@
 		"project-id-map": {
 			"x-curse-project-id": "695703"
 		},
-		"updated-date": "2025-12-20T00:15:15Z",
+		"updated-date": "2025-12-28T02:06:43Z",
 		"flavor-list": [
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 38402,
-		"release-count": 231
+		"downloads": 38516,
+		"release-count": 235
 	},
 	{
 		"id": 853658706,
@@ -33216,7 +33262,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1443,
+		"downloads": 1454,
 		"release-count": 8
 	},
 	{
@@ -33235,7 +33281,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 13833,
+		"downloads": 13922,
 		"release-count": 35
 	},
 	{
@@ -33252,7 +33298,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 198588,
+		"downloads": 198646,
 		"release-count": 87
 	},
 	{
@@ -33286,7 +33332,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1573,
+		"downloads": 1582,
 		"release-count": 24
 	},
 	{
@@ -33322,7 +33368,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 5656,
+		"downloads": 5657,
 		"release-count": 4
 	},
 	{
@@ -33340,7 +33386,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3749,
+		"downloads": 3757,
 		"release-count": 20
 	},
 	{
@@ -33358,7 +33404,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2545,
+		"downloads": 2547,
 		"release-count": 13
 	},
 	{
@@ -33428,7 +33474,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 33391,
+		"downloads": 33398,
 		"release-count": 39
 	},
 	{
@@ -33446,7 +33492,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 16017,
+		"downloads": 16035,
 		"release-count": 20
 	},
 	{
@@ -33478,7 +33524,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2635,
+		"downloads": 2640,
 		"release-count": 108
 	},
 	{
@@ -33495,7 +33541,7 @@
 			"mainline"
 		],
 		"has-release-json": false,
-		"downloads": 2521,
+		"downloads": 2522,
 		"release-count": 23
 	},
 	{
@@ -33601,7 +33647,7 @@
 			"vanilla"
 		],
 		"has-release-json": false,
-		"downloads": 6248,
+		"downloads": 6252,
 		"release-count": 42
 	},
 	{
@@ -33615,7 +33661,7 @@
 			"wrath"
 		],
 		"has-release-json": false,
-		"downloads": 100,
+		"downloads": 101,
 		"release-count": 4
 	},
 	{
@@ -33788,7 +33834,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 227372,
+		"downloads": 227743,
 		"release-count": 238
 	},
 	{
@@ -33806,7 +33852,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 506526,
+		"downloads": 507349,
 		"release-count": 61
 	},
 	{
@@ -33838,7 +33884,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 2817,
+		"downloads": 2832,
 		"release-count": 14
 	},
 	{
@@ -33855,7 +33901,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 27405,
+		"downloads": 27477,
 		"release-count": 67
 	},
 	{
@@ -33908,7 +33954,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 481,
+		"downloads": 482,
 		"release-count": 5
 	},
 	{
@@ -33968,7 +34014,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 37906,
+		"downloads": 37979,
 		"release-count": 52
 	},
 	{
@@ -34070,7 +34116,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 111456,
+		"downloads": 111470,
 		"release-count": 39
 	},
 	{
@@ -34148,7 +34194,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 10041,
+		"downloads": 10087,
 		"release-count": 8
 	},
 	{
@@ -34202,7 +34248,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 1748,
+		"downloads": 1752,
 		"release-count": 28
 	},
 	{
@@ -34225,7 +34271,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 154898,
+		"downloads": 155121,
 		"release-count": 103
 	},
 	{
@@ -34248,7 +34294,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 2221,
+		"downloads": 2222,
 		"release-count": 71
 	},
 	{
@@ -34271,7 +34317,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 39002,
+		"downloads": 39008,
 		"release-count": 86
 	},
 	{
@@ -34399,23 +34445,6 @@
 		"release-count": 4
 	},
 	{
-		"id": 346532102,
-		"name": "EnchantCheck",
-		"full_name": "whatisboom/EnchantCheck",
-		"html_url": "https://github.com/whatisboom/EnchantCheck",
-		"description": "WoW Addon: Adds a button to your character and inspect window that shows a summary of gear enchants and gems.",
-		"project-id-map": {
-			"x-curse-project-id": "461349"
-		},
-		"updated-date": "2025-11-18T06:34:51Z",
-		"flavor-list": [
-			"mainline"
-		],
-		"has-release-json": true,
-		"downloads": 87,
-		"release-count": 26
-	},
-	{
 		"id": 857550286,
 		"name": "DisableBlizzardCastBar",
 		"full_name": "will0w7/DisableBlizzardCastBar",
@@ -34459,7 +34488,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 520,
+		"downloads": 528,
 		"release-count": 70
 	},
 	{
@@ -34492,7 +34521,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 3532,
+		"downloads": 3534,
 		"release-count": 19
 	},
 	{
@@ -34532,7 +34561,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 3233,
+		"downloads": 3236,
 		"release-count": 7
 	},
 	{
@@ -34551,7 +34580,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 71841,
+		"downloads": 71879,
 		"release-count": 918
 	},
 	{
@@ -34589,7 +34618,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1902444,
+		"downloads": 1907927,
 		"release-count": 64
 	},
 	{
@@ -34607,7 +34636,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 2121,
+		"downloads": 2122,
 		"release-count": 72
 	},
 	{
@@ -34642,7 +34671,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 136,
+		"downloads": 139,
 		"release-count": 35
 	},
 	{
@@ -34658,7 +34687,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 47,
+		"downloads": 50,
 		"release-count": 17
 	},
 	{
@@ -34674,7 +34703,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 90,
+		"downloads": 93,
 		"release-count": 29
 	},
 	{
@@ -34688,7 +34717,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 88,
+		"downloads": 91,
 		"release-count": 36
 	},
 	{
@@ -34760,7 +34789,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 8000,
+		"downloads": 8003,
 		"release-count": 32
 	},
 	{
@@ -34812,7 +34841,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 37426,
+		"downloads": 37663,
 		"release-count": 20
 	},
 	{
@@ -34913,7 +34942,7 @@
 			"mainline"
 		],
 		"has-release-json": true,
-		"downloads": 13480,
+		"downloads": 13485,
 		"release-count": 112
 	},
 	{
@@ -34934,7 +34963,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 13826,
+		"downloads": 13856,
 		"release-count": 82
 	},
 	{
@@ -34971,7 +35000,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 512682,
+		"downloads": 513317,
 		"release-count": 217
 	},
 	{
@@ -35004,7 +35033,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 721,
+		"downloads": 727,
 		"release-count": 18
 	},
 	{
@@ -35059,7 +35088,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 6151,
+		"downloads": 6189,
 		"release-count": 25
 	},
 	{
@@ -35111,7 +35140,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 1455,
+		"downloads": 1471,
 		"release-count": 8
 	},
 	{
@@ -35125,7 +35154,7 @@
 			"vanilla"
 		],
 		"has-release-json": true,
-		"downloads": 1468,
+		"downloads": 1469,
 		"release-count": 7
 	},
 	{
@@ -35227,7 +35256,7 @@
 			"mists"
 		],
 		"has-release-json": true,
-		"downloads": 12997,
+		"downloads": 13255,
 		"release-count": 30
 	},
 	{
@@ -35243,7 +35272,7 @@
 			"cata"
 		],
 		"has-release-json": true,
-		"downloads": 14109,
+		"downloads": 14344,
 		"release-count": 3
 	},
 	{
