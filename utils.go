@@ -96,6 +96,13 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
+func truncate(s string, max_len int) string {
+	if len(s) <= max_len {
+		return s
+	}
+	return s[:max_len] + "..."
+}
+
 func path_exists(path string) bool {
 	_, err := os.Stat(path)
 	return !errors.Is(err, os.ErrNotExist)

@@ -909,7 +909,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 		}
 
 		if resp.StatusCode != 200 {
-			slog.Warn("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i)
+			slog.Warn("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i, "body", truncate(resp.Text, 256))
 			wait(resp)
 			continue
 		}
@@ -917,7 +917,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 		return resp, nil
 	}
 
-	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts, "last-resp", resp.StatusCode)
+	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts, "last-resp", resp.StatusCode, "body", truncate(resp.Text, 256))
 	return ResponseWrapper{}, errors.New("failed to download url: " + url)
 }
 
@@ -1102,7 +1102,7 @@ func interface_number_to_flavor(interface_val string) (Flavor, error) {
 func interface_value_to_flavor_list(interface_val string) ([]Flavor, error) {
 	empty_response := []Flavor{}
 	flavor_list := []Flavor{}
-	for _, bit := range strings.Split(interface_val, ",") {
+	for bit := range strings.SplitSeq(interface_val, ",") {
 		flavor, err := interface_number_to_flavor(bit)
 		if err != nil {
 			// one (possibly all) values are bad. fail noisily.
@@ -1270,7 +1270,7 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 
 func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, error) {
 
-	var raw interface{}
+	var raw any
 	err := json.Unmarshal(release_dot_json_bytes, &raw)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal release.json bytes into a generic struct for validation: %w", err)
@@ -1508,10 +1508,7 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	project_chan := make(chan Project, 10)
 
 	for _, repo := range repo_list {
-		repo := repo
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			release_number := 1 // if '2', then per_page=1 and page=2, etc
 			project, err := parse_repo(repo, release_number)
 			if err != nil {
@@ -1535,7 +1532,7 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 				}
 			}
 			project_chan <- project
-		}()
+		})
 	}
 
 	// close the chan when everything is done
@@ -1555,17 +1552,17 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 // TODO: replace this with extracting the 'next' url from the `Link` header:
 // Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
 // inspects `resp` and determines if there are more pages to fetch.
-func more_pages(page, per_page int, jsonstr string) (int, error) {
+func more_pages(page, per_page int, jsonstr string) (int, int, error) {
 	val := gjson.Get(jsonstr, "total_count")
 	if !val.Exists() {
-		return 0, errors.New("expected field 'total_count' not found, cannot paginate")
+		return 0, 0, errors.New("expected field 'total_count' not found, cannot paginate")
 	}
 	total := int(val.Int())
 	ptr := page * per_page            // 300
 	pos := total - ptr                // 743 - 300 = 443
 	remaining_pages := pos / per_page // 4.43
 	slog.Debug("pagination", "total-results", total, "current-page", page, "results-per-page", per_page, "remaining-pages", remaining_pages)
-	return remaining_pages, nil // 4
+	return remaining_pages, total, nil // 4
 }
 
 func search_github(endpoint string, search_query string) []string {
@@ -1597,7 +1594,7 @@ func search_github(endpoint string, search_query string) []string {
 				body := resp.Text
 				results = append(results, body)
 
-				_remaining_pages, err := more_pages(page, per_page, body)
+				_remaining_pages, total_count, err := more_pages(page, per_page, body)
 				if err != nil {
 					// halt if we can't fetch every page from each of the search queries.
 					slog.Error("error finding next page of results", "current-page", page, "remaining-pages", remaining_pages, "error", err)
@@ -1605,6 +1602,14 @@ func search_github(endpoint string, search_query string) []string {
 				}
 				remaining_pages = _remaining_pages
 
+				if total_count > 2000 {
+					slog.Error("search results exceed 2000, results are being missed that sort/order combinations cannot cover", "query", search_query, "total-results", total_count)
+					fatal()
+				}
+				if remaining_pages > 0 && page >= 10 {
+					slog.Warn("search results truncated by GitHub's 1000-result limit", "query", search_query, "sort", sort_by, "order", order_by, "total-results", total_count)
+					break
+				}
 				if remaining_pages > 0 {
 					page = page + 1
 					continue

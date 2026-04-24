@@ -14,6 +14,7 @@ if test ! "$cmd"; then
     echo "  build.release       build project for distribution"
     echo "  clean               deletes all generated files"
     echo "  deps.update         update project dependencies"
+    echo "  lint                run go mod tidy and go fix"
     echo "  test                run project tests"
     echo "  update              update addon catalogue from sources"
     exit 1
@@ -96,6 +97,11 @@ elif test "$cmd" = "deps.update"; then
     go get -u
     go mod tidy
     ./manage.sh build
+    exit 0
+
+elif test "$cmd" = "lint"; then
+    go mod tidy
+    go fix ./...
     exit 0
 
 elif test "$cmd" = "test"; then

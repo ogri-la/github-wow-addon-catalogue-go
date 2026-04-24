@@ -296,7 +296,7 @@ func Test_cache_stats_age_calculation(t *testing.T) {
 	var totalAgeFloat64 float64
 	count := 17673
 
-	for i := 0; i < count; i++ {
+	for i := range count {
 		// Ages varying from 1 day to 600 days (simulate real cache)
 		ageDays := 1 + (i % 600)
 		age := time.Duration(ageDays) * 24 * time.Hour
@@ -357,7 +357,7 @@ func Test_file_locking_concurrent_writes(t *testing.T) {
 	writeOrder := make([]int, 0, numGoroutines)
 	var orderMutex sync.Mutex
 
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -445,7 +445,7 @@ func Test_write_zip_cache_entry_concurrent(t *testing.T) {
 	var wg sync.WaitGroup
 	numGoroutines := 5
 
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		wg.Add(1)
 		go func(id int) {
 			defer wg.Done()
@@ -463,7 +463,7 @@ func Test_write_zip_cache_entry_concurrent(t *testing.T) {
 	wg.Wait()
 
 	// Verify all cache files were created correctly
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		cacheKey := "concurrent_zip_test_" + string(rune('a'+i))
 		cachePath := cache_path(cacheKey)
 		_, err := os.Stat(cachePath)
