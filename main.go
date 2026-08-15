@@ -1,3 +1,7 @@
+// searches Github for World of Warcraft addons and writes a catalogue of them
+// as CSV or JSON.
+//
+// a Github token in `ADDONS_CATALOGUE_GITHUB_TOKEN` is required to scrape.
 package main
 
 import (
@@ -299,7 +303,11 @@ type GithubRepo struct {
 	ProjectIDMap map[string]string `json:"project-id-map,omitempty"` // {"x-wowi-id": "foobar", ...}
 }
 
-// read a csv `row` and return a `Project` struct.
+// reads a csv `row` and returns a `GithubRepo`.
+// the row must have the columns of `ProjectCSVHeader`, in order.
+// the 'last updated' and 'flavors' columns are discarded, they are
+// re-derived when the repository is parsed.
+// exits the program when the 'id' column is not an integer.
 func repo_from_csv_row(row []string) GithubRepo {
 	id, err := strconv.Atoi(row[0])
 	if err != nil {
@@ -330,11 +338,14 @@ func repo_from_csv_row(row []string) GithubRepo {
 	}
 }
 
+// an entry's game flavor, as it appears in a `release.json` file.
 type ReleaseJsonEntryMetadata struct {
 	Flavor    Flavor `json:"flavor"`
 	Interface int    `json:"interface"`
 }
 
+// a single downloadable asset listed in a `release.json` file.
+// `Filename` names an asset of the same Github release.
 type ReleaseJsonEntry struct {
 	Name     string                     `json:"name"`
 	Filename string                     `json:"filename"`
@@ -373,6 +384,8 @@ type Project struct {
 	ReleaseCount   int        `json:"release-count"`
 }
 
+// returns the CSV column names, in order.
+// `project_to_csv_row` and `repo_from_csv_row` both depend on this order.
 func ProjectCSVHeader() []string {
 	return []string{
 		"id",
@@ -392,7 +405,8 @@ func ProjectCSVHeader() []string {
 	}
 }
 
-// read a Project struct `p` and return a csv row.
+// returns the `Project` `p` as a csv row,
+// with the columns of `ProjectCSVHeader`, in order.
 func project_to_csv_row(p Project) []string {
 	return []string{
 		strconv.Itoa(p.ID),
@@ -422,16 +436,19 @@ type ResponseWrapper struct {
 // --- http utils
 
 // returns `true` if given `resp` was throttled.
+// Github uses 403 for rate limiting, so a genuine permissions failure also
+// reads as throttled here.
 func throttled(resp ResponseWrapper) bool {
 	return resp.StatusCode == 403
 }
 
-// inspects `resp` and determines how long to wait. then waits.
+// blocks until `resp` says the rate limit has reset.
+// waits 60 seconds when the reset time is missing, unreadable, or more than
+// two minutes away.
 func wait(resp ResponseWrapper) {
 	default_pause := float64(60) // seconds.
 	pause := default_pause
 
-	// inspect cache to see an example of this value
 	val := resp.Header.Get("X-RateLimit-Reset")
 	if val == "" {
 		slog.Debug("rate limited but no 'X-RateLimit-Reset' header present.", "headers", resp.Header)
@@ -567,6 +584,9 @@ func read_zip_cache_entry(zip_cache_key string, zipped_file_filter func(string) 
 	return result, nil
 }
 
+// writes `zip_file_contents` to the cache under `zip_cache_key`,
+// as a JSON map of zipfile-entry-filename => base64-encoded-bytes.
+// takes an exclusive lock, so concurrent writers wait rather than interleave.
 func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]byte) error {
 	cached_zip_file_contents := map[string]string{}
 
@@ -579,7 +599,6 @@ func write_zip_cache_entry(zip_cache_key string, zip_file_contents map[string][]
 		return err
 	}
 
-	// Create file and acquire exclusive lock
 	cache_file_path := cache_path(zip_cache_key)
 	fh, err := os.Create(cache_file_path)
 	if err != nil {
@@ -650,8 +669,16 @@ func cache_expired(path string) bool {
 	return hours >= cache_duration_hrs
 }
 
+// a `http.RoundTripper` that caches responses to disk.
 type FileCachingRequest struct{}
 
+// serves `req` from the cache when a valid entry exists, otherwise makes the
+// request and caches a successful response.
+// .zip requests bypass this entirely, see `read_zip_cache_entry`.
+// redirects are followed and the final response is stored under the cache key
+// of the original request.
+// a failure to cache is not a failure to request: the response is still
+// returned and the problem is logged.
 func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	// don't handle zip files at all,
@@ -753,6 +780,10 @@ func user_agent() string {
 	return fmt.Sprintf("github-wow-addon-catalogue-go/%v (%v)", APP_VERSION, APP_LOC)
 }
 
+// fetches `url` with a GET request, adding each of `headers` to the request.
+// the response body is read into memory in full and the response is cached,
+// so this is not suitable for large files. see `download_zip` for those.
+// a non-2xx response is not an error, inspect `StatusCode` on the result.
 func download(url string, headers map[string]string) (ResponseWrapper, error) {
 	slog.Debug("HTTP GET", "url", url)
 	empty_response := ResponseWrapper{}
@@ -803,6 +834,9 @@ func github_download(url string) (ResponseWrapper, error) {
 
 // returns a map of zipped-filename => uncompressed-bytes of files within a zipfile at `url`
 // whose filenames match `zipped_file_filter`.
+// only the matched entries are read, using HTTP range requests, so the whole
+// zipfile is never downloaded. the remote server must support range requests.
+// matched entries are cached and never expire.
 func download_zip(url string, headers map[string]string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 
 	slog.Debug("HTTP GET .zip", "url", url)
@@ -881,6 +915,7 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 	return file_bytes, nil
 }
 
+// just like `download_zip` but adds an 'authorization' header to the request.
 func github_zip_download(url string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 	headers := map[string]string{
 		"Authorization": "token " + STATE.GithubToken,
@@ -888,6 +923,11 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 	return download_zip(url, headers, zipped_file_filter)
 }
 
+// fetches `url` from Github, retrying up to five times.
+// a throttled or unsuccessful response waits before trying again, so this
+// call may block for minutes.
+// a 404 returns an error immediately and is not retried.
+// unlike `download`, a non-2xx response after the final attempt is an error.
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
 	var resp ResponseWrapper
 	var err error
@@ -1268,6 +1308,10 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 	return flavor_list, nil
 }
 
+// parses `release_dot_json_bytes` into a `ReleaseDotJson`.
+// the bytes are validated against the `release.json` schema first, so a
+// well-formed but invalid file is an error.
+// flavor aliases are not resolved here, they are normalised before output.
 func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, error) {
 
 	var raw any
@@ -1316,8 +1360,9 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
-// fetches all release pages for a repository.
-// Returns all releases and total download count.
+// fetches every page of releases for the repository `full_name`,
+// newest release first, as Github orders them.
+// stops after 100 pages of 100 releases and returns what it has.
 func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 	all_releases := []GithubRelease{}
 
@@ -1349,14 +1394,13 @@ func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 			return nil, fmt.Errorf("failed to parse repository release listing as JSON (page %d): %w", page, err)
 		}
 
-		// No more releases
 		if len(release_list) == 0 {
 			break
 		}
 
 		all_releases = append(all_releases, release_list...)
 
-		// If we got fewer results than per_page, we're done
+		// a short page is the last page
 		if len(release_list) < per_page {
 			break
 		}
@@ -1373,19 +1417,19 @@ func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 	return all_releases, nil
 }
 
-// look for "release.json" in release assets
-// if found, fetch it, validate it as json and then validate as correct release-json data.
-// for each asset in release, 'extract project ids from toc files'
-// this seems to involve reading the toc files inside zip files looking for "curse_id", "wago_id", "wowi_id" properties
-// a lot of toc data is just being ignored here :( and those properties are kind of rare
-// if not found, do the same as above, but for *all* zip files (not just those specified in release.json)
-// return a Project struct
+// scrapes the repository `repo` and returns it as a `Project`.
+// game flavors and project IDs come from the `release.json` in the latest
+// release, or from the .toc files inside its .zip assets when there is no
+// `release.json`.
+// returns `ErrNoReleasesFound` when the repository has no releases and
+// `ErrNoReleaseCandidateFound` when the latest release has nothing to inspect.
+// a repository that cannot be parsed is excluded from the catalogue, so both
+// errors are expected rather than exceptional.
 func parse_repo(repo GithubRepo, page int) (Project, error) {
 	slog.Info("parsing repo", "repo", repo.FullName)
 
 	var empty_response Project
 
-	// Fetch all releases for download counting
 	all_releases, err := fetch_all_releases_pages(repo.FullName)
 	if err != nil {
 		return empty_response, fmt.Errorf("failed to fetch releases: %w", err)
@@ -1395,13 +1439,13 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		return empty_response, ErrNoReleasesFound
 	}
 
-	// Calculate total downloads and release count
 	total_downloads := calculate_total_downloads(all_releases)
 	release_count := count_releases(all_releases)
 	slog.Debug("calculated statistics", "repo", repo.FullName, "downloads", total_downloads, "releases", release_count)
 
-	// Get the latest release (first in the slice since GitHub returns newest-to-oldest)
+	// Github returns releases newest-first
 	latest_github_release := all_releases[0]
+
 	var release_dot_json *ReleaseDotJson
 	for _, asset := range latest_github_release.AssetList {
 		if asset.Name == "release.json" {
@@ -1549,9 +1593,12 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	return project_list
 }
 
-// TODO: replace this with extracting the 'next' url from the `Link` header:
+// reads the search results `jsonstr` and works out how much is left to fetch,
+// returning a pair of (remaining pages, total results).
+// returns an error when `jsonstr` has no 'total_count' field, as pagination
+// is then impossible.
+// todo: replace this with the 'next' url from the `Link` response header:
 // Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
-// inspects `resp` and determines if there are more pages to fetch.
 func more_pages(page, per_page int, jsonstr string) (int, int, error) {
 	val := gjson.Get(jsonstr, "total_count")
 	if !val.Exists() {
@@ -1565,6 +1612,13 @@ func more_pages(page, per_page int, jsonstr string) (int, int, error) {
 	return remaining_pages, total, nil // 4
 }
 
+// searches Github and returns each page of results as a blob of JSON.
+// `endpoint` must be "code" or "repositories".
+// the same query is repeated across sort and order combinations to reach
+// results that any single ordering leaves out.
+// exits the program when a page cannot be fetched or when a query has more
+// than 2000 results, because a partial catalogue looks like addons have been
+// removed.
 func search_github(endpoint string, search_query string) []string {
 	if endpoint != "code" && endpoint != "repositories" {
 		slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
@@ -1701,6 +1755,8 @@ func is_excluded(blacklist map[string]bool, filter *regexp.Regexp, repo_fullname
 	return "", false
 }
 
+// returns a predicate that reports whether a repository is excluded,
+// suitable for the `filter_fn` of `read_input_file_list`.
 func is_excluded_fn(blacklist map[string]bool, filter *regexp.Regexp) func(GithubRepo) bool {
 	return func(repo GithubRepo) bool {
 		_, b := is_excluded(blacklist, filter, repo.FullName)
@@ -1867,6 +1923,10 @@ func read_csv(path string) ([]GithubRepo, error) {
 
 // bootstrap
 
+// compiles the `release.json` schema used to validate release.json files.
+// the schema is read from `resources/release-json-schema.json`, relative to
+// the working directory, so the program must run from its own directory.
+// exits the program when the schema is missing or will not compile.
 func configure_validator() *jsonschema.Schema {
 	label := "release.json"
 
@@ -1898,6 +1958,11 @@ func usage() string {
 	return "usage: ./github-wow-addon-catalogue <scrape|dump-release-dot-json|find-duplicates|cache-stats|cache-prune>"
 }
 
+// parses `arg_list` into a `Flags` struct, where the first item is the name of
+// the running program and the second is the subcommand.
+// input and output paths must exist and end in .csv or .json.
+// exits the program on any bad argument, and also when `--help` or
+// `--version` is given.
 func read_flags(arg_list []string) Flags {
 	app_flags := Flags{}
 	var flagset *flag.FlagSet
@@ -2050,6 +2115,11 @@ func read_flags(arg_list []string) Flags {
 	return app_flags
 }
 
+// reads each path in `input_file_list` as CSV or JSON, chosen by file
+// extension, and returns the repositories found in all of them.
+// `filter_fn` drops a repository when it returns `true`. a nil `filter_fn`
+// keeps everything.
+// an empty `input_file_list` is not an error.
 func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) bool) ([]GithubRepo, error) {
 	empty_response := []GithubRepo{}
 	if len(input_file_list) == 0 {
@@ -2093,13 +2163,15 @@ func read_input_file_list(input_file_list []string, filter_fn func(GithubRepo) b
 	return filtered_input_repo_list, nil
 }
 
+// removes repositories from `github_repo_list` that share an ID,
+// returning the remainder sorted by full name.
+// later entries override earlier ones, so search results override input file
+// entries and a second input file overrides the first.
 func unique_repo_list(github_repo_list []GithubRepo) []GithubRepo {
 	if len(github_repo_list) == 1 {
 		return github_repo_list
 	}
 
-	// de-duplicate repos with later inputs overriding earlier inputs.
-	// for example, results in input file 1 are overridden by input file 2 that are overridden by search results.
 	repo_idx := map[int]GithubRepo{}
 	for _, repo := range github_repo_list {
 		repo_idx[repo.ID] = repo
@@ -2120,6 +2192,12 @@ func unique_repo_list(github_repo_list []GithubRepo) []GithubRepo {
 	return unique_github_repo_list
 }
 
+// searches Github for addons, merges them with any input files, parses each
+// one and writes the catalogue.
+// writes to the paths given by `--out`, or to stdout as JSON when there are
+// none.
+// exits the program when the Github token is missing or an input file cannot
+// be read.
 func scrape() {
 	if STATE.GithubToken == "" {
 		slog.Error("Environment variable 'ADDONS_CATALOGUE_GITHUB_TOKEN' not set")
@@ -2296,6 +2374,10 @@ type CacheFileStats struct {
 	Ages      []time.Duration // for percentile calculation
 }
 
+// returns the value at `percentile` in `sorted_values`,
+// where `percentile` is a fraction between 0 and 1.
+// `sorted_values` must be sorted ascending, this is not checked.
+// an empty `sorted_values` returns 0.
 func calculate_percentile(sorted_values []int64, percentile float64) int64 {
 	if len(sorted_values) == 0 {
 		return 0
@@ -2307,6 +2389,8 @@ func calculate_percentile(sorted_values []int64, percentile float64) int64 {
 	return sorted_values[index]
 }
 
+// prints size and age statistics for the cache to stdout,
+// overall and then broken down by cache entry type.
 func cache_stats() {
 	cache_entries := cache_entry_list()
 	if len(cache_entries) == 0 {
@@ -2314,7 +2398,6 @@ func cache_stats() {
 		return
 	}
 
-	// categorize cache entries by type
 	stats_map := map[string]*CacheFileStats{
 		"search":       {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"zip":          {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
@@ -2338,7 +2421,6 @@ func cache_stats() {
 			continue
 		}
 
-		// determine cache type
 		var cache_type string
 		if strings.HasSuffix(cache_file, "-search") {
 			cache_type = "search"
@@ -2355,7 +2437,7 @@ func cache_stats() {
 		size := info.Size()
 		age := STATE.RunStart.Sub(info.ModTime())
 
-		// update type-specific stats
+		// per-type
 		stats := stats_map[cache_type]
 		stats.Count++
 		stats.TotalSize += size
@@ -2378,7 +2460,7 @@ func cache_stats() {
 			stats.MaxAge = age
 		}
 
-		// update overall stats
+		// overall
 		overall_stats.Count++
 		overall_stats.TotalSize += size
 		if size < overall_stats.MinSize {
@@ -2406,8 +2488,7 @@ func cache_stats() {
 		if stats.Count > 0 {
 			stats.AvgSize = stats.TotalSize / int64(stats.Count)
 
-			// sort for percentile calculation
-			slices.Sort(stats.Sizes)
+			slices.Sort(stats.Sizes) // `calculate_percentile` needs sorted input
 			stats.P95Size = calculate_percentile(stats.Sizes, 0.95)
 		} else {
 			stats.MinSize = 0
@@ -2421,12 +2502,11 @@ func cache_stats() {
 		overall_stats.P95Size = calculate_percentile(overall_stats.Sizes, 0.95)
 	}
 
-	// print results
 	fmt.Println("Cache Statistics")
 	fmt.Println("================")
 	fmt.Println()
 
-	// overall stats
+	// overall
 	fmt.Println("Overall:")
 	fmt.Printf("  Files:       %d\n", overall_stats.Count)
 	fmt.Printf("  Total Size:  %s (%d bytes)\n", format_bytes(overall_stats.TotalSize), overall_stats.TotalSize)
@@ -2439,7 +2519,7 @@ func cache_stats() {
 	fmt.Printf("  Avg Age:     %s\n", format_duration(overall_stats.AvgAge))
 	fmt.Println()
 
-	// type-specific stats
+	// per-type
 	type_order := []string{"search", "release.json", "releases", "zip", "other"}
 	for _, cache_type := range type_order {
 		stats := stats_map[cache_type]
@@ -2492,8 +2572,12 @@ func format_duration(d time.Duration) string {
 
 // ---
 
-// removes expired cache files according to their type-specific expiration settings.
-// Cap -1 (never expire) to 365 days maximum. Delete 0-byte files regardless of expiry.
+// removes expired cache files, using the expiry for each file's type.
+// zero-byte files are removed whatever their age.
+// entries that never expire are still removed once they reach 365 days,
+// so the cache cannot grow without bound.
+// reports what it would remove and removes nothing unless `--delete=true`
+// is given.
 func cache_prune() {
 	cache_entries := cache_entry_list()
 	if len(cache_entries) == 0 {
@@ -2527,7 +2611,6 @@ func cache_prune() {
 		size := info.Size()
 		age := STATE.RunStart.Sub(info.ModTime())
 
-		// Always remove 0-byte files
 		if size == 0 {
 			if dry_run {
 				fmt.Printf("  %s (0 bytes, %s old) - zero-byte file\n", cache_file, format_duration(age))
@@ -2544,7 +2627,7 @@ func cache_prune() {
 			continue
 		}
 
-		// Determine cache type and expiration
+		// expiry
 		var cache_type string
 		var expiry_hours int
 
@@ -2572,12 +2655,10 @@ func cache_prune() {
 			expiry_hours = CACHE_DURATION
 		}
 
-		// Cap "never expire" (-1) to max_age_days
 		if expiry_hours == -1 {
 			expiry_hours = max_age_days * 24
 		}
 
-		// Check if expired
 		age_hours := int(math.Floor(age.Hours()))
 		expired := age_hours >= expiry_hours
 
@@ -2614,6 +2695,9 @@ func cache_prune() {
 
 // ---
 
+// builds the global `State`, fixing the run start time that cache expiry is
+// measured against.
+// exits the program when the working directory or the schema cannot be read.
 func init_state() *State {
 	state := &State{
 		RunStart: time.Now().UTC(),
@@ -2635,6 +2719,9 @@ func init_state() *State {
 	return state
 }
 
+// builds the global `STATE` and configures logging.
+// does nothing under test, so tests that need `STATE` must set it up
+// themselves.
 func init() {
 	if is_testing() {
 		return
