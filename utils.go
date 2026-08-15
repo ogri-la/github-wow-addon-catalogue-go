@@ -1,4 +1,3 @@
-// general purpose utilities
 package main
 
 import (
@@ -24,7 +23,8 @@ func fatal() {
 	os.Exit(1)
 }
 
-// when `b` is true, log error `msg` and die quietly.
+// when `b` is true, logs `msg` at ERROR and exits with status 1.
+// does nothing when `b` is false.
 func die(b bool, msg string) {
 	if b {
 		slog.Error(msg)
@@ -76,9 +76,9 @@ func flatten[T any](tll ...[]T) []T {
 	return final_tl
 }
 
-// pretty-print a json blob
+// pretty-prints a json `blob`.
+// a blob that is not a json object returns "null", the error is not reported.
 func quick_json(blob string) string {
-	// convert into a simple map then
 	var foo map[string]any
 	json.Unmarshal([]byte(blob), &foo)
 
@@ -96,6 +96,9 @@ func pprint(thing any) {
 	fmt.Println(string(s))
 }
 
+// shortens `s` to `max_len` characters, adding a "..." suffix.
+// the result may be up to three characters longer than `max_len`.
+// slices by byte, so multi-byte characters at the boundary are split.
 func truncate(s string, max_len int) string {
 	if len(s) <= max_len {
 		return s
@@ -103,6 +106,8 @@ func truncate(s string, max_len int) string {
 	return s[:max_len] + "..."
 }
 
+// returns `true` when `path` exists.
+// errors other than 'not exists', like a permissions error, also return `true`.
 func path_exists(path string) bool {
 	_, err := os.Stat(path)
 	return !errors.Is(err, os.ErrNotExist)
@@ -132,7 +137,10 @@ func keys[K comparable, V any](some_map map[K]V) []K {
 	return key_list
 }
 
-// https://stackoverflow.com/questions/36000487/check-for-equality-on-slices-without-order#answer-36001228
+// returns `true` when `a` and `b` hold the same items, ignoring order.
+// duplicates are significant: ["a", "a"] and ["a", "b"] are not equal.
+// neither argument is modified.
+// - https://stackoverflow.com/questions/36000487/check-for-equality-on-slices-without-order#answer-36001228
 func array_sorted_equal(a, b []string) bool {
 	if len(a) != len(b) {
 		return false

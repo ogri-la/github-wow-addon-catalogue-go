@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -613,4 +614,83 @@ func Test_latest_release_is_first_in_slice(t *testing.T) {
 	assert.NotEqual(t, latestRelease.PublishedAtDate, oldestRelease.PublishedAtDate)
 	assert.True(t, latestRelease.PublishedAtDate.After(oldestRelease.PublishedAtDate),
 		"Latest release should have a newer date than oldest release")
+}
+
+func Test_select_release(t *testing.T) {
+	given := []GithubRelease{
+		{Name: "v3.0.0"},
+		{Name: "v2.0.0"},
+		{Name: "v1.0.0"},
+	}
+
+	cases := map[int]string{
+		1: "v3.0.0", // the latest release
+		2: "v2.0.0", // the release before it, used by `REPO_EXCEPTIONS`
+		3: "v1.0.0",
+	}
+
+	for release_number, expected := range cases {
+		actual, err := select_release(given, release_number)
+		require.NoError(t, err)
+		assert.Equal(t, expected, actual.Name)
+	}
+}
+
+func Test_select_release__bad_cases(t *testing.T) {
+	given := []GithubRelease{
+		{Name: "v1.0.0"},
+	}
+
+	cases := []int{
+		0,  // below the first release
+		-1, // nonsense
+		2,  // beyond the last release
+	}
+
+	for _, release_number := range cases {
+		_, actual := select_release(given, release_number)
+		assert.ErrorIs(t, actual, ErrNoReleasesFound)
+	}
+
+	// a repository with no releases at all
+	_, actual := select_release([]GithubRelease{}, 1)
+	assert.ErrorIs(t, actual, ErrNoReleasesFound)
+}
+
+// returns the index of the named CSV column, so tests don't hardcode one.
+func csv_column_idx(t *testing.T, name string) int {
+	t.Helper()
+	idx := slices.Index(ProjectCSVHeader(), name)
+	require.NotEqual(t, -1, idx, "no such CSV column: %s", name)
+	return idx
+}
+
+func Test_project_to_csv_row__nil_last_seen(t *testing.T) {
+	// `write_json` sets `LastSeenDate` to nil, so a Project may reach the CSV
+	// writer without one.
+	given := Project{
+		GithubRepo:   GithubRepo{ID: 1, Name: "Foo", FullName: "bar/Foo"},
+		LastSeenDate: nil,
+	}
+
+	var actual []string
+	require.NotPanics(t, func() {
+		actual = project_to_csv_row(given)
+	})
+
+	expected := ""
+	assert.Equal(t, expected, actual[csv_column_idx(t, "last_seen")])
+	assert.Len(t, actual, len(ProjectCSVHeader()))
+}
+
+func Test_project_to_csv_row__last_seen(t *testing.T) {
+	last_seen := time.Date(2025, 11, 1, 0, 0, 0, 0, time.UTC)
+	given := Project{
+		GithubRepo:   GithubRepo{ID: 1, Name: "Foo", FullName: "bar/Foo"},
+		LastSeenDate: &last_seen,
+	}
+
+	expected := "2025-11-01T00:00:00Z"
+	actual := project_to_csv_row(given)
+	assert.Equal(t, expected, actual[csv_column_idx(t, "last_seen")])
 }
