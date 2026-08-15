@@ -407,7 +407,13 @@ func ProjectCSVHeader() []string {
 
 // returns the `Project` `p` as a csv row,
 // with the columns of `ProjectCSVHeader`, in order.
+// a nil `LastSeenDate` is written as an empty cell.
 func project_to_csv_row(p Project) []string {
+	last_seen := ""
+	if p.LastSeenDate != nil {
+		last_seen = p.LastSeenDate.Format(time.RFC3339)
+	}
+
 	return []string{
 		strconv.Itoa(p.ID),
 		p.Name,
@@ -420,7 +426,7 @@ func project_to_csv_row(p Project) []string {
 		p.ProjectIDMap["x-wago-id"],
 		p.ProjectIDMap["x-wowi-id"],
 		title_case(fmt.Sprintf("%v", p.HasReleaseJSON)),
-		p.LastSeenDate.Format(time.RFC3339),
+		last_seen,
 		strconv.Itoa(p.Downloads),
 		strconv.Itoa(p.ReleaseCount),
 	}
@@ -1417,15 +1423,32 @@ func fetch_all_releases_pages(full_name string) ([]GithubRelease, error) {
 	return all_releases, nil
 }
 
+// returns the release in `release_list` at `release_number`,
+// counting back from the most recent: 1 is the latest release, 2 the one
+// before it. Github returns releases newest-first and that order is preserved.
+// returns `ErrNoReleasesFound` when `release_list` holds fewer than
+// `release_number` releases, or when `release_number` is below 1.
+func select_release(release_list []GithubRelease, release_number int) (GithubRelease, error) {
+	if release_number < 1 || release_number > len(release_list) {
+		return GithubRelease{}, ErrNoReleasesFound
+	}
+	return release_list[release_number-1], nil
+}
+
 // scrapes the repository `repo` and returns it as a `Project`.
-// game flavors and project IDs come from the `release.json` in the latest
+// game flavors and project IDs come from the `release.json` in the selected
 // release, or from the .toc files inside its .zip assets when there is no
 // `release.json`.
-// returns `ErrNoReleasesFound` when the repository has no releases and
-// `ErrNoReleaseCandidateFound` when the latest release has nothing to inspect.
+// download and release counts cover every release, not just the selected one.
+// `release_number` selects which release to inspect, counting back from the
+// most recent: 1 is the latest release, 2 the one before it. use a later
+// release when the latest one is known to be broken, see `REPO_EXCEPTIONS`.
+// returns `ErrNoReleasesFound` when the repository has no releases or has
+// fewer than `release_number` of them, and `ErrNoReleaseCandidateFound` when
+// the selected release has nothing to inspect.
 // a repository that cannot be parsed is excluded from the catalogue, so both
 // errors are expected rather than exceptional.
-func parse_repo(repo GithubRepo, page int) (Project, error) {
+func parse_repo(repo GithubRepo, release_number int) (Project, error) {
 	slog.Info("parsing repo", "repo", repo.FullName)
 
 	var empty_response Project
@@ -1443,11 +1466,13 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 	release_count := count_releases(all_releases)
 	slog.Debug("calculated statistics", "repo", repo.FullName, "downloads", total_downloads, "releases", release_count)
 
-	// Github returns releases newest-first
-	latest_github_release := all_releases[0]
+	github_release, err := select_release(all_releases, release_number)
+	if err != nil {
+		return empty_response, err
+	}
 
 	var release_dot_json *ReleaseDotJson
-	for _, asset := range latest_github_release.AssetList {
+	for _, asset := range github_release.AssetList {
 		if asset.Name == "release.json" {
 			asset_resp, err := github_download_with_retries_and_backoff(asset.BrowserDownloadURL)
 			if err != nil {
@@ -1471,7 +1496,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 	project_id_map := map[string]string{}
 
 	if release_dot_json != nil {
-		slog.Debug("release.json found", "repo", repo.FullName, "release", latest_github_release.Name)
+		slog.Debug("release.json found", "repo", repo.FullName, "release", github_release.Name)
 
 		// ensure at least one release in 'releases' is available
 		for _, entry := range release_dot_json.ReleaseJsonEntryList {
@@ -1483,7 +1508,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		// find the matching asset
 		// see `2072/Decursive` for a release.json using multiple releases
 		first_release_dot_json_entry := release_dot_json.ReleaseJsonEntryList[0]
-		for _, asset := range latest_github_release.AssetList {
+		for _, asset := range github_release.AssetList {
 			if asset.Name == first_release_dot_json_entry.Filename {
 				project_id_map, err = extract_project_ids_from_toc_files(asset.BrowserDownloadURL)
 				if err != nil {
@@ -1499,7 +1524,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 		// look for .zip assets instead and try our luck.
 		slog.Debug("no release.json found in latest release, looking for .zip file assets instead", "repo", repo.FullName)
 		zip_file_asset_list := []GithubReleaseAsset{}
-		for _, asset := range latest_github_release.AssetList {
+		for _, asset := range github_release.AssetList {
 			if asset.ContentType == "application/zip" || asset.ContentType == "application/x-zip-compressed" {
 				if strings.HasSuffix(asset.Name, ".zip") {
 					zip_file_asset_list = append(zip_file_asset_list, asset)
@@ -1535,7 +1560,7 @@ func parse_repo(repo GithubRepo, page int) (Project, error) {
 
 	project := Project{
 		GithubRepo:     repo,
-		UpdatedDate:    latest_github_release.PublishedAtDate,
+		UpdatedDate:    github_release.PublishedAtDate,
 		FlavorList:     flavor_list,
 		HasReleaseJSON: release_dot_json != nil,
 		LastSeenDate:   &STATE.RunStart,
@@ -1553,14 +1578,14 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 
 	for _, repo := range repo_list {
 		wg.Go(func() {
-			release_number := 1 // if '2', then per_page=1 and page=2, etc
-			project, err := parse_repo(repo, release_number)
+			project, err := parse_repo(repo, 1)
 			if err != nil {
 
+				// the latest release is known to be broken,
+				// try the one before it instead.
 				if errors.Is(err, ErrNoReleaseCandidateFound) {
 					_, is_awkward := REPO_EXCEPTIONS[repo.FullName]
 					if is_awkward {
-						release_number = 2
 						project, err = parse_repo(repo, 2)
 					}
 				}
