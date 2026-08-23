@@ -932,7 +932,10 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 // fetches `url` from Github, retrying up to five times.
 // a throttled or unsuccessful response waits before trying again, so this
 // call may block for minutes.
-// a 404 returns an error immediately and is not retried.
+// the requested url does not exist on Github.
+var ErrNotFound = errors.New("not found")
+
+// a 404 returns `ErrNotFound` immediately and is not retried.
 // unlike `download`, a non-2xx response after the final attempt is an error.
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
 	var resp ResponseWrapper
@@ -946,7 +949,7 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 		}
 
 		if resp.StatusCode == 404 {
-			return ResponseWrapper{}, errors.New("not found")
+			return ResponseWrapper{}, ErrNotFound
 		}
 
 		if throttled(resp) {
@@ -1366,6 +1369,11 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 var ErrNoReleasesFound = fmt.Errorf("does not use Github releases")
 var ErrNoReleaseCandidateFound = fmt.Errorf("failed to find a release.json file or a downloadable addon from the assets")
 
+// the repository does not exist on Github: deleted, made private or renamed
+// without a redirect. distinct from `ErrNotFound`, which any missing url
+// yields, so a vanished repository can be told apart from a missing asset.
+var ErrRepoNotFound = errors.New("repository not found")
+
 // fetches every page of releases for the repository `full_name`,
 // newest release first, as Github orders them.
 // stops after 100 pages of 100 releases and returns what it has.
@@ -1443,9 +1451,10 @@ func select_release(release_list []GithubRelease, release_number int) (GithubRel
 // `release_number` selects which release to inspect, counting back from the
 // most recent: 1 is the latest release, 2 the one before it. use a later
 // release when the latest one is known to be broken, see `REPO_EXCEPTIONS`.
-// returns `ErrNoReleasesFound` when the repository has no releases or has
-// fewer than `release_number` of them, and `ErrNoReleaseCandidateFound` when
-// the selected release has nothing to inspect.
+// returns `ErrRepoNotFound` when the repository no longer exists,
+// `ErrNoReleasesFound` when it has no releases or fewer than
+// `release_number` of them, and `ErrNoReleaseCandidateFound` when the
+// selected release has nothing to inspect.
 // a repository that cannot be parsed is excluded from the catalogue, so both
 // errors are expected rather than exceptional.
 func parse_repo(repo GithubRepo, release_number int) (Project, error) {
@@ -1455,6 +1464,12 @@ func parse_repo(repo GithubRepo, release_number int) (Project, error) {
 
 	all_releases, err := fetch_all_releases_pages(repo.FullName)
 	if err != nil {
+		// a 404 on the release listing means the repository itself is gone.
+		// a repository with releases disabled or none published returns an
+		// empty listing, not a 404.
+		if errors.Is(err, ErrNotFound) {
+			return empty_response, ErrRepoNotFound
+		}
 		return empty_response, fmt.Errorf("failed to fetch releases: %w", err)
 	}
 
@@ -1594,6 +1609,12 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 				if err != nil {
 					if errors.Is(err, ErrNoReleasesFound) || errors.Is(err, ErrNoReleaseCandidateFound) {
 						slog.Info("undownloadable addon, skipping", "repo", repo.FullName, "error", err)
+						return
+					}
+					// input files carry repositories that have since been
+					// deleted, renamed or made private. nothing to action.
+					if errors.Is(err, ErrRepoNotFound) {
+						slog.Warn("repository not found, skipping", "repo", repo.FullName)
 						return
 					}
 					slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
