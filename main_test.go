@@ -697,13 +697,14 @@ func Test_project_to_csv_row__last_seen(t *testing.T) {
 	assert.Equal(t, expected, actual[csv_column_idx(t, "last_seen")])
 }
 
-// --- search size bisection
+// --- search slice bisection
 
-// a corpus of files, one per size, that a stubbed `search_fetcher` searches.
-// `size_of` maps a result index to the size of its file in bytes.
+// a corpus of results that a stubbed `search_fetcher` searches.
+// `value_of` maps a result index to the value of its sliced attribute:
+// file size in bytes for code searches, creation day for repository searches.
 type fake_corpus struct {
 	num_results int
-	size_of     func(idx int) int
+	value_of    func(idx int) int
 	queries     []string // every query the fetcher was asked for, in order
 }
 
@@ -721,18 +722,38 @@ func parse_size_qualifier(t *testing.T, search_query string) (int, int) {
 	return lo, hi
 }
 
-// builds a `search_fetcher` over `corpus` that honours `size:` slicing and
-// Github's result window.
+// parses the `created:from..to` qualifier out of `search_query`, returning
+// the bounds as days from `SEARCH_EPOCH`.
+func parse_created_qualifier(t *testing.T, search_query string) (int, int) {
+	t.Helper()
+	idx := strings.Index(search_query, "created:")
+	require.NotEqual(t, -1, idx, "no created: qualifier in %q", search_query)
+	from_str, to_str, found := strings.Cut(search_query[idx+len("created:"):], "..")
+	require.True(t, found, "no '..' in created qualifier of %q", search_query)
+	from, err := time.Parse(time.DateOnly, from_str)
+	require.NoError(t, err)
+	to, err := time.Parse(time.DateOnly, strings.Fields(to_str)[0])
+	require.NoError(t, err)
+	return int(from.Sub(SEARCH_EPOCH).Hours() / 24), int(to.Sub(SEARCH_EPOCH).Hours() / 24)
+}
+
+// builds a `search_fetcher` over `corpus` that honours `size:` and `created:`
+// slicing and Github's result window.
 func stub_fetcher(t *testing.T, corpus *fake_corpus) search_fetcher {
 	t.Helper()
 	return func(endpoint, search_query string, page, per_page int) (string, error) {
 		corpus.queries = append(corpus.queries, search_query)
-		lo, hi := parse_size_qualifier(t, search_query)
+		var lo, hi int
+		if strings.Contains(search_query, "created:") {
+			lo, hi = parse_created_qualifier(t, search_query)
+		} else {
+			lo, hi = parse_size_qualifier(t, search_query)
+		}
 
 		matches := []int{}
 		for idx := range corpus.num_results {
-			size := corpus.size_of(idx)
-			if size >= lo && size <= hi {
+			value := corpus.value_of(idx)
+			if value >= lo && value <= hi {
 				matches = append(matches, idx)
 			}
 		}
@@ -767,7 +788,7 @@ func Test_size_qualifier(t *testing.T) {
 
 func Test_search_size_slice__fits_in_window(t *testing.T) {
 	// a query small enough to need no splitting at all.
-	corpus := &fake_corpus{num_results: 250, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: 250, value_of: func(idx int) int { return idx }}
 	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	assert.Equal(t, 250, count_items(t, actual))
@@ -778,7 +799,7 @@ func Test_search_size_slice__fits_in_window(t *testing.T) {
 func Test_search_size_slice__splits_over_threshold(t *testing.T) {
 	// more results than the split threshold but fewer than the window:
 	// bisection must still kick in, because `total_count` under-reports.
-	corpus := &fake_corpus{num_results: 900, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: 900, value_of: func(idx int) int { return idx }}
 	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	assert.Equal(t, 900, count_items(t, actual))
@@ -789,7 +810,7 @@ func Test_search_size_slice__recovers_results_beyond_window(t *testing.T) {
 	// the case that motivated this change: more results than Github will
 	// serve for any single query.
 	given := 2014
-	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: given, value_of: func(idx int) int { return idx }}
 	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	assert.Equal(t, given, count_items(t, actual), "every result should be retrieved")
@@ -798,7 +819,7 @@ func Test_search_size_slice__recovers_results_beyond_window(t *testing.T) {
 func Test_search_size_slice__splits_when_saturated_despite_low_count(t *testing.T) {
 	// `total_count` claims the slice fits, but the pages say otherwise.
 	// the pages win.
-	corpus := &fake_corpus{num_results: 1500, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: 1500, value_of: func(idx int) int { return idx }}
 	fetch := stub_fetcher(t, corpus)
 	// the probe under-reports so the slice is never split up front, but the
 	// paged responses still fill the window. only saturation reveals the truth.
@@ -824,7 +845,7 @@ func Test_search_size_slice__splits_when_saturated_despite_low_count(t *testing.
 func Test_search_size_slice__unsplittable_saturated_slice(t *testing.T) {
 	// every file is exactly one byte, so the range cannot be narrowed.
 	// the excess is unreachable: keep what we have rather than fail.
-	corpus := &fake_corpus{num_results: 1500, size_of: func(idx int) int { return 1 }}
+	corpus := &fake_corpus{num_results: 1500, value_of: func(idx int) int { return 1 }}
 
 	var actual []string
 	require.NotPanics(t, func() {
@@ -836,7 +857,7 @@ func Test_search_size_slice__unsplittable_saturated_slice(t *testing.T) {
 func Test_search_size_slice__empty_slice(t *testing.T) {
 	// a zero `total_count` is not trusted on its own: the slice is confirmed
 	// empty by a page that returns no results.
-	corpus := &fake_corpus{num_results: 0, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: 0, value_of: func(idx int) int { return idx }}
 	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	assert.Empty(t, actual)
@@ -846,7 +867,7 @@ func Test_search_size_slice__empty_slice(t *testing.T) {
 func Test_search_size_slice__understated_empty_slice(t *testing.T) {
 	// Github reports zero but serves results anyway. the page wins.
 	given := 40
-	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: given, value_of: func(idx int) int { return idx }}
 	fetch := stub_fetcher(t, corpus)
 	lying_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
 		body, err := fetch(endpoint, search_query, page, per_page)
@@ -865,7 +886,7 @@ func Test_search_size_slice__understated_empty_slice(t *testing.T) {
 
 func Test_search_size_slice__slices_are_disjoint(t *testing.T) {
 	// no result should be fetched twice: adjacent slices must not overlap.
-	corpus := &fake_corpus{num_results: 2014, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: 2014, value_of: func(idx int) int { return idx }}
 	results := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	seen := map[string]bool{}
@@ -947,7 +968,7 @@ func Test_search_size_slice__paginates_past_understated_total(t *testing.T) {
 	// serving results past it. observed live: a slice reporting 483 results
 	// served 693. pagination must follow the pages, not the count.
 	given := 693
-	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	corpus := &fake_corpus{num_results: given, value_of: func(idx int) int { return idx }}
 	fetch := stub_fetcher(t, corpus)
 	understating_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
 		body, err := fetch(endpoint, search_query, page, per_page)
@@ -964,4 +985,75 @@ func Test_search_size_slice__paginates_past_understated_total(t *testing.T) {
 
 	actual := search_size_slice(understating_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 	assert.Equal(t, given, count_items(t, actual), "every served result should be fetched, not just the reported total")
+}
+
+// --- repository search date slicing
+
+func Test_created_qualifier(t *testing.T) {
+	given := "topic:wow-addon"
+	cases := []struct {
+		lo, hi   int
+		expected string
+	}{
+		{0, 0, "topic:wow-addon created:2007-01-01..2007-01-01"}, // epoch day, single-day slice
+		{0, 30, "topic:wow-addon created:2007-01-01..2007-01-31"},
+		{365, 365, "topic:wow-addon created:2008-01-01..2008-01-01"}, // 2007 is not a leap year
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.expected, created_qualifier(given, c.lo, c.hi))
+	}
+}
+
+func Test_search_max_created_day(t *testing.T) {
+	// the upper bound must cover repositories created today: rendering it
+	// yields tomorrow's UTC date, so today always falls inside the range.
+	expected := time.Now().UTC().AddDate(0, 0, 1).Format(time.DateOnly)
+	actual := created_qualifier("foo", 0, search_max_created_day())
+	assert.True(t, strings.HasSuffix(actual, ".."+expected), "%q should end with ..%s", actual, expected)
+}
+
+func Test_search_created_slice__recovers_results_beyond_window(t *testing.T) {
+	// the case that motivated this change: `topic:wow-addon` passed 1000
+	// results, more than Github serves for any single query.
+	given := 1245
+	// repositories created across ten years of days.
+	corpus := &fake_corpus{num_results: given, value_of: func(idx int) int { return idx % 3650 }}
+	actual := search_created_slice(stub_fetcher(t, corpus), "repositories", "topic:wow-addon", 0, 7300)
+
+	assert.Equal(t, given, count_items(t, actual), "every result should be retrieved")
+
+	// no result fetched twice: adjacent date slices must not overlap.
+	seen := map[string]bool{}
+	for _, blob := range actual {
+		for _, item := range gjson.Get(blob, "items").Array() {
+			id := item.Get("id").String()
+			assert.False(t, seen[id], "result %s fetched more than once", id)
+			seen[id] = true
+		}
+	}
+	assert.Len(t, seen, given)
+}
+
+func Test_search_created_slice__single_day_saturates(t *testing.T) {
+	// every repository created on the same day: the range cannot be narrowed.
+	// the excess is unreachable: keep what we have rather than fail.
+	corpus := &fake_corpus{num_results: 1500, value_of: func(idx int) int { return 1 }}
+
+	var actual []string
+	require.NotPanics(t, func() {
+		actual = search_created_slice(stub_fetcher(t, corpus), "repositories", "topic:wow-addon", 1, 1)
+	})
+	assert.Equal(t, SEARCH_RESULT_WINDOW, count_items(t, actual), "a full window should still be returned")
+}
+
+func Test_search_url__repositories(t *testing.T) {
+	// `/search/repositories` honours sort and order, but date slicing makes
+	// them unnecessary and they must never be sent.
+	given := created_qualifier("topic:wow-addon", 0, 30)
+	actual := search_url("repositories", given, 1, 100)
+
+	assert.Contains(t, actual, "/search/repositories?")
+	assert.Contains(t, actual, "created%3A2007-01-01..2007-01-31")
+	assert.NotContains(t, actual, "sort=")
+	assert.NotContains(t, actual, "order=")
 }

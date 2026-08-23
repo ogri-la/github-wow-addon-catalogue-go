@@ -53,8 +53,8 @@ var CACHE_DURATION_ZIP = -1           // hours. how long cached zipfile entries 
 var CACHE_DURATION_RELEASE_JSON = -1  // hours. how long cached release.json entries should live for.
 var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for.
 
-// prevents issuing the same warnings multiple times when going backwards and forwards
-// and upside down through the search results.
+// prevents issuing the same warning multiple times when a repository appears
+// in the results of more than one search query.
 var WARNED = map[string]bool{}
 
 var API_URL = "https://api.github.com"
@@ -1619,8 +1619,9 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 }
 
 // Github serves at most `SEARCH_RESULT_WINDOW` results per query, however many
-// results the query actually has. Code searches get past this by splitting a
-// query into disjoint `size:` slices, each with its own window.
+// results the query actually has. Searches get past this by splitting a query
+// into disjoint slices, each with its own window: `size:` for code searches,
+// `created:` for repository searches.
 var SEARCH_RESULT_WINDOW = 1000
 
 // a slice reporting more results than this is split rather than fetched.
@@ -1633,6 +1634,10 @@ var SEARCH_SPLIT_THRESHOLD = 500
 // upper bound of the initial `size:` slice, in bytes.
 // three orders of magnitude above the largest workflow file seen so far.
 var SEARCH_MAX_FILE_SIZE = 999999
+
+// the day repository search slicing starts from, before Github's first
+// repository. `created:` slice bounds are counted in days from here.
+var SEARCH_EPOCH = time.Date(2007, 1, 1, 0, 0, 0, 0, time.UTC)
 
 // fetches one page of search results.
 // separates the bisection logic from the network so it can be tested.
@@ -1663,6 +1668,11 @@ func more_pages(page, per_page int, jsonstr string) (int, int, error) {
 	return remaining_pages, total, nil
 }
 
+// renders the inclusive range `lo..hi` as a search qualifier on
+// `search_query`. the only point where size slicing and date slicing differ:
+// everything else in the bisection is range-agnostic.
+type slice_qualifier func(search_query string, lo, hi int) string
+
 // adds a `size:lo..hi` qualifier to `search_query`, bounding results to files
 // of that many bytes. bounds are inclusive.
 // ranges are used rather than the `size:>=n` form, which the API rejects once
@@ -1671,9 +1681,26 @@ func size_qualifier(search_query string, lo, hi int) string {
 	return fmt.Sprintf("%s size:%d..%d", search_query, lo, hi)
 }
 
+// adds a `created:lo..hi` qualifier to `search_query`, bounding results to
+// repositories created between those days. `lo` and `hi` are days counted
+// from `SEARCH_EPOCH`, inclusive. Github evaluates the dates in UTC.
+func created_qualifier(search_query string, lo, hi int) string {
+	from := SEARCH_EPOCH.AddDate(0, 0, lo).Format(time.DateOnly)
+	to := SEARCH_EPOCH.AddDate(0, 0, hi).Format(time.DateOnly)
+	return fmt.Sprintf("%s created:%s..%s", search_query, from, to)
+}
+
+// the day after today in UTC, as days from `SEARCH_EPOCH`.
+// the upper bound of repository search slicing. one day past today because
+// Github evaluates `created:` in UTC and the local clock may sit either side
+// of the UTC date boundary.
+func search_max_created_day() int {
+	return int(time.Now().UTC().AddDate(0, 0, 1).Sub(SEARCH_EPOCH).Hours() / 24)
+}
+
 // builds the url for one page of search results.
 // `sort` and `order` are deliberately absent: `/search/code` ignores them and
-// `/search/repositories` is paginated elsewhere.
+// slicing makes them unnecessary on `/search/repositories`.
 func search_url(endpoint, search_query string, page, per_page int) string {
 	return API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, url.QueryEscape(search_query), per_page, page)
 }
@@ -1723,13 +1750,13 @@ func fetch_all_pages(fetch search_fetcher, endpoint, search_query string) ([]str
 	}
 }
 
-// fetches `search_query` restricted to files of `lo` to `hi` bytes, splitting
-// the range in half whenever a slice has more results than Github will serve.
-// returns every page fetched across all slices.
+// fetches `search_query` restricted to the slice `lo` to `hi` of `qualify`'s
+// range, splitting the range in half whenever a slice has more results than
+// Github will serve. returns every page fetched across all slices.
 // a slice that cannot be split any further and still fills the result window
 // is logged at ERROR: its excess results are unreachable.
-func search_size_slice(fetch search_fetcher, endpoint, search_query string, lo, hi int) []string {
-	sliced_query := size_qualifier(search_query, lo, hi)
+func search_slice(fetch search_fetcher, qualify slice_qualifier, endpoint, search_query string, lo, hi int) []string {
+	sliced_query := qualify(search_query, lo, hi)
 
 	// probe the slice before fetching it, so an oversized slice costs one
 	// request rather than a full window of pages.
@@ -1747,7 +1774,7 @@ func search_size_slice(fetch search_fetcher, endpoint, search_query string, lo, 
 			fatal()
 		}
 		if total_count > SEARCH_SPLIT_THRESHOLD {
-			return split_size_slice(fetch, endpoint, search_query, lo, hi, total_count)
+			return split_slice(fetch, qualify, endpoint, search_query, lo, hi, total_count)
 		}
 	}
 
@@ -1759,82 +1786,52 @@ func search_size_slice(fetch search_fetcher, endpoint, search_query string, lo, 
 	// `total_count` said the slice would fit but it didn't.
 	// trust the pages over the estimate.
 	if lo < hi {
-		return split_size_slice(fetch, endpoint, search_query, lo, hi, 0)
+		return split_slice(fetch, qualify, endpoint, search_query, lo, hi, 0)
 	}
 
-	slog.Error("search results exceed Github's result window and the file size range cannot be narrowed further, results are being missed", "query", search_query, "file-size", lo, "result-window", SEARCH_RESULT_WINDOW)
+	slog.Error("search results exceed Github's result window and the slice cannot be narrowed further, results are being missed", "query", sliced_query, "result-window", SEARCH_RESULT_WINDOW)
 	return results
 }
 
-// splits the file size range `lo` to `hi` at its midpoint and searches each
-// half. `total_count` is for logging only and may be zero when unknown.
-func split_size_slice(fetch search_fetcher, endpoint, search_query string, lo, hi, total_count int) []string {
+// splits the range `lo` to `hi` at its midpoint and searches each half.
+// `total_count` is for logging only and may be zero when unknown.
+func split_slice(fetch search_fetcher, qualify slice_qualifier, endpoint, search_query string, lo, hi, total_count int) []string {
 	mid := lo + (hi-lo)/2
-	slog.Debug("splitting search by file size", "query", search_query, "from", lo, "to", hi, "at", mid, "total-results", total_count)
-	results := search_size_slice(fetch, endpoint, search_query, lo, mid)
-	return append(results, search_size_slice(fetch, endpoint, search_query, mid+1, hi)...)
+	slog.Debug("splitting search slice", "query", search_query, "from", lo, "to", hi, "at", mid, "total-results", total_count)
+	results := search_slice(fetch, qualify, endpoint, search_query, lo, mid)
+	return append(results, search_slice(fetch, qualify, endpoint, search_query, mid+1, hi)...)
+}
+
+// fetches `search_query` restricted to files of `lo` to `hi` bytes,
+// bisecting the range to reach past Github's result window.
+func search_size_slice(fetch search_fetcher, endpoint, search_query string, lo, hi int) []string {
+	return search_slice(fetch, size_qualifier, endpoint, search_query, lo, hi)
+}
+
+// fetches `search_query` restricted to repositories created between days `lo`
+// and `hi` from `SEARCH_EPOCH`, bisecting the range to reach past Github's
+// result window.
+func search_created_slice(fetch search_fetcher, endpoint, search_query string, lo, hi int) []string {
+	return search_slice(fetch, created_qualifier, endpoint, search_query, lo, hi)
 }
 
 // searches Github and returns each page of results as a blob of JSON.
 // `endpoint` must be "code" or "repositories".
-// code searches are partitioned by file size to reach results beyond Github's
-// result window. repository searches are repeated across sort and order
-// combinations, which only that endpoint honours.
+// searches are partitioned to reach results beyond Github's result window:
+// code searches by file size, repository searches by repository creation date.
 // exits the program when a page cannot be fetched, because a partial catalogue
 // looks like addons have been removed.
 func search_github(endpoint string, search_query string) []string {
-	if endpoint != "code" && endpoint != "repositories" {
-		slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
-		fatal()
-	}
 	slog.Info("searching for repositories", "query", search_query)
-
-	if endpoint == "code" {
+	switch endpoint {
+	case "code":
 		return search_size_slice(github_search_fetcher, endpoint, search_query, 0, SEARCH_MAX_FILE_SIZE)
+	case "repositories":
+		return search_created_slice(github_search_fetcher, endpoint, search_query, 0, search_max_created_day())
 	}
-
-	results := []string{} // blobs of json from github api
-	per_page := 100
-
-	// sort and order the search results in different ways in an attempt to get at the addons not being returned.
-	sort_list := []string{"created", "updated"} // note! these are *deprecated*.
-	order_by_list := []string{"asc", "desc"}    // note! also *deprecated*.
-	for _, order_by := range order_by_list {
-		for _, sort_by := range sort_list {
-			page := 1
-			remaining_pages := 0
-			for {
-				url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d&sort=%s&order=%s", endpoint, url.QueryEscape(search_query), per_page, page, sort_by, order_by)
-				resp, err := github_download_with_retries_and_backoff(url)
-				if err != nil {
-					// halt if we can't fetch every page from each of the search queries.
-					slog.Error("error requesting url", "url", url, "error", err)
-					fatal()
-				}
-				body := resp.Text
-				results = append(results, body)
-
-				_remaining_pages, total_count, err := more_pages(page, per_page, body)
-				if err != nil {
-					// halt if we can't fetch every page from each of the search queries.
-					slog.Error("error finding next page of results", "current-page", page, "remaining-pages", remaining_pages, "error", err)
-					fatal()
-				}
-				remaining_pages = _remaining_pages
-
-				if remaining_pages > 0 && page >= 10 {
-					slog.Warn("search results truncated by GitHub's 1000-result limit", "query", search_query, "sort", sort_by, "order", order_by, "total-results", total_count)
-					break
-				}
-				if remaining_pages > 0 {
-					page = page + 1
-					continue
-				}
-				break
-			}
-		}
-	}
-	return results
+	slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
+	fatal()
+	return nil
 }
 
 // converts a single search result item from a single page of results to a `GithubRepo` struct.
