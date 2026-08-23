@@ -6,12 +6,14 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/tidwall/gjson"
 )
 
 func Test_parse_toc_filename(t *testing.T) {
@@ -693,4 +695,273 @@ func Test_project_to_csv_row__last_seen(t *testing.T) {
 	expected := "2025-11-01T00:00:00Z"
 	actual := project_to_csv_row(given)
 	assert.Equal(t, expected, actual[csv_column_idx(t, "last_seen")])
+}
+
+// --- search size bisection
+
+// a corpus of files, one per size, that a stubbed `search_fetcher` searches.
+// `size_of` maps a result index to the size of its file in bytes.
+type fake_corpus struct {
+	num_results int
+	size_of     func(idx int) int
+	queries     []string // every query the fetcher was asked for, in order
+}
+
+// parses the `size:lo..hi` qualifier out of `search_query`.
+// returns the full range when there is no qualifier.
+func parse_size_qualifier(t *testing.T, search_query string) (int, int) {
+	t.Helper()
+	idx := strings.Index(search_query, "size:")
+	if idx == -1 {
+		return 0, SEARCH_MAX_FILE_SIZE
+	}
+	var lo, hi int
+	_, err := fmt.Sscanf(search_query[idx:], "size:%d..%d", &lo, &hi)
+	require.NoError(t, err)
+	return lo, hi
+}
+
+// builds a `search_fetcher` over `corpus` that honours `size:` slicing and
+// Github's result window.
+func stub_fetcher(t *testing.T, corpus *fake_corpus) search_fetcher {
+	t.Helper()
+	return func(endpoint, search_query string, page, per_page int) (string, error) {
+		corpus.queries = append(corpus.queries, search_query)
+		lo, hi := parse_size_qualifier(t, search_query)
+
+		matches := []int{}
+		for idx := range corpus.num_results {
+			size := corpus.size_of(idx)
+			if size >= lo && size <= hi {
+				matches = append(matches, idx)
+			}
+		}
+
+		// github never serves results beyond its window
+		servable := min(len(matches), SEARCH_RESULT_WINDOW)
+		start := min((page-1)*per_page, servable)
+		end := min(page*per_page, servable)
+		items := []string{}
+		for _, idx := range matches[start:end] {
+			items = append(items, fmt.Sprintf(`{"id":%d}`, idx))
+		}
+		return fmt.Sprintf(`{"total_count":%d,"items":[%s]}`, len(matches), strings.Join(items, ",")), nil
+	}
+}
+
+// counts the result items across every page blob in `results`.
+func count_items(t *testing.T, results []string) int {
+	t.Helper()
+	total := 0
+	for _, blob := range results {
+		total += len(gjson.Get(blob, "items").Array())
+	}
+	return total
+}
+
+func Test_size_qualifier(t *testing.T) {
+	given := "CF_API_KEY path:.github/workflows"
+	expected := "CF_API_KEY path:.github/workflows size:0..999"
+	assert.Equal(t, expected, size_qualifier(given, 0, 999))
+}
+
+func Test_search_size_slice__fits_in_window(t *testing.T) {
+	// a query small enough to need no splitting at all.
+	corpus := &fake_corpus{num_results: 250, size_of: func(idx int) int { return idx }}
+	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	assert.Equal(t, 250, count_items(t, actual))
+	// one probe, then three pages of 100.
+	assert.Len(t, corpus.queries, 4)
+}
+
+func Test_search_size_slice__splits_over_threshold(t *testing.T) {
+	// more results than the split threshold but fewer than the window:
+	// bisection must still kick in, because `total_count` under-reports.
+	corpus := &fake_corpus{num_results: 900, size_of: func(idx int) int { return idx }}
+	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	assert.Equal(t, 900, count_items(t, actual))
+	assert.Greater(t, len(corpus.queries), 9, "expected the slice to be split")
+}
+
+func Test_search_size_slice__recovers_results_beyond_window(t *testing.T) {
+	// the case that motivated this change: more results than Github will
+	// serve for any single query.
+	given := 2014
+	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	assert.Equal(t, given, count_items(t, actual), "every result should be retrieved")
+}
+
+func Test_search_size_slice__splits_when_saturated_despite_low_count(t *testing.T) {
+	// `total_count` claims the slice fits, but the pages say otherwise.
+	// the pages win.
+	corpus := &fake_corpus{num_results: 1500, size_of: func(idx int) int { return idx }}
+	fetch := stub_fetcher(t, corpus)
+	// the probe under-reports so the slice is never split up front, but the
+	// paged responses still fill the window. only saturation reveals the truth.
+	lying_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
+		body, err := fetch(endpoint, search_query, page, per_page)
+		if err != nil {
+			return "", err
+		}
+		is_probe := per_page == 1
+		total := gjson.Get(body, "total_count").Int()
+		if is_probe && total > int64(SEARCH_SPLIT_THRESHOLD) {
+			body = strings.Replace(body,
+				fmt.Sprintf(`"total_count":%d`, total),
+				fmt.Sprintf(`"total_count":%d`, SEARCH_SPLIT_THRESHOLD-100), 1)
+		}
+		return body, nil
+	}
+
+	actual := search_size_slice(lying_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+	assert.Equal(t, 1500, count_items(t, actual), "saturation should trigger a split regardless of total_count")
+}
+
+func Test_search_size_slice__unsplittable_saturated_slice(t *testing.T) {
+	// every file is exactly one byte, so the range cannot be narrowed.
+	// the excess is unreachable: keep what we have rather than fail.
+	corpus := &fake_corpus{num_results: 1500, size_of: func(idx int) int { return 1 }}
+
+	var actual []string
+	require.NotPanics(t, func() {
+		actual = search_size_slice(stub_fetcher(t, corpus), "code", "foo", 1, 1)
+	})
+	assert.Equal(t, SEARCH_RESULT_WINDOW, count_items(t, actual), "a full window should still be returned")
+}
+
+func Test_search_size_slice__empty_slice(t *testing.T) {
+	// a zero `total_count` is not trusted on its own: the slice is confirmed
+	// empty by a page that returns no results.
+	corpus := &fake_corpus{num_results: 0, size_of: func(idx int) int { return idx }}
+	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	assert.Empty(t, actual)
+	assert.Len(t, corpus.queries, 2, "one probe, then one page to confirm the slice really is empty")
+}
+
+func Test_search_size_slice__understated_empty_slice(t *testing.T) {
+	// Github reports zero but serves results anyway. the page wins.
+	given := 40
+	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	fetch := stub_fetcher(t, corpus)
+	lying_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
+		body, err := fetch(endpoint, search_query, page, per_page)
+		if err != nil {
+			return "", err
+		}
+		if per_page == 1 {
+			body = strings.Replace(body, fmt.Sprintf(`"total_count":%d`, given), `"total_count":0`, 1)
+		}
+		return body, nil
+	}
+
+	actual := search_size_slice(lying_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+	assert.Equal(t, given, count_items(t, actual), "a zero total must not skip fetching the slice")
+}
+
+func Test_search_size_slice__slices_are_disjoint(t *testing.T) {
+	// no result should be fetched twice: adjacent slices must not overlap.
+	corpus := &fake_corpus{num_results: 2014, size_of: func(idx int) int { return idx }}
+	results := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	seen := map[string]bool{}
+	for _, blob := range results {
+		for _, item := range gjson.Get(blob, "items").Array() {
+			id := item.Get("id").String()
+			assert.False(t, seen[id], "result %s fetched more than once", id)
+			seen[id] = true
+		}
+	}
+	assert.Len(t, seen, 2014)
+}
+
+func Test_more_pages(t *testing.T) {
+	// (page, total) => expected remaining pages, 100 per page.
+	// a partial final page still needs fetching.
+	cases := []struct {
+		page, total, expected int
+	}{
+		{1, 50, 0},   // single partial page
+		{1, 100, 0},  // single exact page
+		{1, 250, 2},  // pages 2 and 3, the last one partial
+		{2, 250, 1},  // page 3, partial
+		{3, 250, 0},  // nothing left
+		{1, 743, 7},  // pages 2-8, the last one partial
+		{7, 743, 1},  // page 8, partial
+		{8, 743, 0},  // nothing left
+		{1, 1000, 9}, // exact multiple, no partial page
+		{10, 1000, 0},
+		{10, 2014, 11}, // beyond the window: caller decides what to do
+	}
+	for _, c := range cases {
+		jsonstr := fmt.Sprintf(`{"total_count":%d}`, c.total)
+		actual, total, err := more_pages(c.page, 100, jsonstr)
+		require.NoError(t, err)
+		assert.Equal(t, c.total, total)
+		assert.Equal(t, c.expected, actual, "page %d of %d results", c.page, c.total)
+	}
+}
+
+func Test_more_pages__missing_total_count(t *testing.T) {
+	_, _, err := more_pages(1, 100, `{"items":[]}`)
+	assert.Error(t, err)
+}
+
+func Test_search_url(t *testing.T) {
+	// `/search/code` ignores sort and order, so sending them just re-fetches
+	// the same page. the size qualifier must survive url encoding.
+	given := size_qualifier("CF_API_KEY path:.github/workflows", 0, 999)
+	actual := search_url("code", given, 1, 100)
+
+	assert.Contains(t, actual, "size%3A0..999")
+	assert.NotContains(t, actual, "sort=")
+	assert.NotContains(t, actual, "order=")
+	assert.Contains(t, actual, "per_page=100")
+	assert.Contains(t, actual, "page=1")
+	assert.Contains(t, actual, "/search/code?")
+}
+
+func Test_ceil_div(t *testing.T) {
+	cases := []struct {
+		a, b, expected int
+	}{
+		{0, 100, 0},
+		{1, 100, 1},
+		{99, 100, 1},
+		{100, 100, 1},
+		{101, 100, 2},
+		{443, 100, 5},
+		{-1, 100, 0}, // already past the end
+	}
+	for _, c := range cases {
+		assert.Equal(t, c.expected, ceil_div(c.a, c.b), "ceil_div(%d, %d)", c.a, c.b)
+	}
+}
+
+func Test_search_size_slice__paginates_past_understated_total(t *testing.T) {
+	// Github under-reports `total_count` on sliced code searches and keeps
+	// serving results past it. observed live: a slice reporting 483 results
+	// served 693. pagination must follow the pages, not the count.
+	given := 693
+	corpus := &fake_corpus{num_results: given, size_of: func(idx int) int { return idx }}
+	fetch := stub_fetcher(t, corpus)
+	understating_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
+		body, err := fetch(endpoint, search_query, page, per_page)
+		if err != nil {
+			return "", err
+		}
+		total := gjson.Get(body, "total_count").Int()
+		if total == int64(given) {
+			body = strings.Replace(body,
+				fmt.Sprintf(`"total_count":%d`, given), `"total_count":483`, 1)
+		}
+		return body, nil
+	}
+
+	actual := search_size_slice(understating_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+	assert.Equal(t, given, count_items(t, actual), "every served result should be fetched, not just the reported total")
 }

@@ -45,6 +45,15 @@ func is_testing() bool {
 	return strings.HasSuffix(os.Args[0], ".test")
 }
 
+// divides `a` by `b`, rounding up.
+// a negative result is zero: fewer than none of something is still none.
+func ceil_div(a, b int) int {
+	if a <= 0 {
+		return 0
+	}
+	return (a + b - 1) / b
+}
+
 // "title case" => "Title Case"
 // `strings.ToTitle` behaves strangely and isn't safe with unicode.
 func title_case(s string) string {

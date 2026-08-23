@@ -1618,10 +1618,36 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	return project_list
 }
 
-// reads the search results `jsonstr` and works out how much is left to fetch,
+// Github serves at most `SEARCH_RESULT_WINDOW` results per query, however many
+// results the query actually has. Code searches get past this by splitting a
+// query into disjoint `size:` slices, each with its own window.
+var SEARCH_RESULT_WINDOW = 1000
+
+// a slice reporting more results than this is split rather than fetched.
+// far below `SEARCH_RESULT_WINDOW` because Github under-reports `total_count`
+// on sliced code searches: a slice reporting 483 was observed serving 693.
+// saturation is what actually decides a split, this only avoids the wasted
+// pages of an obviously oversized slice.
+var SEARCH_SPLIT_THRESHOLD = 500
+
+// upper bound of the initial `size:` slice, in bytes.
+// three orders of magnitude above the largest workflow file seen so far.
+var SEARCH_MAX_FILE_SIZE = 999999
+
+// fetches one page of search results.
+// separates the bisection logic from the network so it can be tested.
+type search_fetcher func(endpoint, search_query string, page, per_page int) (string, error)
+
+// reads the page of search results `jsonstr` and reports what remains,
 // returning a pair of (remaining pages, total results).
-// returns an error when `jsonstr` has no 'total_count' field, as pagination
-// is then impossible.
+// a partial final page counts as a remaining page.
+// returns an error when `jsonstr` has no 'total_count' field.
+//
+// both values derive from 'total_count', which is only trustworthy on
+// `/search/repositories`. `/search/code` under-reports it and serves results
+// past it, so code searches use the total to size a slice and never to decide
+// whether another page exists. see `fetch_all_pages`.
+//
 // todo: replace this with the 'next' url from the `Link` response header:
 // Link: <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=8>; rel="prev", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="next", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=10>; rel="last", <https://api.github.com/search/code?q=path%3A.github%2Fworkflows+bigwigsmods+packager&per_page=100&page=1>; rel="first"
 func more_pages(page, per_page int, jsonstr string) (int, int, error) {
@@ -1630,20 +1656,132 @@ func more_pages(page, per_page int, jsonstr string) (int, int, error) {
 		return 0, 0, errors.New("expected field 'total_count' not found, cannot paginate")
 	}
 	total := int(val.Int())
-	ptr := page * per_page            // 300
-	pos := total - ptr                // 743 - 300 = 443
-	remaining_pages := pos / per_page // 4.43
+	fetched := page * per_page                       // page 3 of 100 => 300
+	remaining := total - fetched                     // 743 - 300 = 443
+	remaining_pages := ceil_div(remaining, per_page) // 443 / 100 => 5, the last page partial
 	slog.Debug("pagination", "total-results", total, "current-page", page, "results-per-page", per_page, "remaining-pages", remaining_pages)
-	return remaining_pages, total, nil // 4
+	return remaining_pages, total, nil
+}
+
+// adds a `size:lo..hi` qualifier to `search_query`, bounding results to files
+// of that many bytes. bounds are inclusive.
+// ranges are used rather than the `size:>=n` form, which the API rejects once
+// url encoded.
+func size_qualifier(search_query string, lo, hi int) string {
+	return fmt.Sprintf("%s size:%d..%d", search_query, lo, hi)
+}
+
+// builds the url for one page of search results.
+// `sort` and `order` are deliberately absent: `/search/code` ignores them and
+// `/search/repositories` is paginated elsewhere.
+func search_url(endpoint, search_query string, page, per_page int) string {
+	return API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d", endpoint, url.QueryEscape(search_query), per_page, page)
+}
+
+// fetches one page of results from Github.
+func github_search_fetcher(endpoint, search_query string, page, per_page int) (string, error) {
+	resp, err := github_download_with_retries_and_backoff(search_url(endpoint, search_query, page, per_page))
+	if err != nil {
+		return "", err
+	}
+	return resp.Text, nil
+}
+
+// fetches every page of `search_query`, up to the limit of Github's result
+// window, returning the pages and whether the window was exhausted.
+// an exhausted window means results are being missed and the query must be
+// narrowed.
+// pagination stops on a short page rather than on `total_count`: Github
+// under-reports the total on sliced code searches, sometimes by 40% or more,
+// and keeps serving results well past it.
+// exits the program when a page cannot be fetched, because a partial catalogue
+// looks like addons have been removed.
+func fetch_all_pages(fetch search_fetcher, endpoint, search_query string) ([]string, bool) {
+	per_page := 100
+	max_page := SEARCH_RESULT_WINDOW / per_page
+
+	results := []string{}
+	for page := 1; ; page++ {
+		body, err := fetch(endpoint, search_query, page, per_page)
+		if err != nil {
+			slog.Error("error requesting search results", "endpoint", endpoint, "query", search_query, "page", page, "error", err)
+			fatal()
+		}
+
+		num_items := len(gjson.Get(body, "items").Array())
+		if num_items == 0 {
+			return results, false
+		}
+		results = append(results, body)
+
+		if num_items < per_page {
+			return results, false
+		}
+		if page >= max_page {
+			return results, true
+		}
+	}
+}
+
+// fetches `search_query` restricted to files of `lo` to `hi` bytes, splitting
+// the range in half whenever a slice has more results than Github will serve.
+// returns every page fetched across all slices.
+// a slice that cannot be split any further and still fills the result window
+// is logged at ERROR: its excess results are unreachable.
+func search_size_slice(fetch search_fetcher, endpoint, search_query string, lo, hi int) []string {
+	sliced_query := size_qualifier(search_query, lo, hi)
+
+	// probe the slice before fetching it, so an oversized slice costs one
+	// request rather than a full window of pages.
+	// only an oversized total is acted on. an empty slice is settled by
+	// `fetch_all_pages`, which believes a page of zero results and not a count.
+	if lo < hi {
+		body, err := fetch(endpoint, sliced_query, 1, 1)
+		if err != nil {
+			slog.Error("error probing search results", "endpoint", endpoint, "query", sliced_query, "error", err)
+			fatal()
+		}
+		_, total_count, err := more_pages(1, 1, body)
+		if err != nil {
+			slog.Error("error reading probe results", "query", sliced_query, "error", err)
+			fatal()
+		}
+		if total_count > SEARCH_SPLIT_THRESHOLD {
+			return split_size_slice(fetch, endpoint, search_query, lo, hi, total_count)
+		}
+	}
+
+	results, saturated := fetch_all_pages(fetch, endpoint, sliced_query)
+	if !saturated {
+		return results
+	}
+
+	// `total_count` said the slice would fit but it didn't.
+	// trust the pages over the estimate.
+	if lo < hi {
+		return split_size_slice(fetch, endpoint, search_query, lo, hi, 0)
+	}
+
+	slog.Error("search results exceed Github's result window and the file size range cannot be narrowed further, results are being missed", "query", search_query, "file-size", lo, "result-window", SEARCH_RESULT_WINDOW)
+	return results
+}
+
+// splits the file size range `lo` to `hi` at its midpoint and searches each
+// half. `total_count` is for logging only and may be zero when unknown.
+func split_size_slice(fetch search_fetcher, endpoint, search_query string, lo, hi, total_count int) []string {
+	mid := lo + (hi-lo)/2
+	slog.Debug("splitting search by file size", "query", search_query, "from", lo, "to", hi, "at", mid, "total-results", total_count)
+	results := search_size_slice(fetch, endpoint, search_query, lo, mid)
+	return append(results, search_size_slice(fetch, endpoint, search_query, mid+1, hi)...)
 }
 
 // searches Github and returns each page of results as a blob of JSON.
 // `endpoint` must be "code" or "repositories".
-// the same query is repeated across sort and order combinations to reach
-// results that any single ordering leaves out.
-// exits the program when a page cannot be fetched or when a query has more
-// than 2000 results, because a partial catalogue looks like addons have been
-// removed.
+// code searches are partitioned by file size to reach results beyond Github's
+// result window. repository searches are repeated across sort and order
+// combinations, which only that endpoint honours.
+// exits the program when a page cannot be fetched, because a partial catalogue
+// looks like addons have been removed.
 func search_github(endpoint string, search_query string) []string {
 	if endpoint != "code" && endpoint != "repositories" {
 		slog.Error("unsupported endpoint", "endpoint", endpoint, "supported-endpoints", []string{"code", "repositories"})
@@ -1651,9 +1789,12 @@ func search_github(endpoint string, search_query string) []string {
 	}
 	slog.Info("searching for repositories", "query", search_query)
 
+	if endpoint == "code" {
+		return search_size_slice(github_search_fetcher, endpoint, search_query, 0, SEARCH_MAX_FILE_SIZE)
+	}
+
 	results := []string{} // blobs of json from github api
 	per_page := 100
-	search_query = url.QueryEscape(search_query)
 
 	// sort and order the search results in different ways in an attempt to get at the addons not being returned.
 	sort_list := []string{"created", "updated"} // note! these are *deprecated*.
@@ -1663,7 +1804,7 @@ func search_github(endpoint string, search_query string) []string {
 			page := 1
 			remaining_pages := 0
 			for {
-				url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d&sort=%s&order=%s", endpoint, search_query, per_page, page, sort_by, order_by)
+				url := API_URL + fmt.Sprintf("/search/%s?q=%s&per_page=%d&page=%d&sort=%s&order=%s", endpoint, url.QueryEscape(search_query), per_page, page, sort_by, order_by)
 				resp, err := github_download_with_retries_and_backoff(url)
 				if err != nil {
 					// halt if we can't fetch every page from each of the search queries.
@@ -1681,10 +1822,6 @@ func search_github(endpoint string, search_query string) []string {
 				}
 				remaining_pages = _remaining_pages
 
-				if total_count > 2000 {
-					slog.Error("search results exceed 2000, results are being missed that sort/order combinations cannot cover", "query", search_query, "total-results", total_count)
-					fatal()
-				}
 				if remaining_pages > 0 && page >= 10 {
 					slog.Warn("search results truncated by GitHub's 1000-result limit", "query", search_query, "sort", sort_by, "order", order_by, "total-results", total_count)
 					break
