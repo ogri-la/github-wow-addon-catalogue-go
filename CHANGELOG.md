@@ -25,7 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **BREAKING:** all functionality now sits behind subcommands
   - scraping is no longer the default, `./github-wow-addon-catalogue` becomes `./github-wow-addon-catalogue scrape`
-- Search results exceeding Github's 1000-result limit are now detected and reported rather than silently truncated
+- Search queries with more than 1000 results are now partitioned into slices, retrieving every result
+  - code searches are sliced by matched file size, repository searches by repository creation date
+  - previously such queries were silently truncated at 1000 results per ordering
 - Concurrent requests to Github are limited to 50, and the wait after being throttled has increased to 60 seconds
 - Cache writes now take an exclusive file lock, so concurrent runs no longer corrupt entries
 - `release.json` schema updated to the 1.0.2 specification, which requires an `interface` value
@@ -38,6 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Writing CSV no longer panics when an addon has no last-seen date
 - Project IDs with a value of `0` are ignored, as several addons set this by mistake
 - The `X-RateLimit-Reset` header is now read correctly outside of search results
+- Around 200 addons that sat past Github's 1000-result search window are restored to the catalogue
+
+### Removed
+
+- The `sort`/`order` search permutation passes: deprecated by Github, ignored on code search, replaced by slicing
 
 ## [1.0.0] - 2024-05-05
 
