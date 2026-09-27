@@ -122,10 +122,20 @@ Aug 15 22:16:30.118 INF addons parsed num=3 viable=3
 ]
 ```
 
-The `flavor-list` values are `mainline`, `vanilla`, `tbc`, `wrath`, `cata` and
-`mists`. The CSV form of the above uses the columns `id`, `name`, `full_name`,
+The `flavor-list` values are `mainline`, `vanilla`, `forever`, `tbc`, `wrath`,
+`cata` and `mists`. The CSV form of the above uses the columns `id`, `name`, `full_name`,
 `url`, `description`, `last_updated`, `flavors`, `curse_id`, `wago_id`,
 `wowi_id`, `has_release_json`, `last_seen`, `downloads` and `release_count`.
+
+An addon whose `release.json` cannot be parsed or fails validation against the
+[specification](https://github.com/ogri-la/release.json-specification) is
+excluded from the catalogue. Each exclusion is written as a JSON line to
+`./output/reports/release-json-failures-YYYY-MM-DD.jsonl`, with the failing
+schema keyword and offending value, to measure the use of values the
+specification does not support. An unexpected or missing property is reported
+by its name:
+
+    $ jq -r '.violations[] | "\(.keyword) \(.value)"' output/reports/release-json-failures-*.jsonl | sort | uniq -c
 
 ### `find-duplicates`
 

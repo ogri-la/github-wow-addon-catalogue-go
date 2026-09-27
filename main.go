@@ -203,6 +203,7 @@ type State struct {
 	GithubToken string             // Github credentials, pulled from ENV
 	Client      *http.Client       // shared HTTP client for persistent connections
 	Schema      *jsonschema.Schema // validates release.json files
+	SchemaDoc   any                // `Schema` as unmarshalled JSON, for describing violations
 	Flags       Flags
 	RunStart    time.Time // time app started
 }
@@ -230,6 +231,7 @@ type Flavor = string
 const (
 	MainlineFlavor Flavor = "mainline"
 	VanillaFlavor  Flavor = "vanilla"
+	ForeverFlavor  Flavor = "forever"
 	TBCFlavor      Flavor = "tbc"
 	WrathFlavor    Flavor = "wrath"
 	CataFlavor     Flavor = "cata"
@@ -238,12 +240,13 @@ const (
 
 // all known flavours.
 var FLAVOR_LIST = []Flavor{
-	MainlineFlavor, VanillaFlavor, TBCFlavor, WrathFlavor, CataFlavor, MistsFlavor,
+	MainlineFlavor, VanillaFlavor, ForeverFlavor, TBCFlavor, WrathFlavor, CataFlavor, MistsFlavor,
 }
 
 // mapping of alias => canonical flavour
 var FLAVOR_ALIAS_MAP = map[string]Flavor{
 	"classic": VanillaFlavor,
+	"camelot": ForeverFlavor, // WoW: Forever's internal codename and .toc suffix
 	"bcc":     TBCFlavor,
 	"wotlk":   WrathFlavor,
 	"wotlkc":  WrathFlavor,
@@ -253,10 +256,21 @@ var FLAVOR_ALIAS_MAP = map[string]Flavor{
 var FLAVOR_WEIGHTS = map[Flavor]int{
 	MainlineFlavor: 0,
 	VanillaFlavor:  1,
-	TBCFlavor:      2,
-	WrathFlavor:    3,
-	CataFlavor:     4,
-	MistsFlavor:    5,
+	ForeverFlavor:  2,
+	TBCFlavor:      3,
+	WrathFlavor:    4,
+	CataFlavor:     5,
+	MistsFlavor:    6,
+}
+
+// interface value ranges, inclusive, that take precedence over `INTERFACE_RANGES`.
+// WoW: Forever reports a 1.x interface value (1.60.1 => 16001) but is not vanilla.
+var INTERFACE_SUBRANGES = []struct {
+	Min    int
+	Max    int
+	Flavor Flavor
+}{
+	{1_60_00, 1_99_99, ForeverFlavor},
 }
 
 var INTERFACE_RANGES = map[int]Flavor{
@@ -356,6 +370,44 @@ type ReleaseJsonEntry struct {
 // a `release.json` file.
 type ReleaseDotJson struct {
 	ReleaseJsonEntryList []ReleaseJsonEntry `json:"releases"`
+}
+
+// a single schema violation in a `release.json` file.
+// an unexpected or missing property is one violation per property name.
+type ReleaseDotJsonViolation struct {
+	Location string `json:"location"` // JSON pointer to the value, "/releases/0/metadata/2/flavor"
+	Keyword  string `json:"keyword"`  // the schema keyword that failed, "enum", "additionalProperties", "required"
+	Value    any    `json:"value"`    // the offending value, or the property name for "additionalProperties" and "required"
+	Message  string `json:"message"`
+}
+
+// a `release.json` file that cannot be parsed or fails validation.
+// `Violations` is empty when the file is not valid JSON.
+type ReleaseDotJsonError struct {
+	Violations []ReleaseDotJsonViolation
+	Err        error
+}
+
+func (e *ReleaseDotJsonError) Error() string {
+	return e.Err.Error()
+}
+
+func (e *ReleaseDotJsonError) Unwrap() error {
+	return e.Err
+}
+
+// a Github release whose `release.json` file excludes its addon from the catalogue.
+// written to a report to measure the use of values the specification does not support.
+type ReleaseDotJsonFailure struct {
+	Repo       string                    `json:"repo"`
+	Release    string                    `json:"release"`
+	URL        string                    `json:"url"`
+	Message    string                    `json:"error"`
+	Violations []ReleaseDotJsonViolation `json:"violations"`
+}
+
+func (f *ReleaseDotJsonFailure) Error() string {
+	return f.Message
 }
 
 // a Github release has many assets.
@@ -1139,6 +1191,12 @@ func interface_number_to_flavor(interface_val string) (Flavor, error) {
 		return "", fmt.Errorf("failed to convert interface value to integer: %w", err)
 	}
 
+	for _, subrange := range INTERFACE_SUBRANGES {
+		if interface_int >= subrange.Min && interface_int <= subrange.Max {
+			return subrange.Flavor, nil
+		}
+	}
+
 	idx := (interface_int / 1_00_00) * 1_00_00 // 12345 => 1 => 10000
 	flavor, present := INTERFACE_RANGES[idx]
 	if !present {
@@ -1317,23 +1375,182 @@ func extract_game_flavors_from_tocs(asset_list []GithubReleaseAsset) ([]Flavor, 
 	return flavor_list, nil
 }
 
+// returns the value in `doc` at the JSON pointer `pointer`, or nil when absent.
+// `doc` is JSON unmarshalled into an `any`.
+// "" => doc, "/releases/0/name" => doc["releases"][0]["name"]
+func json_pointer_value(doc any, pointer string) any {
+	if pointer == "" {
+		return doc
+	}
+	node := doc
+	for _, token := range strings.Split(strings.TrimPrefix(pointer, "/"), "/") {
+		token = strings.ReplaceAll(strings.ReplaceAll(token, "~1", "/"), "~0", "~")
+		switch typed_node := node.(type) {
+		case map[string]any:
+			val, present := typed_node[token]
+			if !present {
+				return nil
+			}
+			node = val
+		case []any:
+			idx, err := strconv.Atoi(token)
+			if err != nil || idx < 0 || idx >= len(typed_node) {
+				return nil
+			}
+			node = typed_node[idx]
+		default:
+			return nil
+		}
+	}
+	return node
+}
+
+// returns the keyword and the JSON pointer to the schema object holding it.
+// "https://example.org/schema.json#/properties/releases/items/additionalProperties" => "additionalProperties", "/properties/releases/items"
+func split_keyword_location(absolute_keyword_location string) (string, string) {
+	_, fragment, _ := strings.Cut(absolute_keyword_location, "#")
+	idx := strings.LastIndex(fragment, "/")
+	if idx == -1 {
+		return fragment, ""
+	}
+	return fragment[idx+1:], fragment[:idx]
+}
+
+// returns the keys of `v` as a set, or an empty set when `v` is not a JSON object.
+func key_set(v any) map[string]bool {
+	set := map[string]bool{}
+	obj, is_obj := v.(map[string]any)
+	if is_obj {
+		for key := range obj {
+			set[key] = true
+		}
+	}
+	return set
+}
+
+// returns the strings in `v` as a set, or an empty set when `v` is not a JSON array.
+func string_set(v any) map[string]bool {
+	set := map[string]bool{}
+	arr, is_arr := v.([]any)
+	if is_arr {
+		for _, item := range arr {
+			str, is_str := item.(string)
+			if is_str {
+				set[str] = true
+			}
+		}
+	}
+	return set
+}
+
+// returns the members of `a` absent from `b`, sorted.
+func set_difference(a, b map[string]bool) []string {
+	diff := []string{}
+	for key := range a {
+		if !b[key] {
+			diff = append(diff, key)
+		}
+	}
+	slices.Sort(diff)
+	return diff
+}
+
+// returns the property names at fault in an "additionalProperties" or "required" violation.
+// `schema_node` is the schema object holding the keyword, `instance` the object that failed.
+// returns an empty list for any other keyword.
+func offending_property_names(keyword string, schema_node, instance any) []string {
+	schema_obj, _ := schema_node.(map[string]any)
+	switch keyword {
+	case "additionalProperties":
+		return set_difference(key_set(instance), key_set(schema_obj["properties"]))
+	case "required":
+		return set_difference(string_set(schema_obj["required"]), key_set(instance))
+	}
+	return []string{}
+}
+
+// returns `token` escaped for use in a JSON pointer.
+func json_pointer_escape(token string) string {
+	return strings.ReplaceAll(strings.ReplaceAll(token, "~", "~0"), "/", "~1")
+}
+
+// returns the most specific schema violations in `err` with their offending values from `raw`.
+// `schema_doc` is the schema `err` came from, as unmarshalled JSON.
+// returns an empty list when `err` is not a `*jsonschema.ValidationError`.
+func schema_violations(schema_doc any, raw any, err error) []ReleaseDotJsonViolation {
+	violation_list := []ReleaseDotJsonViolation{}
+	var validation_err *jsonschema.ValidationError
+	if !errors.As(err, &validation_err) {
+		return violation_list
+	}
+	var walk func(*jsonschema.ValidationError)
+	walk = func(ve *jsonschema.ValidationError) {
+		if len(ve.Causes) == 0 {
+			keyword, schema_location := split_keyword_location(ve.AbsoluteKeywordLocation)
+			instance := json_pointer_value(raw, ve.InstanceLocation)
+			name_list := offending_property_names(keyword, json_pointer_value(schema_doc, schema_location), instance)
+			for _, name := range name_list {
+				violation_list = append(violation_list, ReleaseDotJsonViolation{
+					Location: ve.InstanceLocation + "/" + json_pointer_escape(name),
+					Keyword:  keyword,
+					Value:    name,
+					Message:  ve.Message,
+				})
+			}
+			if len(name_list) == 0 {
+				violation_list = append(violation_list, ReleaseDotJsonViolation{
+					Location: ve.InstanceLocation,
+					Keyword:  keyword,
+					Value:    instance,
+					Message:  ve.Message,
+				})
+			}
+			return
+		}
+		for _, cause := range ve.Causes {
+			walk(cause)
+		}
+	}
+	walk(validation_err)
+	return violation_list
+}
+
+// returns the number of times each keyword and offending value appears in `failure_list`.
+// keys are "keyword:value", "enum:camelot", an absent value is "<nil>".
+func tally_violation_values(failure_list []ReleaseDotJsonFailure) map[string]int {
+	tally := map[string]int{}
+	for _, failure := range failure_list {
+		for _, violation := range failure.Violations {
+			tally[fmt.Sprintf("%s:%v", violation.Keyword, violation.Value)]++
+		}
+	}
+	return tally
+}
+
 // parses `release_dot_json_bytes` into a `ReleaseDotJson`.
 // the bytes are validated against the `release.json` schema first, so a
 // well-formed but invalid file is an error.
 // flavor aliases are not resolved here, they are normalised before output.
+// errors are a `*ReleaseDotJsonError`.
 func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, error) {
 
 	var raw any
 	err := json.Unmarshal(release_dot_json_bytes, &raw)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal release.json bytes into a generic struct for validation: %w", err)
+		return nil, &ReleaseDotJsonError{
+			Violations: []ReleaseDotJsonViolation{},
+			Err:        fmt.Errorf("failed to unmarshal release.json bytes into a generic struct for validation: %w", err),
+		}
 	}
 
 	err = STATE.Schema.Validate(raw)
 	if err != nil {
 		// future: error data is rich, can something nicer be emitted?
 		slog.Warn("failed to validate", "raw", raw, "error", err)
-		return nil, fmt.Errorf("release.json file failed to validate against schema: %w", err)
+		return nil, &ReleaseDotJsonError{
+			Violations: schema_violations(STATE.SchemaDoc, raw, err),
+			Err:        fmt.Errorf("release.json file failed to validate against schema: %w", err),
+		}
 	}
 
 	// data is valid, unmarshal to a ReleaseJson
@@ -1341,7 +1558,10 @@ func parse_release_dot_json(release_dot_json_bytes []byte) (*ReleaseDotJson, err
 	var release_dot_json ReleaseDotJson
 	err = json.Unmarshal(release_dot_json_bytes, &release_dot_json)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse release.json as JSON: %w", err)
+		return nil, &ReleaseDotJsonError{
+			Violations: []ReleaseDotJsonViolation{},
+			Err:        fmt.Errorf("failed to parse release.json as JSON: %w", err),
+		}
 	}
 
 	// coerce game flavor values
@@ -1453,8 +1673,9 @@ func select_release(release_list []GithubRelease, release_number int) (GithubRel
 // release when the latest one is known to be broken, see `REPO_EXCEPTIONS`.
 // returns `ErrRepoNotFound` when the repository no longer exists,
 // `ErrNoReleasesFound` when it has no releases or fewer than
-// `release_number` of them, and `ErrNoReleaseCandidateFound` when the
-// selected release has nothing to inspect.
+// `release_number` of them, `ErrNoReleaseCandidateFound` when the
+// selected release has nothing to inspect, and a `*ReleaseDotJsonFailure`
+// when its `release.json` cannot be parsed or fails validation.
 // a repository that cannot be parsed is excluded from the catalogue, so both
 // errors are expected rather than exceptional.
 func parse_repo(repo GithubRepo, release_number int) (Project, error) {
@@ -1494,13 +1715,22 @@ func parse_repo(repo GithubRepo, release_number int) (Project, error) {
 				return empty_response, fmt.Errorf("failed to download release.json: %w", err)
 			}
 
-			// todo: custom unmarshall here to enforce flavor, coerce aliases, validate, etc
-			// todo: do we still have access to the bytes or were they consumed?
 			release_dot_json, err = parse_release_dot_json(asset_resp.Bytes)
 			if err != nil {
 				// todo: if we return here then the addon is skipped entirely.
 				// instead, should probably just ignore the release.json and move on.
-				return empty_response, fmt.Errorf("failed to parse release.json: %w", err)
+				failure := &ReleaseDotJsonFailure{
+					Repo:       repo.FullName,
+					Release:    github_release.Name,
+					URL:        asset.BrowserDownloadURL,
+					Message:    err.Error(),
+					Violations: []ReleaseDotJsonViolation{},
+				}
+				var release_dot_json_err *ReleaseDotJsonError
+				if errors.As(err, &release_dot_json_err) {
+					failure.Violations = release_dot_json_err.Violations
+				}
+				return empty_response, failure
 			}
 
 			break
@@ -1587,9 +1817,13 @@ func parse_repo(repo GithubRepo, release_number int) (Project, error) {
 
 // parses many `GithubRepo` structs in to a list of `Project` structs.
 // `GithubRepo` structs that fail to parse are excluded from the final list.
-func parse_repo_list(repo_list []GithubRepo) []Project {
+// also returns the `release.json` failures that caused an exclusion.
+func parse_repo_list(repo_list []GithubRepo) ([]Project, []ReleaseDotJsonFailure) {
 	var wg sync.WaitGroup
 	project_chan := make(chan Project, 10)
+
+	var failure_lock sync.Mutex
+	failure_list := []ReleaseDotJsonFailure{}
 
 	for _, repo := range repo_list {
 		wg.Go(func() {
@@ -1617,6 +1851,15 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 						slog.Warn("repository not found, skipping", "repo", repo.FullName)
 						return
 					}
+					// the addon's own data is at fault, not this program.
+					var failure *ReleaseDotJsonFailure
+					if errors.As(err, &failure) {
+						slog.Warn("invalid release.json, skipping", "repo", repo.FullName, "url", failure.URL, "violations", failure.Violations, "error", err)
+						failure_lock.Lock()
+						failure_list = append(failure_list, *failure)
+						failure_lock.Unlock()
+						return
+					}
 					slog.Error("error parsing GithubRepo into a Project, skipping", "repo", repo.FullName, "error", err)
 					return
 				}
@@ -1636,7 +1879,12 @@ func parse_repo_list(repo_list []GithubRepo) []Project {
 	for v := range project_chan {
 		project_list = append(project_list, v)
 	}
-	return project_list
+
+	// `wg.Wait` has returned once `project_chan` is closed and drained.
+	slices.SortFunc(failure_list, func(a, b ReleaseDotJsonFailure) int {
+		return strings.Compare(a.Repo, b.Repo)
+	})
+	return project_list, failure_list
 }
 
 // Github serves at most `SEARCH_RESULT_WINDOW` results per query, however many
@@ -2028,6 +2276,25 @@ func write_json(project_list []Project, output_file string) {
 	}
 }
 
+// writes `failure_list` to `output_file`, one JSON object per line.
+// creates the parent directory when missing.
+func write_release_dot_json_failures(failure_list []ReleaseDotJsonFailure, output_file string) error {
+	err := os.MkdirAll(filepath.Dir(output_file), 0755)
+	if err != nil {
+		return fmt.Errorf("failed to create report directory: %w", err)
+	}
+	var buf bytes.Buffer
+	for _, failure := range failure_list {
+		line, err := json.Marshal(failure)
+		if err != nil {
+			return fmt.Errorf("failed to marshal release.json failure: %w", err)
+		}
+		buf.Write(line)
+		buf.WriteByte('\n')
+	}
+	return os.WriteFile(output_file, buf.Bytes(), 0644)
+}
+
 // read a list of Projects from the given JSON file at `path`.
 // not recommended. JSON output is used for diffing and may not contain all the data present in CSV output.
 func read_json(path string) ([]GithubRepo, error) {
@@ -2104,10 +2371,11 @@ func read_csv(path string) ([]GithubRepo, error) {
 // bootstrap
 
 // compiles the `release.json` schema used to validate release.json files.
+// also returns the schema as unmarshalled JSON.
 // the schema is read from `resources/release-json-schema.json`, relative to
 // the working directory, so the program must run from its own directory.
 // exits the program when the schema is missing or will not compile.
-func configure_validator() *jsonschema.Schema {
+func configure_validator() (*jsonschema.Schema, any) {
 	label := "release.json"
 
 	compiler := jsonschema.NewCompiler()
@@ -2131,7 +2399,14 @@ func configure_validator() *jsonschema.Schema {
 		fatal()
 	}
 
-	return schema
+	var schema_doc any
+	err = json.Unmarshal(file_bytes, &schema_doc)
+	if err != nil {
+		slog.Error("failed to unmarshal schema", "error", err)
+		fatal()
+	}
+
+	return schema, schema_doc
 }
 
 func usage() string {
@@ -2404,8 +2679,17 @@ func scrape() {
 	github_repo_list = unique_repo_list(github_repo_list)
 
 	slog.Info("parsing addons")
-	project_list := parse_repo_list(github_repo_list)
+	project_list, failure_list := parse_repo_list(github_repo_list)
 	slog.Info("addons parsed", "num", len(github_repo_list), "viable", len(project_list))
+
+	// a subdirectory of the cache directory, so cache commands do not treat it as a cache entry.
+	failure_report := filepath.Join(cache_dir(), "reports", fmt.Sprintf("release-json-failures-%s.jsonl", STATE.RunStart.Format("2006-01-02")))
+	err = write_release_dot_json_failures(failure_list, failure_report)
+	if err != nil {
+		slog.Error("failed to write release.json failure report", "output-file", failure_report, "error", err)
+	} else {
+		slog.Info("release.json failures", "num", len(failure_list), "values", tally_violation_values(failure_list), "output-file", failure_report)
+	}
 
 	slices.SortFunc(project_list, func(a, b Project) int {
 		return strings.Compare(a.FullName, b.FullName)
@@ -2894,7 +3178,7 @@ func init_state() *State {
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
 
-	state.Schema = configure_validator()
+	state.Schema, state.SchemaDoc = configure_validator()
 
 	return state
 }

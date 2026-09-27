@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,6 +26,8 @@ func Test_parse_toc_filename(t *testing.T) {
 		//"Foo.mainline.toc": {"Foo", MainlineFlavor}, // todo: this *should* work
 
 		"Foo-classic.toc": {"Foo", VanillaFlavor},
+		"Foo-forever.toc": {"Foo", ForeverFlavor},
+		"Foo_Camelot.toc": {"Foo", ForeverFlavor},
 		"Foo-bcc.toc":     {"Foo", TBCFlavor},
 		"Foo-wrath.toc":   {"Foo", WrathFlavor},
 		"Foo-cata.toc":    {"Foo", CataFlavor},
@@ -55,6 +59,160 @@ func Test_parse_toc_filename(t *testing.T) {
 		assert.Equal(t, expected_filename, actual_filename)
 		assert.Equal(t, expected_flavor, actual_flavor)
 	}
+}
+
+func Test_release_json_schema__flavors(t *testing.T) {
+	schema, _ := configure_validator()
+	cases := map[string]bool{
+		"mainline": true,
+		"classic":  true,
+		"forever":  true,
+		"bcc":      true,
+		"wrath":    true,
+		"titan":    true,
+		"cata":     true,
+		"mists":    true,
+		"camelot":  false, // .toc suffix alias, not a `release.json` flavor
+		"vanilla":  false,
+	}
+	for flavor, expected := range cases {
+		given := fmt.Sprintf(`{"releases": [{"name": "Foo", "version": "1.0", "filename": "Foo-1.0.zip", "nolib": false,
+			"metadata": [{"flavor": %q, "interface": 16001}]}]}`, flavor)
+		var raw any
+		require.Nil(t, json.Unmarshal([]byte(given), &raw))
+		actual := schema.Validate(raw) == nil
+		assert.Equal(t, expected, actual, flavor)
+	}
+}
+
+func Test_json_pointer_value(t *testing.T) {
+	var doc any
+	require.Nil(t, json.Unmarshal([]byte(`{"a": [{"b": 1}, {"c/d": "e", "f~g": "h"}]}`), &doc))
+	cases := map[string]any{
+		"":          doc,
+		"/a/0/b":    float64(1),
+		"/a/1/c~1d": "e",
+		"/a/1/f~0g": "h",
+		"/a/2":      nil, // index out of range
+		"/a/x":      nil, // not an index
+		"/z":        nil, // missing key
+		"/a/0/b/c":  nil, // scalar has no children
+	}
+	for given, expected := range cases {
+		actual := json_pointer_value(doc, given)
+		assert.Equal(t, expected, actual, given)
+	}
+}
+
+func Test_split_keyword_location(t *testing.T) {
+	cases := map[string][]string{
+		"":                            {"", ""},
+		"https://example.org/s.json#": {"", ""},
+		"https://example.org/s.json#/additionalProperties":               {"additionalProperties", ""},
+		"https://example.org/s.json#/properties/releases/items/required": {"required", "/properties/releases/items"},
+	}
+	for given, expected := range cases {
+		actual_keyword, actual_location := split_keyword_location(given)
+		assert.Equal(t, expected, []string{actual_keyword, actual_location}, given)
+	}
+}
+
+func Test_schema_violations(t *testing.T) {
+	schema, schema_doc := configure_validator()
+	cases := map[string][]ReleaseDotJsonViolation{
+		// unknown flavor
+		`{"releases": [{"name": "Foo", "version": "1.0", "filename": "Foo-1.0.zip", "nolib": false,
+			"metadata": [{"flavor": "mainline", "interface": 110200}, {"flavor": "camelot", "interface": 16001}]}]}`: {
+			{Location: "/releases/0/metadata/1/flavor", Keyword: "enum", Value: "camelot"},
+		},
+		// unexpected properties, one violation each
+		`{"releases": [], "questie": {}, "questiedb": {}}`: {
+			{Location: "/questie", Keyword: "additionalProperties", Value: "questie"},
+			{Location: "/questiedb", Keyword: "additionalProperties", Value: "questiedb"},
+		},
+		`{"releases": [{"filename": "Foo-1.0.zip", "nolib": false, "metadata": [], "directories": {}}]}`: {
+			{Location: "/releases/0/directories", Keyword: "additionalProperties", Value: "directories"},
+		},
+		// missing property
+		`{"releases": [{"filename": "Foo-1.0.zip", "nolib": false, "metadata": [{"flavor": "mists"}]}]}`: {
+			{Location: "/releases/0/metadata/0/interface", Keyword: "required", Value: "interface"},
+		},
+		// wrong type
+		`{"releases": [{"filename": "Foo-1.0.zip", "nolib": "no", "metadata": []}]}`: {
+			{Location: "/releases/0/nolib", Keyword: "type", Value: "no"},
+		},
+	}
+	for given, expected := range cases {
+		var raw any
+		require.Nil(t, json.Unmarshal([]byte(given), &raw))
+
+		actual := schema_violations(schema_doc, raw, schema.Validate(raw))
+		for i := range actual {
+			assert.NotEmpty(t, actual[i].Message, given)
+			actual[i].Message = ""
+		}
+		assert.Equal(t, expected, actual, given)
+	}
+}
+
+func Test_schema_violations__not_a_validation_error(t *testing.T) {
+	expected := []ReleaseDotJsonViolation{}
+	assert.Equal(t, expected, schema_violations(nil, nil, nil))
+	assert.Equal(t, expected, schema_violations(nil, nil, fmt.Errorf("some other error")))
+}
+
+func Test_parse_release_dot_json__invalid(t *testing.T) {
+	original_state := STATE
+	schema, schema_doc := configure_validator()
+	STATE = &State{Schema: schema, SchemaDoc: schema_doc}
+	defer func() { STATE = original_state }()
+
+	cases := map[string]int{
+		`not json`: 0,
+		`{"releases": [{"name": "Foo", "version": "1.0", "filename": "Foo-1.0.zip", "nolib": false,
+			"metadata": [{"flavor": "tbc", "interface": 20505}, {"flavor": "mop", "interface": 50500}]}]}`: 2,
+	}
+	for given, expected_violations := range cases {
+		_, err := parse_release_dot_json([]byte(given))
+		var actual *ReleaseDotJsonError
+		require.True(t, errors.As(err, &actual), given)
+		assert.Len(t, actual.Violations, expected_violations, given)
+	}
+}
+
+func Test_tally_violation_values(t *testing.T) {
+	given := []ReleaseDotJsonFailure{
+		{Repo: "a/a", Violations: []ReleaseDotJsonViolation{{Keyword: "enum", Value: "camelot"}, {Keyword: "enum", Value: "tbc"}}},
+		{Repo: "b/b", Violations: []ReleaseDotJsonViolation{{Keyword: "enum", Value: "camelot"}}},
+		{Repo: "c/c", Violations: []ReleaseDotJsonViolation{{Keyword: "additionalProperties", Value: "directories"}}},
+		{Repo: "d/d", Violations: []ReleaseDotJsonViolation{{Keyword: "type", Value: nil}}},
+		{Repo: "e/e", Violations: []ReleaseDotJsonViolation{}},
+	}
+	expected := map[string]int{"enum:camelot": 2, "enum:tbc": 1, "additionalProperties:directories": 1, "type:<nil>": 1}
+	assert.Equal(t, expected, tally_violation_values(given))
+}
+
+func Test_write_release_dot_json_failures(t *testing.T) {
+	output_file := filepath.Join(t.TempDir(), "reports", "failures.jsonl")
+	given := []ReleaseDotJsonFailure{
+		{Repo: "a/a", Release: "1.0", URL: "https://example.org/release.json", Message: "bad",
+			Violations: []ReleaseDotJsonViolation{{Location: "/releases/0/metadata/0/flavor", Keyword: "enum", Value: "camelot", Message: "value must be one of ..."}}},
+		{Repo: "b/b", Release: "2.0", URL: "https://example.org/release.json", Message: "not json", Violations: []ReleaseDotJsonViolation{}},
+	}
+	require.Nil(t, write_release_dot_json_failures(given, output_file))
+
+	file_bytes, err := os.ReadFile(output_file)
+	require.Nil(t, err)
+	lines := strings.Split(strings.TrimSpace(string(file_bytes)), "\n")
+	require.Len(t, lines, 2)
+
+	actual := []ReleaseDotJsonFailure{}
+	for _, line := range lines {
+		var failure ReleaseDotJsonFailure
+		require.Nil(t, json.Unmarshal([]byte(line), &failure))
+		actual = append(actual, failure)
+	}
+	assert.Equal(t, given, actual)
 }
 
 func Test_is_toc_file(t *testing.T) {
@@ -135,6 +293,11 @@ func Test_interface_number_to_flavor(t *testing.T) {
 	cases := map[string]Flavor{
 		"10000":  VanillaFlavor,
 		"13000":  VanillaFlavor,
+		"11507":  VanillaFlavor,
+		"15999":  VanillaFlavor,
+		"16000":  ForeverFlavor,
+		"16001":  ForeverFlavor,
+		"19999":  ForeverFlavor,
 		"20000":  TBCFlavor,
 		"20500":  TBCFlavor,
 		"30000":  WrathFlavor,
@@ -162,6 +325,7 @@ func Test_interface_number_to_flavor(t *testing.T) {
 func Test_interface_value_to_flavor_list(t *testing.T) {
 	cases := map[string][]Flavor{
 		"10000": {VanillaFlavor},
+		"16001": {ForeverFlavor},
 
 		"20000":  {TBCFlavor},
 		"30000":  {WrathFlavor},
@@ -176,6 +340,7 @@ func Test_interface_value_to_flavor_list(t *testing.T) {
 
 		// from the wiki
 		"100206, 40400, 11502": {MainlineFlavor, CataFlavor, VanillaFlavor},
+		"11507, 16001":         {VanillaFlavor, ForeverFlavor},
 
 		// whitespace is ignored
 		" 100206 ": {MainlineFlavor},
@@ -207,6 +372,8 @@ func Test_guess_game_track(t *testing.T) {
 		"vanilla":       {"vanilla", VanillaFlavor},
 		"fooclassicbar": {"classic", VanillaFlavor},
 		"foovanillabar": {"vanilla", VanillaFlavor},
+		"forever":       {"forever", ForeverFlavor},
+		"camelot":       {"camelot", ForeverFlavor},
 	}
 	for given, expected := range cases {
 		expected_match, expected_flavor := expected[0], expected[1]

@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2026-09-27
 
 ### Added
 
@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `find-duplicates` subcommand, reporting addons that share a project ID across different owners
 - `dump-release-dot-json` subcommand, emitting cached `release.json` files for the `release.json-validator` project
 - Support for the Mists of Pandaria game flavour
+- Support for the WoW: Forever game flavour, restoring 285 addons whose `release.json` used `forever`
+  - `_Camelot.toc` files and interface values from `16000` are recognised as `forever`
+- Addons excluded for an invalid `release.json` are recorded in a report under `output/reports/`
+  - each entry names the offending values, to measure what is used in the wild but not supported
 - Repositories whose latest release is unusable can now fall back to the release before it
 - A warning is issued when an addon's project IDs cannot be determined with confidence
 - `manage.sh` for building, testing, linting and releasing, replacing `update.sh`
@@ -30,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - previously such queries were silently truncated at 1000 results per ordering
 - Concurrent requests to Github are limited to 50, and the wait after being throttled has increased to 60 seconds
 - Cache writes now take an exclusive file lock, so concurrent runs no longer corrupt entries
-- `release.json` schema updated to the 1.0.2 specification, which requires an `interface` value
+- `release.json` schema updated to the 1-0-3 specification, which requires an `interface` value and adds `forever`
+- An invalid `release.json` is logged as a WARN, not an ERROR, as the fault lies with the addon
 - Dependencies updated and the Go toolchain raised to 1.26
 - Doc comments audited across the codebase, correcting several that no longer matched their code
 
@@ -38,6 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Addons whose latest release is broken are no longer skipped entirely, reviving the repository exceptions list
 - Writing CSV no longer panics when an addon has no last-seen date
+- A repository that no longer exists is skipped with a WARN, not an ERROR
+- `previous-addons.csv` is fetched from this project's catalogue, not the retired Python project's
 - Project IDs with a value of `0` are ignored, as several addons set this by mistake
 - The `X-RateLimit-Reset` header is now read correctly outside of search results
 - Around 200 addons that sat past Github's 1000-result search window are restored to the catalogue
