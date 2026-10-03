@@ -206,12 +206,13 @@ type State struct {
 	SchemaDoc   any                // `Schema` as unmarshalled JSON, for describing violations
 	Flags       Flags
 	RunStart    time.Time // time app started
+	RateGate    *RateGate // Github rate limits, shared by every request
 }
 
 var STATE *State
 
-// limit concurrent HTTP requests
-var HTTPSem = make(chan int, 50)
+// limits concurrent network requests. far below the 100 Github allows.
+var HTTPSem = make(chan int, 10)
 
 func take_http_token() {
 	HTTPSem <- 1
@@ -493,41 +494,6 @@ type ResponseWrapper struct {
 
 // --- http utils
 
-// returns `true` if given `resp` was throttled.
-// Github uses 403 for rate limiting, so a genuine permissions failure also
-// reads as throttled here.
-func throttled(resp ResponseWrapper) bool {
-	return resp.StatusCode == 403
-}
-
-// blocks until `resp` says the rate limit has reset.
-// waits 60 seconds when the reset time is missing, unreadable, or more than
-// two minutes away.
-func wait(resp ResponseWrapper) {
-	default_pause := float64(60) // seconds.
-	pause := default_pause
-
-	val := resp.Header.Get("X-RateLimit-Reset")
-	if val == "" {
-		slog.Debug("rate limited but no 'X-RateLimit-Reset' header present.", "headers", resp.Header)
-	} else {
-		int_val, err := strconv.ParseInt(val, 10, 64)
-		if err != nil {
-			slog.Error("failed to convert value of 'X-RateLimit-Reset' header to an integer", "val", val)
-		} else {
-			pause = math.Ceil(time.Until(time.Unix(int_val, 0)).Seconds())
-			if pause > 120 {
-				slog.Warn("received unusual wait time, using default instead", "X-RateLimit-Reset", val, "wait-time", pause, "default-wait-time", default_pause)
-				pause = default_pause
-			}
-		}
-	}
-	if pause > 0 {
-		slog.Info("throttled", "pause", pause)
-		time.Sleep(time.Duration(pause) * time.Second)
-	}
-}
-
 // logs whether the HTTP request's underlying TCP connection was re-used.
 func trace_context() context.Context {
 	client_tracer := &httptrace.ClientTrace{
@@ -727,6 +693,63 @@ func cache_expired(path string) bool {
 	return hours >= cache_duration_hrs
 }
 
+// reads the body of `resp` and puts it back, so the caller can still read it.
+func peek_body(resp *http.Response) []byte {
+	body, err := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if err != nil {
+		slog.Debug("failed to read response body", "url", resp.Request.URL, "error", err)
+	}
+	resp.Body = io.NopCloser(bytes.NewReader(body))
+	return body
+}
+
+// a `http.RoundTripper` that sends requests over the network.
+// a request waits until Github's rate limits allow it and holds one of the
+// `HTTPSem` slots while it is sent. the response updates the shared rate
+// limits and a refusal is logged with the body Github gave for it.
+type LimitedRequest struct{}
+
+func (x LimitedRequest) RoundTrip(req *http.Request) (*http.Response, error) {
+	resource := resource_of(req.URL)
+	STATE.RateGate.wait(resource)
+
+	take_http_token()
+	resp, err := http.DefaultTransport.RoundTrip(req)
+	release_http_token()
+	if err != nil {
+		return resp, err
+	}
+
+	header_resource := resp.Header.Get("X-RateLimit-Resource")
+	if header_resource != "" && header_resource != resource {
+		slog.Debug("rate-limit resource differs from the one expected", "url", req.URL, "expected", resource, "actual", header_resource)
+	}
+
+	event := STATE.RateGate.observe(resource, resp.StatusCode, resp.Header)
+	if event.kind == LimitNone {
+		return resp, nil
+	}
+
+	attrs := []any{
+		"url", req.URL,
+		"response", resp.StatusCode,
+		"kind", event.kind,
+		"pause", event.pause,
+		rate_limit_attrs(resp.Header),
+		"body", truncate(string(peek_body(resp)), 256),
+	}
+	switch {
+	case event.capped:
+		slog.Warn("rate limited, unusually long pause capped", attrs...)
+	case event.kind == LimitSecondary:
+		slog.Warn("secondary rate limit, backing off", attrs...)
+	default:
+		slog.Info("throttled", attrs...)
+	}
+	return resp, nil
+}
+
 // a `http.RoundTripper` that caches responses to disk.
 type FileCachingRequest struct{}
 
@@ -743,8 +766,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	// their caching is handled differently.
 	// see: `read_zip_cache_entry` and `write_zip_cache_entry`.
 	if strings.HasSuffix(req.URL.String(), ".zip") {
-		resp, err := http.DefaultTransport.RoundTrip(req)
-		return resp, err
+		return LimitedRequest{}.RoundTrip(req)
 	}
 
 	cache_key := make_cache_key(req)    // "711f20df1f76da140218e51445a6fc47"
@@ -757,10 +779,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	}
 	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
 
-	take_http_token()
-	defer release_http_token()
-
-	resp, err := http.DefaultTransport.RoundTrip(req)
+	resp, err := LimitedRequest{}.RoundTrip(req)
 	if err != nil {
 		// do not cache error responses
 		slog.Error("error with transport", "url", req.URL)
@@ -783,9 +802,10 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 
 		// but what happens when the redirect is also redirected?
 		// the `client` below isn't attached to this `RoundTrip` transport,
-		// so it will keep following redirects.
+		// so it will keep following redirects, each one sent by `LimitedRequest`.
 		// the downside is it will probably create a new connection.
-		client := http.Client{}
+		resp.Body.Close()
+		client := http.Client{Transport: LimitedRequest{}}
 		resp, err = client.Get(new_url.String())
 		if err != nil {
 			slog.Error("error with transport handling redirect", "requested-url", req.URL, "redirected-to", new_url, "error", err)
@@ -795,8 +815,7 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 
 	if resp.StatusCode > 299 {
 		// non-2xx response, skip cache
-		bdy, _ := io.ReadAll(resp.Body)
-		slog.Debug("request unsuccessful, skipping cache", "code", resp.StatusCode, "body", string(bdy))
+		slog.Debug("request unsuccessful, skipping cache", "code", resp.StatusCode, "body", string(peek_body(resp)))
 		return resp, nil
 	}
 
@@ -883,9 +902,14 @@ func download(url string, headers map[string]string) (ResponseWrapper, error) {
 }
 
 // just like `download` but adds an 'authorization' header to the request.
+// requests to the API also name the API version and media type.
 func github_download(url string) (ResponseWrapper, error) {
 	headers := map[string]string{
 		"Authorization": "token " + STATE.GithubToken,
+	}
+	if is_api_url(url) {
+		headers["Accept"] = "application/vnd.github+json"
+		headers["X-GitHub-Api-Version"] = GITHUB_API_VERSION
 	}
 	return download(url, headers)
 }
@@ -974,6 +998,8 @@ func download_zip(url string, headers map[string]string, zipped_file_filter func
 }
 
 // just like `download_zip` but adds an 'authorization' header to the request.
+// `url` is a release asset's download url on github.com, not the API, so the
+// API's `Accept` and version headers are not sent.
 func github_zip_download(url string, zipped_file_filter func(string) bool) (map[string][]byte, error) {
 	headers := map[string]string{
 		"Authorization": "token " + STATE.GithubToken,
@@ -981,20 +1007,26 @@ func github_zip_download(url string, zipped_file_filter func(string) bool) (map[
 	return download_zip(url, headers, zipped_file_filter)
 }
 
-// fetches `url` from Github, retrying up to five times.
-// a throttled or unsuccessful response waits before trying again, so this
-// call may block for minutes.
 // the requested url does not exist on Github.
 var ErrNotFound = errors.New("not found")
 
+// attempts per url in `github_download_with_retries_and_backoff`.
+// enough for the secondary rate-limit backoff to reach its cap.
+var RETRY_ATTEMPTS = 6
+
+// pause after an unsuccessful response that is not a rate limit, such as a 5xx.
+var RETRY_PAUSE = 10 * time.Second
+
+// fetches `url` from Github, retrying up to `RETRY_ATTEMPTS` times.
+// a rate-limited attempt is not paused here: the `RateGate` holds the next
+// attempt back until Github allows it, so this call may block for minutes.
 // a 404 returns `ErrNotFound` immediately and is not retried.
 // unlike `download`, a non-2xx response after the final attempt is an error.
 func github_download_with_retries_and_backoff(url string) (ResponseWrapper, error) {
 	var resp ResponseWrapper
 	var err error
-	num_attempts := 5
 
-	for i := 1; i <= num_attempts; i++ {
+	for i := 1; i <= RETRY_ATTEMPTS; i++ {
 		resp, err = github_download(url)
 		if err != nil {
 			return ResponseWrapper{}, err
@@ -1004,21 +1036,22 @@ func github_download_with_retries_and_backoff(url string) (ResponseWrapper, erro
 			return ResponseWrapper{}, ErrNotFound
 		}
 
-		if throttled(resp) {
-			wait(resp)
+		if resp.StatusCode == 200 {
+			return resp, nil
+		}
+
+		// already logged by `LimitedRequest`.
+		if classify_limit(resp.StatusCode, resp.Header) != LimitNone {
 			continue
 		}
 
-		if resp.StatusCode != 200 {
-			slog.Warn("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i, "body", truncate(resp.Text, 256))
-			wait(resp)
-			continue
+		slog.Warn("unsuccessful response from github, waiting and trying again", "url", url, "response", resp.StatusCode, "attempt", i, "body", truncate(resp.Text, 256))
+		if i < RETRY_ATTEMPTS {
+			time.Sleep(RETRY_PAUSE)
 		}
-
-		return resp, nil
 	}
 
-	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", num_attempts, "last-resp", resp.StatusCode, "body", truncate(resp.Text, 256))
+	slog.Error("failed to download url after a number of attempts", "url", url, "num-attempts", RETRY_ATTEMPTS, "last-resp", resp.StatusCode, rate_limit_attrs(resp.Header), "body", truncate(resp.Text, 256))
 	return ResponseWrapper{}, errors.New("failed to download url: " + url)
 }
 
@@ -1893,6 +1926,11 @@ func parse_repo_list(repo_list []GithubRepo) ([]Project, []ReleaseDotJsonFailure
 // `created:` for repository searches.
 var SEARCH_RESULT_WINDOW = 1000
 
+// results per page of search results, the most Github allows.
+// every search request uses it, so a slice probe and the first page of the
+// slice share a url and a cache entry.
+var SEARCH_PER_PAGE = 100
+
 // a slice reporting more results than this is split rather than fetched.
 // far below `SEARCH_RESULT_WINDOW` because Github under-reports `total_count`
 // on sliced code searches: a slice reporting 483 was observed serving 693.
@@ -1993,7 +2031,7 @@ func github_search_fetcher(endpoint, search_query string, page, per_page int) (s
 // exits the program when a page cannot be fetched, because a partial catalogue
 // looks like addons have been removed.
 func fetch_all_pages(fetch search_fetcher, endpoint, search_query string) ([]string, bool) {
-	per_page := 100
+	per_page := SEARCH_PER_PAGE
 	max_page := SEARCH_RESULT_WINDOW / per_page
 
 	results := []string{}
@@ -2029,10 +2067,13 @@ func search_slice(fetch search_fetcher, qualify slice_qualifier, endpoint, searc
 
 	// probe the slice before fetching it, so an oversized slice costs one
 	// request rather than a full window of pages.
+	// the probe is a full first page: a request costs the same whatever its
+	// size, and when the slice fits, `fetch_all_pages` asks for the same url
+	// again and is answered from the response cache.
 	// only an oversized total is acted on. an empty slice is settled by
 	// `fetch_all_pages`, which believes a page of zero results and not a count.
 	if lo < hi {
-		body, err := fetch(endpoint, sliced_query, 1, 1)
+		body, err := fetch(endpoint, sliced_query, 1, SEARCH_PER_PAGE)
 		if err != nil {
 			slog.Error("error probing search results", "endpoint", endpoint, "query", sliced_query, "error", err)
 			fatal()
@@ -3177,6 +3218,7 @@ func init_state() *State {
 	// attach a HTTP client to global state to reuse HTTP connections
 	state.Client = &http.Client{}
 	state.Client.Transport = &FileCachingRequest{}
+	state.RateGate = new_rate_gate()
 
 	state.Schema, state.SchemaDoc = configure_validator()
 

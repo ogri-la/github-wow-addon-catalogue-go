@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Github's rate limits are now tracked per resource, a refusal pausing every request to that resource together
+  - secondary rate limits honour `Retry-After`, otherwise backing off exponentially from 60 seconds
+  - requests are spaced to the remaining budget rather than spending it in a burst
+- Concurrent requests to Github are limited to 10, down from 50, and now include `.zip` downloads
+- Search slices are probed with a full page of results, served again from the cache, saving a request per slice
+- API requests carry Github's recommended `Accept` and `X-GitHub-Api-Version` headers
+- Requests refused by Github are attempted 6 times, up from 5
+
+### Fixed
+
+- Scraping no longer aborts when code searches hit Github's secondary rate limit
+- Exhausting the hourly API budget now waits for the reset, rather than skipping repositories after five minutes
+- Refused requests log the response body and rate-limit headers Github sent, previously discarded
+
 ## [2.0.0] - 2026-09-27
 
 ### Added

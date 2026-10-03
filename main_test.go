@@ -959,7 +959,8 @@ func Test_search_size_slice__fits_in_window(t *testing.T) {
 	actual := search_size_slice(stub_fetcher(t, corpus), "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 
 	assert.Equal(t, 250, count_items(t, actual))
-	// one probe, then three pages of 100.
+	// a probe, then three pages of 100. in use, the probe and the first page
+	// are the same url and the first page is answered from the response cache.
 	assert.Len(t, corpus.queries, 4)
 }
 
@@ -995,7 +996,7 @@ func Test_search_size_slice__splits_when_saturated_despite_low_count(t *testing.
 		if err != nil {
 			return "", err
 		}
-		is_probe := per_page == 1
+		is_probe := page == 1
 		total := gjson.Get(body, "total_count").Int()
 		if is_probe && total > int64(SEARCH_SPLIT_THRESHOLD) {
 			body = strings.Replace(body,
@@ -1041,7 +1042,7 @@ func Test_search_size_slice__understated_empty_slice(t *testing.T) {
 		if err != nil {
 			return "", err
 		}
-		if per_page == 1 {
+		if page == 1 {
 			body = strings.Replace(body, fmt.Sprintf(`"total_count":%d`, given), `"total_count":0`, 1)
 		}
 		return body, nil
@@ -1049,6 +1050,26 @@ func Test_search_size_slice__understated_empty_slice(t *testing.T) {
 
 	actual := search_size_slice(lying_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
 	assert.Equal(t, given, count_items(t, actual), "a zero total must not skip fetching the slice")
+}
+
+func Test_search_size_slice__probe_is_a_full_page(t *testing.T) {
+	// a probe costs a full request whatever its size, so it fetches the same
+	// url as the slice's first page and the response cache serves that page.
+	corpus := &fake_corpus{num_results: 250, value_of: func(idx int) int { return idx }}
+	fetch := stub_fetcher(t, corpus)
+	actual := []string{}
+	recording_fetch := func(endpoint, search_query string, page, per_page int) (string, error) {
+		actual = append(actual, search_url(endpoint, search_query, page, per_page))
+		return fetch(endpoint, search_query, page, per_page)
+	}
+
+	search_size_slice(recording_fetch, "code", "foo", 0, SEARCH_MAX_FILE_SIZE)
+
+	require.Len(t, actual, 4)
+	assert.Equal(t, actual[0], actual[1], "the probe and the first page should share a url")
+	for _, u := range actual {
+		assert.Contains(t, u, fmt.Sprintf("per_page=%d", SEARCH_PER_PAGE))
+	}
 }
 
 func Test_search_size_slice__slices_are_disjoint(t *testing.T) {
