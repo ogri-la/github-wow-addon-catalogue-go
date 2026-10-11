@@ -227,6 +227,7 @@ type rate_state struct {
 	limit         int64     // budget per window, from the most recent response. zero when unknown
 	reset         time.Time // end of the current window, from the most recent response
 	backoff_level int       // consecutive secondary rate limits
+	pacing        bool      // requests are currently spaced out, see `pace_interval`
 }
 
 // the result of observing a response.
@@ -269,6 +270,8 @@ func (g *RateGate) get(resource RateResource) *rate_state {
 // blocks until a request to `resource` may be sent, then claims the next
 // pacing slot. checks again after each sleep, because another request may
 // have extended the pause in the meantime.
+// the start of pacing is logged once per window at INFO, so a long quiet
+// stretch in the log has an explanation. each individual wait is DEBUG.
 func (g *RateGate) wait(resource RateResource) {
 	if resource == ResourceNone {
 		return
@@ -282,7 +285,12 @@ func (g *RateGate) wait(resource RateResource) {
 			ready_at = s.paused_until
 		}
 		if !now.Before(ready_at) {
-			s.next_send = now.Add(pace_interval(resource, s.remaining, s.limit, s.reset, now))
+			interval := pace_interval(resource, s.remaining, s.limit, s.reset, now)
+			if interval > 0 && !s.pacing {
+				slog.Info("budget low, pacing requests", "resource", resource, "remaining", s.remaining, "limit", s.limit, "reset-in", s.reset.Sub(now).Round(time.Second), "interval", interval.Round(time.Millisecond))
+			}
+			s.pacing = interval > 0
+			s.next_send = now.Add(interval)
 			if s.remaining > 0 {
 				s.remaining-- // this request spends one, before its response says so.
 			}

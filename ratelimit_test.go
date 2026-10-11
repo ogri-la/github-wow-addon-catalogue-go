@@ -269,6 +269,28 @@ func Test_rate_gate__paces_to_the_remaining_budget(t *testing.T) {
 	assert.Equal(t, expected, clock.slept, "the next request waits its share of the window")
 }
 
+func Test_rate_gate__pacing_is_announced_once_per_window(t *testing.T) {
+	clock := &fake_clock{now: test_now}
+	gate := fake_gate(clock)
+
+	gate.observe(ResourceCore, 200, headers("X-RateLimit-Remaining", "4000", "X-RateLimit-Limit", "5000", "X-RateLimit-Reset", reset_at(test_now.Add(time.Hour))))
+	gate.wait(ResourceCore)
+	assert.False(t, gate.state[ResourceCore].pacing, "budget to spare")
+
+	// the budget falls under the reserve: pacing starts.
+	gate.observe(ResourceCore, 200, headers("X-RateLimit-Remaining", "10", "X-RateLimit-Limit", "5000", "X-RateLimit-Reset", reset_at(test_now.Add(time.Hour))))
+	gate.wait(ResourceCore)
+	assert.True(t, gate.state[ResourceCore].pacing)
+
+	gate.wait(ResourceCore)
+	assert.True(t, gate.state[ResourceCore].pacing, "still paced, not announced again")
+
+	// the window ends: the next request is not paced.
+	clock.now = test_now.Add(2 * time.Hour)
+	gate.wait(ResourceCore)
+	assert.False(t, gate.state[ResourceCore].pacing)
+}
+
 func Test_rate_gate__core_is_not_paced_with_budget_to_spare(t *testing.T) {
 	clock := &fake_clock{now: test_now}
 	gate := fake_gate(clock)
