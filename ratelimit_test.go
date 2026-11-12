@@ -247,12 +247,63 @@ func Test_rate_gate__refusals_during_a_pause_do_not_escalate(t *testing.T) {
 	assert.Equal(t, 59*time.Second, second.pause, "part of the same pause")
 	assert.Equal(t, 59*time.Second, third.pause, "part of the same pause")
 
+	assert.True(t, first.extended, "the first refusal began the pause and is reported")
+	assert.False(t, second.extended, "part of the same pause, not reported")
+	assert.False(t, third.extended, "part of the same pause, not reported")
+	assert.Equal(t, 3, gate.state[ResourceCodeSearch].refused)
+
 	gate.wait(ResourceCodeSearch)
 	assert.Equal(t, 59*time.Second, total_slept(clock))
+	assert.Equal(t, 0, gate.state[ResourceCodeSearch].refused, "the count is reported with the end of the pause")
 
 	// the next refusal is a new one, the second step of the backoff.
 	actual := gate.observe(ResourceCodeSearch, 403, headers()).pause
 	assert.Equal(t, 120*time.Second, actual)
+}
+
+func Test_rate_gate__primary_refusals_share_one_pause(t *testing.T) {
+	// every request in flight when the budget runs out is refused with the same reset.
+	clock := &fake_clock{now: test_now}
+	gate := fake_gate(clock)
+
+	given := headers("X-RateLimit-Remaining", "0", "X-RateLimit-Limit", "5000", "X-RateLimit-Reset", reset_at(test_now.Add(40*time.Minute)))
+	first := gate.observe(ResourceCore, 403, given)
+	clock.now = clock.now.Add(time.Second)
+	second := gate.observe(ResourceCore, 403, given)
+
+	assert.True(t, first.extended)
+	assert.Equal(t, test_now.Add(40*time.Minute+RESET_MARGIN), first.until)
+	assert.False(t, second.extended, "same reset, same pause")
+	assert.Equal(t, first.until, second.until)
+	assert.Equal(t, 2, gate.state[ResourceCore].refused)
+}
+
+func Test_rate_gate__refusal_that_lengthens_a_pause_is_reported(t *testing.T) {
+	clock := &fake_clock{now: test_now}
+	gate := fake_gate(clock)
+
+	short := gate.observe(ResourceCore, 403, headers("Retry-After", "30"))
+	long := gate.observe(ResourceCore, 403, headers("Retry-After", "90"))
+
+	assert.True(t, short.extended)
+	assert.True(t, long.extended, "the pause now ends later")
+	assert.Equal(t, test_now.Add(90*time.Second), gate.state[ResourceCore].paused_until)
+}
+
+func Test_rate_gate__paused(t *testing.T) {
+	clock := &fake_clock{now: test_now}
+	gate := fake_gate(clock)
+
+	assert.False(t, gate.paused(ResourceCore))
+	assert.False(t, gate.paused(ResourceNone))
+
+	gate.observe(ResourceCore, 403, headers("Retry-After", "30"))
+	assert.True(t, gate.paused(ResourceCore))
+	assert.False(t, gate.paused(ResourceSearch), "other resources are not paused")
+	assert.False(t, gate.paused(ResourceNone))
+
+	clock.now = test_now.Add(30 * time.Second)
+	assert.False(t, gate.paused(ResourceCore))
 }
 
 func Test_rate_gate__paces_to_the_remaining_budget(t *testing.T) {

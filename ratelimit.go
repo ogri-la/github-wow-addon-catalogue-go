@@ -228,13 +228,19 @@ type rate_state struct {
 	reset         time.Time // end of the current window, from the most recent response
 	backoff_level int       // consecutive secondary rate limits
 	pacing        bool      // requests are currently spaced out, see `pace_interval`
+	refused       int       // refusals since the current pause began, reported when it ends
 }
 
 // the result of observing a response.
+// `extended` is `true` when the refusal began the pause or moved its end
+// later. a refusal during a pause is otherwise part of the same event and
+// is counted, not reported.
 type limit_event struct {
-	kind   LimitKind
-	pause  time.Duration
-	capped bool
+	kind     LimitKind
+	pause    time.Duration
+	until    time.Time
+	capped   bool
+	extended bool
 }
 
 // rate-limit state shared by every request.
@@ -267,11 +273,22 @@ func (g *RateGate) get(resource RateResource) *rate_state {
 	return s
 }
 
+// returns `true` while a pause holds back requests to `resource`.
+func (g *RateGate) paused(resource RateResource) bool {
+	if resource == ResourceNone {
+		return false
+	}
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	return g.now().Before(g.get(resource).paused_until)
+}
+
 // blocks until a request to `resource` may be sent, then claims the next
 // pacing slot. checks again after each sleep, because another request may
 // have extended the pause in the meantime.
-// the start of pacing is logged once per window at INFO, so a long quiet
-// stretch in the log has an explanation. each individual wait is DEBUG.
+// the end of a pause and the start of pacing are each logged once at INFO,
+// so a long quiet stretch in the log has an explanation. each individual
+// wait is DEBUG.
 func (g *RateGate) wait(resource RateResource) {
 	if resource == ResourceNone {
 		return
@@ -285,6 +302,10 @@ func (g *RateGate) wait(resource RateResource) {
 			ready_at = s.paused_until
 		}
 		if !now.Before(ready_at) {
+			if s.refused > 0 {
+				slog.Info("rate limit pause over, retrying", "resource", resource, "refused", s.refused)
+				s.refused = 0
+			}
 			interval := pace_interval(resource, s.remaining, s.limit, s.reset, now)
 			if interval > 0 && !s.pacing {
 				slog.Info("budget low, pacing requests", "resource", resource, "remaining", s.remaining, "limit", s.limit, "reset-in", s.reset.Sub(now).Round(time.Second), "interval", interval.Round(time.Millisecond))
@@ -308,7 +329,8 @@ func (g *RateGate) wait(resource RateResource) {
 // updates the state of `resource` from a response with `status` and `header`.
 // a rate limit pauses the resource. a successful response ends any backoff.
 // the returned pause is the pause for this response; the resource may stay
-// paused for longer.
+// paused for longer. the returned event says whether this refusal changed
+// the pause, so the caller can report the first refusal and not each one.
 func (g *RateGate) observe(resource RateResource, status int, header http.Header) limit_event {
 	if resource == ResourceNone {
 		return limit_event{}
@@ -337,11 +359,13 @@ func (g *RateGate) observe(resource RateResource, status int, header http.Header
 		return limit_event{}
 	}
 
+	s.refused++
+
 	// a refusal during a pause is from a request sent before the pause began.
 	// it is part of the same refusal, so it neither escalates nor extends the
 	// backoff. an explicit `Retry-After` is still honoured.
 	if kind == LimitSecondary && now.Before(s.paused_until) && header.Get("Retry-After") == "" {
-		return limit_event{kind: kind, pause: s.paused_until.Sub(now)}
+		return limit_event{kind: kind, pause: s.paused_until.Sub(now), until: s.paused_until}
 	}
 
 	pause, capped := limit_pause(kind, header, now, s.backoff_level)
@@ -349,8 +373,9 @@ func (g *RateGate) observe(resource RateResource, status int, header http.Header
 		s.backoff_level++
 	}
 	paused_until := now.Add(pause)
-	if paused_until.After(s.paused_until) {
+	extended := paused_until.After(s.paused_until)
+	if extended {
 		s.paused_until = paused_until
 	}
-	return limit_event{kind: kind, pause: pause, capped: capped}
+	return limit_event{kind: kind, pause: pause, until: paused_until, capped: capped, extended: extended}
 }

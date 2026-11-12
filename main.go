@@ -707,14 +707,25 @@ func peek_body(resp *http.Response) []byte {
 // a `http.RoundTripper` that sends requests over the network.
 // a request waits until Github's rate limits allow it and holds one of the
 // `HTTPSem` slots while it is sent. the response updates the shared rate
-// limits and a refusal is logged with the body Github gave for it.
+// limits. the refusal that begins or lengthens a pause is logged with the
+// body Github gave for it; refusals of requests already in flight are
+// counted and reported when the pause ends.
 type LimitedRequest struct{}
 
 func (x LimitedRequest) RoundTrip(req *http.Request) (*http.Response, error) {
 	resource := resource_of(req.URL)
-	STATE.RateGate.wait(resource)
 
-	take_http_token()
+	// a pause that begins while this request queues for a slot holds it back
+	// too. without this every queued request is sent into the same refusal.
+	for {
+		STATE.RateGate.wait(resource)
+		take_http_token()
+		if !STATE.RateGate.paused(resource) {
+			break
+		}
+		release_http_token()
+	}
+
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	release_http_token()
 	if err != nil {
@@ -732,20 +743,24 @@ func (x LimitedRequest) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	attrs := []any{
+		"resource", resource,
+		"kind", event.kind,
+		"retry-in", event.pause.Round(time.Second),
+		"retry-at", event.until.Format("15:04:05"),
 		"url", req.URL,
 		"response", resp.StatusCode,
-		"kind", event.kind,
-		"pause", event.pause,
 		rate_limit_attrs(resp.Header),
 		"body", truncate(string(peek_body(resp)), 256),
 	}
 	switch {
+	case !event.extended:
+		slog.Debug("rate limited, part of the current pause", attrs...)
 	case event.capped:
 		slog.Warn("rate limited, unusually long pause capped", attrs...)
 	case event.kind == LimitSecondary:
 		slog.Warn("secondary rate limit, backing off", attrs...)
 	default:
-		slog.Info("throttled", attrs...)
+		slog.Info("rate limited", attrs...)
 	}
 	return resp, nil
 }
