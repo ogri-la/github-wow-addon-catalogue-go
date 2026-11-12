@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -1244,4 +1247,201 @@ func Test_search_url__repositories(t *testing.T) {
 	assert.Contains(t, actual, "created%3A2007-01-01..2007-01-31")
 	assert.NotContains(t, actual, "sort=")
 	assert.NotContains(t, actual, "order=")
+}
+
+func Test_revalidation_header(t *testing.T) {
+	cases := []struct {
+		name          string
+		given         http.Header
+		expected_name string
+		expected_val  string
+		expected_ok   bool
+	}{
+		{"strong etag", http.Header{"Etag": {`"abc123"`}}, "If-None-Match", `"abc123"`, true},
+		{"weak etag", http.Header{"Etag": {`W/"abc123"`}}, "If-None-Match", `W/"abc123"`, true},
+		{"no etag", http.Header{"Last-Modified": {"Sat, 07 Nov 2026 00:00:00 GMT"}}, "", "", false},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			actual_name, actual_val, actual_ok := revalidation_header(&http.Response{Header: c.given})
+			assert.Equal(t, c.expected_ok, actual_ok)
+			assert.Equal(t, c.expected_name, actual_name)
+			assert.Equal(t, c.expected_val, actual_val)
+		})
+	}
+}
+
+// --- caching transport
+
+// a test server that serves one resource with an `ETag`, answering `304`
+// to a matching `If-None-Match`. `status` overrides the answer when set.
+type revalidating_server struct {
+	etag     string
+	body     string
+	status   int
+	requests []http.Header // the headers of every request received
+	mu       sync.Mutex
+}
+
+func (s *revalidating_server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.mu.Lock()
+	s.requests = append(s.requests, r.Header.Clone())
+	s.mu.Unlock()
+	if s.status != 0 {
+		w.WriteHeader(s.status)
+		return
+	}
+	if r.Header.Get("If-None-Match") == s.etag {
+		w.Header().Set("ETag", s.etag)
+		w.WriteHeader(http.StatusNotModified)
+		return
+	}
+	w.Header().Set("ETag", s.etag)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(s.body))
+}
+
+// points `STATE` at a fresh cache directory for the duration of the test and
+// returns a client that caches through it.
+func with_test_cache(t *testing.T) *http.Client {
+	t.Helper()
+	original_state := STATE
+	temp_dir := t.TempDir()
+	require.NoError(t, os.MkdirAll(filepath.Join(temp_dir, "output"), 0755))
+	STATE = &State{CWD: temp_dir, RunStart: time.Now(), RateGate: new_rate_gate()}
+	t.Cleanup(func() { STATE = original_state })
+	return &http.Client{Transport: FileCachingRequest{}}
+}
+
+// fetches `url` with `client` and returns the response and its body.
+func fetch(t *testing.T, client *http.Client, url string) (*http.Response, string) {
+	t.Helper()
+	resp, err := client.Get(url)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	return resp, string(body)
+}
+
+// returns the cache file path for `url`.
+func cache_path_of(t *testing.T, url string) string {
+	t.Helper()
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	require.NoError(t, err)
+	return cache_path(make_cache_key(req))
+}
+
+// sets the cache entry for `url` to `age` old.
+func age_cache_entry(t *testing.T, url string, age time.Duration) time.Time {
+	t.Helper()
+	stale_time := time.Now().Add(-age)
+	require.NoError(t, os.Chtimes(cache_path_of(t, url), stale_time, stale_time))
+	return stale_time
+}
+
+func Test_FileCachingRequest__valid_entry_is_served_without_a_request(t *testing.T) {
+	server := &revalidating_server{etag: `"v1"`, body: "first"}
+	ts := httptest.NewServer(server)
+	defer ts.Close()
+	client := with_test_cache(t)
+
+	_, first := fetch(t, client, ts.URL+"/listing")
+	_, second := fetch(t, client, ts.URL+"/listing")
+
+	assert.Equal(t, "first", first)
+	assert.Equal(t, "first", second)
+	assert.Len(t, server.requests, 1, "the second request was served from the cache")
+	assert.Equal(t, int64(1), STATE.Cache.Hits.Load())
+	assert.Equal(t, int64(0), STATE.Cache.Revalidated.Load())
+	assert.Equal(t, int64(1), STATE.Cache.Fetched.Load())
+}
+
+func Test_FileCachingRequest__stale_entry_is_revalidated(t *testing.T) {
+	server := &revalidating_server{etag: `W/"v1"`, body: "first"}
+	ts := httptest.NewServer(server)
+	defer ts.Close()
+	client := with_test_cache(t)
+	url := ts.URL + "/listing"
+
+	fetch(t, client, url)
+	stale_time := age_cache_entry(t, url, 25*time.Hour)
+
+	resp, body := fetch(t, client, url)
+
+	require.Len(t, server.requests, 2)
+	assert.Equal(t, `W/"v1"`, server.requests[1].Get("If-None-Match"), "the stale entry's etag was sent")
+	assert.Equal(t, http.StatusOK, resp.StatusCode, "the caller never sees a 304")
+	assert.Equal(t, "first", body, "the cached body is served")
+
+	info, err := os.Stat(cache_path_of(t, url))
+	require.NoError(t, err)
+	assert.True(t, info.ModTime().After(stale_time), "the entry was renewed")
+	assert.Equal(t, int64(0), STATE.Cache.Hits.Load())
+	assert.Equal(t, int64(1), STATE.Cache.Revalidated.Load())
+	assert.Equal(t, int64(1), STATE.Cache.Fetched.Load())
+}
+
+func Test_FileCachingRequest__changed_entry_is_replaced(t *testing.T) {
+	server := &revalidating_server{etag: `"v1"`, body: "first"}
+	ts := httptest.NewServer(server)
+	defer ts.Close()
+	client := with_test_cache(t)
+	url := ts.URL + "/listing"
+
+	fetch(t, client, url)
+	age_cache_entry(t, url, 25*time.Hour)
+	server.etag = `"v2"`
+	server.body = "second"
+
+	resp, body := fetch(t, client, url)
+
+	require.Len(t, server.requests, 2)
+	assert.Equal(t, `"v1"`, server.requests[1].Get("If-None-Match"))
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, "second", body, "the new body is served")
+
+	entry, err := read_cache_entry(filepath.Base(cache_path_of(t, url)))
+	require.NoError(t, err)
+	assert.Equal(t, `"v2"`, entry.Header.Get("ETag"), "the entry holds the new response")
+	assert.Equal(t, int64(2), STATE.Cache.Fetched.Load())
+}
+
+func Test_FileCachingRequest__refused_revalidation_keeps_the_stale_entry(t *testing.T) {
+	server := &revalidating_server{etag: `"v1"`, body: "first"}
+	ts := httptest.NewServer(server)
+	defer ts.Close()
+	client := with_test_cache(t)
+	url := ts.URL + "/listing"
+
+	fetch(t, client, url)
+	stale_time := age_cache_entry(t, url, 25*time.Hour)
+	server.status = http.StatusForbidden
+
+	resp, _ := fetch(t, client, url)
+
+	assert.Equal(t, http.StatusForbidden, resp.StatusCode, "the refusal reaches the caller")
+	entry, err := read_cache_entry(filepath.Base(cache_path_of(t, url)))
+	require.NoError(t, err)
+	assert.Equal(t, `"v1"`, entry.Header.Get("ETag"), "the stale entry is untouched")
+	info, err := os.Stat(cache_path_of(t, url))
+	require.NoError(t, err)
+	assert.Equal(t, stale_time.Unix(), info.ModTime().Unix(), "the stale entry is not renewed")
+}
+
+func Test_FileCachingRequest__stale_entry_without_etag_is_refetched(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Empty(t, r.Header.Get("If-None-Match"))
+		w.Write([]byte("body"))
+	}))
+	defer ts.Close()
+	client := with_test_cache(t)
+	url := ts.URL + "/listing"
+
+	fetch(t, client, url)
+	age_cache_entry(t, url, 25*time.Hour)
+	_, body := fetch(t, client, url)
+
+	assert.Equal(t, "body", body)
+	assert.Equal(t, int64(2), STATE.Cache.Fetched.Load())
 }

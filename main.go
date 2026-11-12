@@ -16,6 +16,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
+	"sync/atomic"
 	"syscall"
 
 	"fmt"
@@ -47,11 +48,10 @@ import (
 var APP_VERSION = "unreleased" // modified at release with `-ldflags "-X main.APP_VERSION=X.X.X"`
 var APP_LOC = "https://github.com/ogri-la/github-wow-addon-catalogue-go"
 
-var CACHE_DURATION = 24               // hours. how long cached files should live for generally.
-var CACHE_DURATION_SEARCH = 2         // hours. how long cached *search* files should live for.
-var CACHE_DURATION_ZIP = -1           // hours. how long cached zipfile entries should live for.
-var CACHE_DURATION_RELEASE_JSON = -1  // hours. how long cached release.json entries should live for.
-var CACHE_DURATION_RELEASES_PAGE = -1 // hours. how long cached releases page listings should live for.
+var CACHE_DURATION = 24              // hours. how long cached files should live for generally.
+var CACHE_DURATION_SEARCH = 2        // hours. how long cached *search* files should live for.
+var CACHE_DURATION_ZIP = -1          // hours. how long cached zipfile entries should live for.
+var CACHE_DURATION_RELEASE_JSON = -1 // hours. how long cached release.json entries should live for.
 
 // prevents issuing the same warning multiple times when a repository appears
 // in the results of more than one search query.
@@ -207,6 +207,7 @@ type State struct {
 	Flags       Flags
 	RunStart    time.Time // time app started
 	RateGate    *RateGate // Github rate limits, shared by every request
+	Cache       CacheCounters
 }
 
 var STATE *State
@@ -506,6 +507,17 @@ func trace_context() context.Context {
 
 // --- caching
 
+// how requests were answered during a run, summed across goroutines.
+// `Hits` were served from a valid entry without a network request.
+// `Revalidated` were stale entries the server confirmed unchanged with `304`.
+// `Fetched` were answered by the network with anything other than `304`,
+// so the sum of the three is the number of non-`.zip` requests.
+type CacheCounters struct {
+	Hits        atomic.Int64
+	Revalidated atomic.Int64
+	Fetched     atomic.Int64
+}
+
 // returns a path to the cache directory.
 func cache_dir() string {
 	return filepath.Join(STATE.CWD, "output") // "/current/working/dir/output"
@@ -672,8 +684,6 @@ func cache_expired(path string) bool {
 		cache_duration_hrs = CACHE_DURATION_ZIP
 	case "release.json":
 		cache_duration_hrs = CACHE_DURATION_RELEASE_JSON
-	case "releases":
-		cache_duration_hrs = CACHE_DURATION_RELEASES_PAGE
 	default:
 		cache_duration_hrs = CACHE_DURATION
 	}
@@ -765,11 +775,25 @@ func (x LimitedRequest) RoundTrip(req *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
+// returns the header that asks the server to confirm `cached` is unchanged:
+// `If-None-Match` with the cached `ETag`, exactly as the server sent it.
+// returns `false` when `cached` has no `ETag`.
+func revalidation_header(cached *http.Response) (string, string, bool) {
+	etag := cached.Header.Get("ETag")
+	if etag == "" {
+		return "", "", false
+	}
+	return "If-None-Match", etag, true
+}
+
 // a `http.RoundTripper` that caches responses to disk.
 type FileCachingRequest struct{}
 
 // serves `req` from the cache when a valid entry exists, otherwise makes the
 // request and caches a successful response.
+// a stale entry with an `ETag` is revalidated: the request carries
+// `If-None-Match`, and a `304` serves the stale entry and makes it valid
+// for a full lifetime again. the caller never sees a `304`.
 // .zip requests bypass this entirely, see `read_zip_cache_entry`.
 // redirects are followed and the final response is stored under the cache key
 // of the original request.
@@ -790,9 +814,23 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 	if err == nil && !cache_expired(cache_path) {
 		// a cache entry was found and it's still valid, use that.
 		slog.Debug("HTTP GET cache HIT", "url", req.URL, "cache-path", cache_path)
+		STATE.Cache.Hits.Add(1)
 		return cached_resp, nil
 	}
 	slog.Debug("HTTP GET cache MISS", "url", req.URL, "cache-path", cache_path, "error", err)
+
+	// a stale entry is kept: the server may confirm it is still current.
+	stale_resp := cached_resp
+	if err != nil {
+		stale_resp = nil
+	}
+	if stale_resp != nil {
+		if name, val, ok := revalidation_header(stale_resp); ok {
+			// a round tripper must not modify the request it was given.
+			req = req.Clone(req.Context())
+			req.Header.Set(name, val)
+		}
+	}
 
 	resp, err := LimitedRequest{}.RoundTrip(req)
 	if err != nil {
@@ -800,6 +838,20 @@ func (x FileCachingRequest) RoundTrip(req *http.Request) (*http.Response, error)
 		slog.Error("error with transport", "url", req.URL)
 		return resp, err
 	}
+
+	if resp.StatusCode == http.StatusNotModified && stale_resp != nil {
+		// the server confirmed the stale entry is current.
+		resp.Body.Close()
+		now := time.Now()
+		err = os.Chtimes(cache_path, now, now)
+		if err != nil {
+			slog.Warn("failed to renew cache entry, it will be revalidated again", "cache-path", cache_path, "error", err)
+		}
+		slog.Debug("HTTP GET cache revalidated", "url", req.URL, "cache-path", cache_path)
+		STATE.Cache.Revalidated.Add(1)
+		return stale_resp, nil
+	}
+	STATE.Cache.Fetched.Add(1)
 
 	if resp.StatusCode == 301 || resp.StatusCode == 302 {
 		// we've been redirected to another location.
@@ -2765,6 +2817,8 @@ func scrape() {
 	} else {
 		write_json(project_list, "")
 	}
+
+	slog.Info("cache use", "hits", STATE.Cache.Hits.Load(), "revalidated", STATE.Cache.Revalidated.Load(), "fetched", STATE.Cache.Fetched.Load())
 }
 
 // ---
@@ -2922,7 +2976,6 @@ func cache_stats() {
 		"search":       {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"zip":          {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"release.json": {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
-		"releases":     {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 		"other":        {MinSize: math.MaxInt64, MinAge: time.Duration(math.MaxInt64), Sizes: []int64{}, Ages: []time.Duration{}},
 	}
 
@@ -2948,8 +3001,6 @@ func cache_stats() {
 			cache_type = "zip"
 		} else if strings.HasSuffix(cache_file, "-release.json") {
 			cache_type = "release.json"
-		} else if strings.HasSuffix(cache_file, "-releases") {
-			cache_type = "releases"
 		} else {
 			cache_type = "other"
 		}
@@ -3040,7 +3091,7 @@ func cache_stats() {
 	fmt.Println()
 
 	// per-type
-	type_order := []string{"search", "release.json", "releases", "zip", "other"}
+	type_order := []string{"search", "release.json", "zip", "other"}
 	for _, cache_type := range type_order {
 		stats := stats_map[cache_type]
 		if stats.Count == 0 {
@@ -3167,9 +3218,6 @@ func cache_prune() {
 		case "release.json":
 			cache_type = "release.json"
 			expiry_hours = CACHE_DURATION_RELEASE_JSON
-		case "releases":
-			cache_type = "releases"
-			expiry_hours = CACHE_DURATION_RELEASES_PAGE
 		default:
 			cache_type = "other"
 			expiry_hours = CACHE_DURATION
